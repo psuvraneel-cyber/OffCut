@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+web/dist/
+.wrangler/
+
+# Local secrets (commit .dev.vars.example instead)
+.dev.vars
+.env
+.env.*
+!.env.example
+
+# Logs and caches
+*.log
+npm-debug.log*
+.vite/
+coverage/
+
+# Editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
