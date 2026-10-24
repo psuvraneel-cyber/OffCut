@@ -1,0 +1,12 @@
+# Cloudflare Pages response headers.
+# Do NOT add Cross-Origin-Embedder-Policy / Cross-Origin-Opener-Policy site-wide:
+# cross-origin isolation blocks the ad iframes. See docs/backend-prompt.md.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

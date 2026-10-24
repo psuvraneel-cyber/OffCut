@@ -1,0 +1,32 @@
+.hero {
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--gutter) calc(var(--space-6) + 4rem);
+  text-align: center;
+  background:
+    radial-gradient(60% 50% at 50% 35%, rgba(215, 123, 255, 0.25), transparent 70%),
+    radial-gradient(50% 40% at 70% 80%, rgba(122, 77, 255, 0.18), transparent 70%),
+    var(--mist);
+}
+
+.hero__eyebrow {
+  color: var(--violet-deep);
+}
+
+.hero__title {
+  font-size: var(--text-display);
+}
+
+.hero__title em {
+  font-style: italic;
+  color: var(--violet);
+}
+
+.hero__lede {
+  max-width: 34rem;
+  color: var(--ink-soft);
+  font-size: var(--text-lg);
+}

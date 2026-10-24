@@ -1,0 +1,47 @@
+/* Design tokens: every colour, font and spacing value the site uses lives here. */
+:root {
+  /* Palette: lavender dusk */
+  --mist: #f1ecff;          /* page background, pale lavender */
+  --mist-deep: #e2d8ff;
+  --ink: #1d1530;           /* main text, near-black violet */
+  --ink-soft: #5b5078;      /* secondary text */
+  --violet: #7a4dff;        /* brand accent */
+  --violet-deep: #4b23c8;
+  --orchid: #d77bff;        /* warm glow accent */
+  --signal: #6fe3ff;        /* cool highlight, used sparingly */
+  --night: #120b24;         /* dark scenes */
+  --night-soft: #251a45;
+  --white: #ffffff;
+
+  /* Glass surfaces (pill menu, cards) */
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-dark: rgba(29, 21, 48, 0.55);
+  --glass-border: rgba(122, 77, 255, 0.22);
+
+  /* Type */
+  --font-display: 'Instrument Serif', 'Times New Roman', serif;
+  --font-body: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-display: clamp(3rem, 9vw, 8.5rem);
+
+  /* Spacing and shape */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  --space-6: 4rem;
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --radius-pill: 999px;
+  --radius-card: 20px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 180ms;
+  --dur-med: 420ms;
+}

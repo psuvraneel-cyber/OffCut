@@ -1,0 +1,12 @@
+{
+  "name": "clipper",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev:web": "npm --prefix web run dev",
+    "build": "npm --prefix web ci && npm --prefix web run build",
+    "preview:web": "npm --prefix web run preview",
+    "lint:web": "npm --prefix web run lint"
+  }
+}
