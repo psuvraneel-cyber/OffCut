@@ -6,7 +6,23 @@
   "scripts": {
     "dev:web": "npm --prefix web run dev",
     "build": "npm --prefix web ci && npm --prefix web run build",
+    "build:web": "npm --prefix web run build",
     "preview:web": "npm --prefix web run preview",
-    "lint:web": "npm --prefix web run lint"
+    "lint:web": "npm --prefix web run lint",
+    "dev:api": "wrangler pages dev web/dist",
+    "db:migrate:local": "wrangler d1 migrations apply clipper-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply clipper-db --remote",
+    "test:api": "vitest run --config vitest.config.ts",
+    "typecheck:api": "tsc --noEmit -p tsconfig.api.json"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.23.0",
+    "@cloudflare/workers-types": "^5.20261024.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.0",
+    "wrangler": "^4.152.0"
   }
 }

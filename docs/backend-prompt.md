@@ -55,8 +55,8 @@ The repo is shared with a frontend that another engineer is building at the same
 │   │   ├── features/[id]/vote.ts
 │   │   ├── stats/index.ts
 │   │   ├── stats/export.ts
-│   │   └── errors.ts
-│   ├── _middleware.ts    yours: shared middleware for /api/*
+│   │   ├── errors.ts
+│   │   └── _middleware.ts  yours: shared middleware for /api/* (must live in api/, see Middleware)
 │   └── lib/              yours: helpers (validation, turnstile, responses, db)
 ├── shared/
 │   └── api-types.ts      yours: create it exactly from the contract below
@@ -67,7 +67,9 @@ The repo is shared with a frontend that another engineer is building at the same
 └── docs/backend.md       yours: backend README
 ```
 
-`wrangler.toml` must set `pages_build_output_dir = "web/dist"` and declare the D1 binding `DB` (database name `clipper-db`). If `web/dist` doesn't exist yet, create an empty `web/dist/index.html` placeholder for local dev only and say so in the README.
+`wrangler.toml` must set `name = "offcut"` (the Pages project, so the site lives at `https://offcut.pages.dev`), `pages_build_output_dir = "web/dist"`, and declare the D1 binding `DB` (database name `clipper-db`). Top-level `[vars]` are for local dev and previews (localhost origins). Production needs its own `[env.production.vars]` **and** `[[env.production.d1_databases]]` (bindings aren't inherited), with `APP_ENV = "production"` and the production origin(s) in `ALLOWED_ORIGINS`. If `web/dist` doesn't exist yet, create an empty `web/dist/index.html` placeholder for local dev only and say so in the README.
+
+To build the frontend locally, use `npm run build:web`. Never run the root `npm run build` locally: it runs `npm ci` in `web/`, which deletes `web/node_modules` (it's meant for Cloudflare's build servers).
 
 ## Configuration
 
@@ -75,7 +77,7 @@ The repo is shared with a frontend that another engineer is building at the same
 |---|---|---|
 | `DB` | D1 binding | The database |
 | `TURNSTILE_SECRET_KEY` | Secret | Server-side Turnstile verification. Never commit it. |
-| `ALLOWED_ORIGINS` | Var | Comma-separated origins allowed to call write endpoints, e.g. `https://clipper.pages.dev,http://localhost:5173,http://localhost:8788` |
+| `ALLOWED_ORIGINS` | Var | Comma-separated origins allowed to call write endpoints, e.g. `https://offcut.pages.dev` in production, `http://localhost:5173,http://localhost:8788` locally |
 | `APP_ENV` | Var | `development` or `production` |
 
 For local development, use **Cloudflare's published Turnstile test keys** (the "always passes" secret) in `.dev.vars`, and commit a `.dev.vars.example` with placeholder values instead. Add `.dev.vars` to `.gitignore`.
@@ -92,6 +94,7 @@ export type ApiErrorCode =
   | "TURNSTILE_FAILED"   // 403: bot check failed or missing
   | "FORBIDDEN_ORIGIN"   // 403: Origin not in ALLOWED_ORIGINS
   | "NOT_FOUND"          // 404
+  | "METHOD_NOT_ALLOWED" // 405: response includes an Allow header
   | "CONFLICT"           // 409
   | "PAYLOAD_TOO_LARGE"  // 413
   | "RATE_LIMITED"       // 429
@@ -201,9 +204,11 @@ export interface ClientMeta {
 | `POST /api/stats/export` | yes | `no-store` | 202 | Atomic increments |
 | `POST /api/errors` | yes | `no-store` | 202 | |
 
-Unknown `/api/*` routes return 404 with `NOT_FOUND`. Wrong methods return 405 with an `Allow` header.
+Unknown `/api/*` routes return 404 with `NOT_FOUND`. Wrong methods return 405 `METHOD_NOT_ALLOWED` with an `Allow` header.
 
-## Middleware (`functions/_middleware.ts`, applies to `/api/*` only)
+## Middleware (`functions/api/_middleware.ts`, applies to `/api/*` only)
+
+It must live in `functions/api/`, not at the root of `functions/`. A root-level middleware makes Cloudflare route **every** request (pages, scripts, fonts) through Functions, burning the free daily request quota on static files.
 
 1. **Origin check.** For every non-GET request, the `Origin` header must be present and listed in `ALLOWED_ORIGINS`, otherwise 403 `FORBIDDEN_ORIGIN`. No CORS headers are needed (same-origin). Don't add `Access-Control-Allow-Origin: *`.
 2. **Body limits.** Reject non-JSON content types on POST/DELETE with 400 and bodies over 10 KB with 413.

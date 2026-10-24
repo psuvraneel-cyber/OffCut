@@ -1,0 +1,4 @@
+# Copy this file to .dev.vars for local Pages Functions development.
+# The local file is ignored by git. Use Cloudflare's published Turnstile
+# test secret that always passes for TURNSTILE_SECRET_KEY.
+TURNSTILE_SECRET_KEY=replace-with-cloudflare-turnstile-test-secret

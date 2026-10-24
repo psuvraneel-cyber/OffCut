@@ -1,0 +1,28 @@
+# Cloudflare Pages project. The project name becomes the free address: https://offcut.pages.dev
+# (if that subdomain is taken, Cloudflare adds a suffix; update the production origins below to match).
+name = "offcut"
+compatibility_date = "2026-08-22"
+pages_build_output_dir = "web/dist"
+
+# Top-level settings apply to local development (`npm run dev:api`) and to preview deployments.
+[[d1_databases]]
+binding = "DB"
+database_name = "clipper-db"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+[vars]
+APP_ENV = "development"
+ALLOWED_ORIGINS = "http://localhost:8788,http://localhost:5173"
+
+# Production overrides. Bindings are not inherited between environments, so D1 is repeated here.
+# Add your custom domain to ALLOWED_ORIGINS when you connect one, e.g. ",https://offcut.app".
+[env.production]
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "clipper-db"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+[env.production.vars]
+APP_ENV = "production"
+ALLOWED_ORIGINS = "https://offcut.pages.dev"
