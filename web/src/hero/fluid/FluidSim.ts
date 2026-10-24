@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import type { FrameState, HeroSystem } from '../engine/types'
+import { sceneColor } from '../post/tone'
 import {
   advectShader,
   baseVertex,
@@ -28,8 +29,11 @@ const DYE_AMOUNT = 0.05
 const UNDERLAY_INTENSITY = 0.32
 // After this long without input the fluid is cleared and the solver sleeps.
 const IDLE_AFTER = 6
-// Dye colours: violet and orchid from tokens.css, alternating as the pointer moves.
-const DYE_COLORS = [new THREE.Vector3(0.48, 0.3, 1), new THREE.Vector3(0.84, 0.48, 1)]
+// Dye colours: violet and orchid from tokens.css (in scene light), alternating as the pointer moves.
+const DYE_COLORS = ['#7a4dff', '#d77bff'].map((hex) => {
+  const color = sceneColor(hex)
+  return new THREE.Vector3(color.r, color.g, color.b)
+})
 
 // A render target pair for fields that read their own previous value.
 class PingPong {

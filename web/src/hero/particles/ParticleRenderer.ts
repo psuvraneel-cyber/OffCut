@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { WIDE_LAYOUT_MIN } from '../engine/layout'
 import type { FrameState, HeroSystem } from '../engine/types'
+import { sceneColor } from '../post/tone'
 import type { ParticleSim } from './ParticleSim'
 
 // Mirrors the CSS tokens, lightened a touch so the particles glow on the night background.
@@ -13,11 +14,6 @@ const particleSize = (width: number, count: number) =>
 // Seconds of motion a streak shows behind a fast particle.
 const STREAK_SECONDS = 0.03
 
-// Hex → 0..1 RGB without Three's colour management, because the shader writes colours as-is.
-function rgb(hex: string) {
-  const n = Number.parseInt(hex.slice(1), 16)
-  return new THREE.Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255)
-}
 
 const vertexShader = /* glsl */ `
 uniform sampler2D tPosition;
@@ -33,6 +29,9 @@ uniform vec3 uColorA;
 uniform vec3 uColorB;
 uniform vec3 uColorC;
 uniform vec3 uColorHot;
+// Depth of field (high tier): particles nearer than the focus distance swell and dim.
+uniform float uFocus;
+uniform float uDepthOfField;
 
 // Quad position in particle radii: x runs along the particle's motion, the tail trails behind.
 varying vec2 vLocal;
@@ -57,6 +56,8 @@ void main() {
 
   // Size attenuation as in v1 (gl_PointSize was this diameter), with a floor against flicker.
   float radius = max(0.5 * uSize * scale * uPixelRatio / -mvPosition.z, 0.75 * uPixelRatio);
+  float blur = uDepthOfField * clamp((uFocus + mvPosition.z) * 1.2, 0.0, 3.0);
+  radius *= 1.0 + blur;
   // Only genuinely fast particles streak; slow drifters stay round so the shapes read as dust.
   float speed = length(velocity);
   float tail = min(trailLength, radius * 5.0) / radius * smoothstep(2.0, 4.5, speed) * uMotion;
@@ -78,7 +79,7 @@ void main() {
 
   float twinkle = 0.55 + 0.45 * (0.5 + 0.5 * sin(uTime * 2.0 + rnd * 40.0));
   // A streak spreads its light along its length, but fast particles still read brighter.
-  vAlpha = uAlpha * mix(1.0, twinkle, uMotion) * (1.0 + heat * 0.8) / (1.0 + tail * 0.3);
+  vAlpha = uAlpha * mix(1.0, twinkle, uMotion) * (1.0 + heat * 0.8) / (1.0 + tail * 0.3) / ((1.0 + blur) * (1.0 + blur));
 }
 `
 
@@ -106,7 +107,9 @@ export class ParticleRenderer implements HeroSystem {
   private readonly material: THREE.ShaderMaterial
   private readonly mesh: THREE.Mesh
 
-  constructor(sim: ParticleSim, parent: THREE.Object3D, reducedMotion: boolean) {
+  private readonly anchorPosition = new THREE.Vector3()
+
+  constructor(sim: ParticleSim, parent: THREE.Object3D, reducedMotion: boolean, depthOfField: boolean) {
     this.sim = sim
     const quad = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0])
     this.geometry.setAttribute('position', new THREE.BufferAttribute(quad, 3))
@@ -127,10 +130,12 @@ export class ParticleRenderer implements HeroSystem {
         uTime: { value: 0 },
         uMotion: { value: reducedMotion ? 0 : 1 },
         uStreak: { value: STREAK_SECONDS },
-        uColorA: { value: rgb(PALETTE.a) },
-        uColorB: { value: rgb(PALETTE.b) },
-        uColorC: { value: rgb(PALETTE.c) },
-        uColorHot: { value: rgb(PALETTE.hot) },
+        uColorA: { value: sceneColor(PALETTE.a) },
+        uColorB: { value: sceneColor(PALETTE.b) },
+        uColorC: { value: sceneColor(PALETTE.c) },
+        uColorHot: { value: sceneColor(PALETTE.hot) },
+        uFocus: { value: 6 },
+        uDepthOfField: { value: depthOfField && !reducedMotion ? 1 : 0 },
       },
       transparent: true,
       depthWrite: false,
@@ -147,6 +152,8 @@ export class ParticleRenderer implements HeroSystem {
     u.tPosition.value = this.sim.positionTexture
     u.tVelocity.value = this.sim.velocityTexture
     u.uTime.value = state.time
+    // Focus on the shape itself.
+    u.uFocus.value = state.camera.position.distanceTo(state.anchor.getWorldPosition(this.anchorPosition))
   }
 
   resize(state: FrameState) {

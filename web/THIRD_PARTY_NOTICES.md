@@ -42,6 +42,7 @@ THE SOFTWARE.
 | Package | Used for | Licence |
 |---|---|---|
 | `three` (incl. `examples/jsm` addons such as `GPUComputationRenderer`) | WebGL rendering, GPU particle simulation | MIT |
+| `postprocessing` (pmndrs) | Hero bloom, tone mapping, vignette, grain, chromatic aberration | Zlib |
 | `gsap` | Scroll timeline and tweens | GreenSock Standard "No Charge" licence |
 | `lenis` | Smooth scrolling | MIT |
 | `react`, `react-dom` | UI | MIT |

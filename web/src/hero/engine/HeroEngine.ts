@@ -6,6 +6,8 @@ import { PointerTracker, type PointerSample } from '../interaction/pointer'
 import { ParticleRenderer } from '../particles/ParticleRenderer'
 import { ParticleSim } from '../particles/ParticleSim'
 import { buildShapes, type ShapeSet } from '../particles/shapes'
+import { PostChain } from '../post/composer'
+import { Backdrop } from '../world/Backdrop'
 import { frameShape } from './layout'
 import type { GpuSupport, GpuTier } from './quality'
 import type { FrameState, HeroSystem } from './types'
@@ -44,6 +46,7 @@ export class HeroEngine {
   private readonly pointer: PointerTracker
   private readonly cutGesture = new CutGesture()
   private readonly systems: HeroSystem[] = []
+  private readonly post: PostChain
   private readonly state: FrameState
   private readonly resizeObserver: ResizeObserver
   private readonly visibilityObserver: IntersectionObserver
@@ -112,8 +115,14 @@ export class HeroEngine {
         fluid,
       })
       // Order matters: the fluid steps before the particles that sample it.
+      this.systems.push(new Backdrop(this.scene))
       if (fluid) this.systems.push(fluid)
-      this.systems.push(sim, new ParticleRenderer(sim, this.anchor, options.reducedMotion), new ImpactEffects(this.anchor))
+      this.systems.push(
+        sim,
+        new ParticleRenderer(sim, this.anchor, options.reducedMotion, tier.depthOfField),
+        new ImpactEffects(this.anchor),
+      )
+      this.post = new PostChain(this.renderer, this.scene, this.camera, tier, options.reducedMotion)
       this.particleCount = sim.count
       this.fluidGrid = fluid ? tier.fluidGrid : 0
       // Run every shader once (a zero-length step changes nothing) so compile errors surface here.
@@ -154,6 +163,7 @@ export class HeroEngine {
   private disposeResources() {
     for (const system of this.systems) system.dispose()
     this.systems.length = 0
+    this.post?.dispose()
     this.pointer.dispose()
     this.renderer.dispose()
   }
@@ -206,7 +216,7 @@ export class HeroEngine {
     this.accumulator = Math.min(this.accumulator, STEP / 2)
 
     for (const system of this.systems) system.update(dt, s)
-    this.renderer.render(this.scene, this.camera)
+    this.post.render(dt)
   }
 
   // Ease towards the pointer for a gentle parallax tilt, plus a slow idle sway.
@@ -284,6 +294,7 @@ export class HeroEngine {
 
     const s = this.state
     this.renderer.setSize(width, height, false)
+    this.post?.setSize(width, height)
     s.width = width
     s.height = height
     s.pixelRatio = this.renderer.getPixelRatio()

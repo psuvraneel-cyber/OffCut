@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import type { FrameState, HeroSystem } from '../engine/types'
+import { sceneColor } from '../post/tone'
 
 // Timing shared with the particle simulation, in seconds and shape units.
 export const SHOCK_LIFE = 0.5
@@ -9,8 +10,8 @@ export const CUT_REACH = 0.9
 const SHOCK_RADIUS = SHOCK_SPEED * SHOCK_LIFE
 
 // Hot pink-white core with an orchid glow (tokens.css), as additive light.
-const CORE = new THREE.Color('#fff0fc')
-const GLOW = new THREE.Color('#e08bff')
+const CORE = sceneColor('#fff0fc')
+const GLOW = sceneColor('#e08bff')
 
 const vertexShader = /* glsl */ `
 varying vec2 vUv;
