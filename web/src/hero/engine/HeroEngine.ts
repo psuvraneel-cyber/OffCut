@@ -1,5 +1,8 @@
 import * as THREE from 'three'
-import { PointerTracker } from '../interaction/pointer'
+import { FluidSim } from '../fluid/FluidSim'
+import { CutGesture } from '../interaction/cutGesture'
+import { ImpactEffects } from '../interaction/ImpactEffects'
+import { PointerTracker, type PointerSample } from '../interaction/pointer'
 import { ParticleRenderer } from '../particles/ParticleRenderer'
 import { ParticleSim } from '../particles/ParticleSim'
 import { buildShapes, type ShapeSet } from '../particles/shapes'
@@ -39,6 +42,7 @@ export class HeroEngine {
   private readonly camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 200)
   private readonly anchor = new THREE.Group()
   private readonly pointer: PointerTracker
+  private readonly cutGesture = new CutGesture()
   private readonly systems: HeroSystem[] = []
   private readonly state: FrameState
   private readonly resizeObserver: ResizeObserver
@@ -51,6 +55,7 @@ export class HeroEngine {
   private readonly hit = new THREE.Vector3()
   private readonly tilt = { x: 0, y: 0 }
   private readonly particleCount: number
+  private readonly fluidGrid: number
   private shaderError = false
   private onScreen = false
   private running = false
@@ -90,17 +95,27 @@ export class HeroEngine {
       width: 1,
       height: 1,
       pixelRatio: this.renderer.getPixelRatio(),
+      cut: { id: 0, age: Infinity, start: new THREE.Vector2(), end: new THREE.Vector2(), startUv: new THREE.Vector2(), endUv: new THREE.Vector2() },
+      shock: { id: 0, age: Infinity, centre: new THREE.Vector3(), centreUv: new THREE.Vector2() },
     }
 
     try {
+      // The fluid only ever moves under a mouse or pen, so touch screens and reduced motion skip it.
+      const { tier } = options
+      const stirrable = !options.reducedMotion && window.matchMedia('(pointer: fine)').matches
+      const fluid = stirrable && tier.fluidGrid > 0 ? new FluidSim(this.renderer, this.scene, tier.fluidGrid, tier.fluidIterations) : null
       const sim = new ParticleSim(this.renderer, shapes, {
-        size: options.tier.simSize,
+        size: tier.simSize,
         textureType: options.support.textureType,
         reducedMotion: options.reducedMotion,
         scroll: this.state.scroll,
+        fluid,
       })
-      this.systems.push(sim, new ParticleRenderer(sim, this.anchor, options.reducedMotion))
+      // Order matters: the fluid steps before the particles that sample it.
+      if (fluid) this.systems.push(fluid)
+      this.systems.push(sim, new ParticleRenderer(sim, this.anchor, options.reducedMotion), new ImpactEffects(this.anchor))
       this.particleCount = sim.count
+      this.fluidGrid = fluid ? tier.fluidGrid : 0
       // Run every shader once (a zero-length step changes nothing) so compile errors surface here.
       for (const system of this.systems) system.step?.(0, this.state)
       this.resize()
@@ -124,7 +139,8 @@ export class HeroEngine {
   // One line for the ?debug overlay.
   describe() {
     const { tier, support } = this.options
-    return `${tier.name} · ${this.particleCount.toLocaleString()} particles (${tier.simSize}²) · ${support.textureType} · dpr ${this.state.pixelRatio}`
+    const fluid = this.fluidGrid ? `fluid ${this.fluidGrid}/${tier.fluidIterations}` : 'no fluid'
+    return `${tier.name} · ${this.particleCount.toLocaleString()} particles (${tier.simSize}²) · ${fluid} · ${support.textureType} · dpr ${this.state.pixelRatio}`
   }
 
   dispose() {
@@ -176,6 +192,7 @@ export class HeroEngine {
     this.pointer.update(dt)
     this.updateTilt(dt)
     this.updatePointer(dt)
+    this.updateGestures(dt)
 
     // Fixed steps, rounded to the nearest whole step so a 60 Hz display gets exactly one per frame
     // (and 120 Hz one every other frame). Time beyond two steps is dropped: slow motion, not chaos.
@@ -208,15 +225,56 @@ export class HeroEngine {
     const p = s.pointer
     const active = p.inside && p.fine && s.motion > 0
     s.pointerInfluence += ((active ? 1 : 0) - s.pointerInfluence) * (1 - Math.exp(-dt * 5))
-    if (!p.inside) return
+    if (p.inside && this.toShape(p.clientX, p.clientY)) {
+      s.pointerLocal.lerp(this.hit, 1 - Math.exp(-dt * 15))
+    }
+  }
 
+  // Swipes become cuts and clicks become shockwaves (neither with reduced motion).
+  private updateGestures(dt: number) {
+    const { cut, shock, motion } = this.state
+    cut.age += dt
+    shock.age += dt
+    const tap = this.pointer.taps.pop()
+    this.pointer.taps.length = 0
+    if (motion === 0) return
+
+    const stroke = this.cutGesture.detect(this.pointer.history)
+    if (stroke && this.toShape(stroke.start.x, stroke.start.y)) {
+      cut.start.set(this.hit.x, this.hit.y)
+      if (this.toShape(stroke.end.x, stroke.end.y)) {
+        cut.end.set(this.hit.x, this.hit.y)
+        this.toUv(stroke.start, cut.startUv)
+        this.toUv(stroke.end, cut.endUv)
+        cut.id++
+        cut.age = 0
+      }
+    }
+    if (tap && this.toShape(tap.x, tap.y)) {
+      shock.centre.set(this.hit.x, this.hit.y, 0)
+      this.toUv(tap, shock.centreUv)
+      shock.id++
+      shock.age = 0
+    }
+  }
+
+  // Client px → a point on the shape's (tilted) plane, in shape units, left in this.hit.
+  private toShape(clientX: number, clientY: number) {
+    const rect = this.canvas.getBoundingClientRect()
+    this.pointerNdc.set(((clientX - rect.left) / rect.width) * 2 - 1, -(((clientY - rect.top) / rect.height) * 2 - 1))
     this.anchor.updateMatrixWorld()
-    this.raycaster.setFromCamera(this.pointerNdc.set(p.ndcX, p.ndcY), this.camera)
+    this.raycaster.setFromCamera(this.pointerNdc, this.camera)
     this.planeNormal.set(0, 0, 1).applyQuaternion(this.anchor.quaternion)
     this.shapePlane.setFromNormalAndCoplanarPoint(this.planeNormal, this.anchor.position)
-    if (this.raycaster.ray.intersectPlane(this.shapePlane, this.hit)) {
-      s.pointerLocal.lerp(this.anchor.worldToLocal(this.hit), 1 - Math.exp(-dt * 15))
-    }
+    if (!this.raycaster.ray.intersectPlane(this.shapePlane, this.hit)) return false
+    this.anchor.worldToLocal(this.hit)
+    return true
+  }
+
+  // Client px → canvas uv (0..1, +y up), for the fluid.
+  private toUv(sample: PointerSample, out: THREE.Vector2) {
+    const rect = this.canvas.getBoundingClientRect()
+    out.set((sample.x - rect.left) / rect.width, 1 - (sample.y - rect.top) / rect.height)
   }
 
   private resize() {

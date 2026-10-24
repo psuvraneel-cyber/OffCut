@@ -1,4 +1,5 @@
 import { curlNoise } from '../glsl/noise'
+import { CUT_REACH, SHOCK_LIFE, SHOCK_SPEED } from '../interaction/ImpactEffects'
 
 // GPGPU passes for the particles (run by GPUComputationRenderer, which declares texturePosition,
 // textureVelocity and `resolution`). Position texels: xyz in shape units, w = per-particle random.
@@ -24,6 +25,26 @@ uniform float uMaxSpeed;
 uniform vec3 uPointer;
 uniform float uPointerStrength;
 uniform float uPointerRadius;
+// Swipe to cut: a line through xy along the unit direction zw (shape units); x = the stroke's
+// half-length, y = the kick in shape units per second (0 when no cut landed this step).
+uniform vec4 uCutLine;
+uniform vec2 uCut;
+// Tap shockwave: centre (xyz) and seconds since the tap (w), or w < 0 when there's none.
+uniform vec4 uShock;
+
+#ifdef FLUID
+uniform sampler2D tFluid;
+uniform mat4 uLocalToClip;
+// Fluid velocity is in canvas heights per second; this converts it to shape units per second.
+uniform float uFluidToLocal;
+uniform float uFluidStrength;
+#endif
+
+#define CUT_REACH ${CUT_REACH.toFixed(3)}
+#define SHOCK_SPEED ${SHOCK_SPEED.toFixed(3)}
+#define SHOCK_LIFE ${SHOCK_LIFE.toFixed(3)}
+#define SHOCK_WIDTH 0.18
+#define SHOCK_FORCE 70.0
 
 ${curlNoise}
 
@@ -50,14 +71,45 @@ void main() {
   vec3 curl = curlNoise(pos * uCurlScale + vec3(0.0, uTime * 0.07, uTime * 0.11));
   force += curl * (uDrift + uCurlStrength * transit) * uMotion;
 
-  // The cursor pushes particles out of its way and towards the viewer.
+  // Without a fluid (low tier) the cursor pushes particles out of its way and towards the viewer.
   vec2 away = pos.xy - uPointer.xy;
   float reach = length(away);
   float push = smoothstep(uPointerRadius, 0.0, reach) * uPointerStrength;
   force.xy += away / max(reach, 1e-4) * push * (0.7 + 0.6 * rnd);
   force.z += push * 0.8;
 
+#ifdef FLUID
+  // Stir like ink: where the fluid moves, particles are dragged towards its velocity.
+  vec4 clip = uLocalToClip * vec4(pos, 1.0);
+  vec2 flow = texture2D(tFluid, clip.xy / clip.w * 0.5 + 0.5).xy * uFluidToLocal;
+  force.xy += (flow - vel.xy) * uFluidStrength * smoothstep(0.0, 0.6, length(flow));
+#endif
+
+  // The shockwave: an expanding ring that shoves particles outwards as it passes.
+  if (uShock.w >= 0.0) {
+    vec2 outward = pos.xy - uShock.xy;
+    float d = length(outward);
+    float wave = exp(-pow((d - uShock.w * SHOCK_SPEED) / SHOCK_WIDTH, 2.0)) * (1.0 - uShock.w / SHOCK_LIFE);
+    force.xy += outward / max(d, 1e-3) * wave * SHOCK_FORCE;
+    force.z += wave * SHOCK_FORCE * 0.4;
+  }
+
   vel += force * uDt;
+
+  // A cut kicks particles away from the line, each to its own side, so the shape splits in two.
+  // A narrow band takes the full kick; the rest of the shape parts gently.
+  if (uCut.y > 0.0) {
+    vec2 rel = pos.xy - uCutLine.xy;
+    vec2 normal = vec2(-uCutLine.w, uCutLine.z);
+    float side = dot(rel, normal);
+    float along = abs(dot(rel, uCutLine.zw));
+    float span = 1.0 - smoothstep(uCut.x + CUT_REACH * 0.5, uCut.x + CUT_REACH, along);
+    float hit = (1.0 - smoothstep(0.0, 0.4, abs(side))) + 0.3 * (1.0 - smoothstep(0.0, 1.4, abs(side)));
+    hit *= span * uCut.y;
+    vel.xy += (normal * sign(side) * (0.6 + 0.8 * rnd) + uCutLine.zw * 0.35) * hit;
+    vel.z += (rnd - 0.5) * hit * 0.8;
+  }
+
   vel *= exp(-uDamping * uDt);
   float speed = length(vel);
   if (speed > uMaxSpeed) vel *= uMaxSpeed / speed;

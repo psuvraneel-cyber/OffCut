@@ -23,6 +23,27 @@ export interface FrameState {
   width: number
   height: number
   pixelRatio: number
+  // The latest swipe-to-cut and tap shockwave. `id` goes up by one per event (0 = none yet), so each
+  // system can react exactly once; `age` is seconds since the event.
+  cut: CutEvent
+  shock: ShockEvent
+}
+
+export interface CutEvent {
+  id: number
+  age: number
+  // The stroke in shape units, and in canvas uv (0..1, +y up) for the fluid.
+  start: THREE.Vector2
+  end: THREE.Vector2
+  startUv: THREE.Vector2
+  endUv: THREE.Vector2
+}
+
+export interface ShockEvent {
+  id: number
+  age: number
+  centre: THREE.Vector3
+  centreUv: THREE.Vector2
 }
 
 export interface HeroSystem {

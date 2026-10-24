@@ -1,5 +1,5 @@
-// One set of pointer listeners for every hero system: the parallax tilt, the particle forces and,
-// later, the fluid and the cut gesture all read the same state.
+// One set of pointer listeners for every hero system: the parallax tilt, the fluid, the cut gesture
+// and the tap shockwave all read the same state.
 
 export interface PointerState {
   clientX: number
@@ -18,8 +18,21 @@ export interface PointerState {
   fine: boolean
 }
 
+export interface PointerSample {
+  // Client px, and the event's timestamp in ms (same clock as performance.now()).
+  x: number
+  y: number
+  t: number
+}
+
 // Events further apart than this don't count as one continuous movement.
 const MAX_GAP_MS = 100
+// How much mouse/pen movement history to keep for gestures.
+const HISTORY_MS = 300
+// Clicks on these keep their normal meaning and never trigger a shockwave.
+const INTERACTIVE = 'a, button, input, select, textarea, label, [role="button"]'
+// A press that travels further than this before release was a drag (maybe a cut), not a tap.
+const TAP_SLOP = 10
 
 export class PointerTracker {
   readonly state: PointerState = {
@@ -34,21 +47,30 @@ export class PointerTracker {
     inside: false,
     fine: window.matchMedia('(pointer: fine)').matches,
   }
+  // Recent mouse/pen positions over the canvas, oldest first. Touch never lands here.
+  readonly history: PointerSample[] = []
+  // Clicks and taps on the canvas since the systems last looked, in client px.
+  readonly taps: PointerSample[] = []
   private readonly target: HTMLElement
+  private readonly pressedAt = { x: 0, y: 0 }
   private lastEvent = 0
 
   constructor(target: HTMLElement) {
     this.target = target
     window.addEventListener('pointermove', this.onPointerMove, { passive: true })
+    window.addEventListener('pointerdown', this.onPointerDown, { passive: true })
     window.addEventListener('pointerup', this.onPointerUp, { passive: true })
     window.addEventListener('pointercancel', this.onPointerUp, { passive: true })
+    window.addEventListener('click', this.onClick, { passive: true })
     document.documentElement.addEventListener('pointerleave', this.onPointerLeave)
   }
 
   dispose() {
     window.removeEventListener('pointermove', this.onPointerMove)
+    window.removeEventListener('pointerdown', this.onPointerDown)
     window.removeEventListener('pointerup', this.onPointerUp)
     window.removeEventListener('pointercancel', this.onPointerUp)
+    window.removeEventListener('click', this.onClick)
     document.documentElement.removeEventListener('pointerleave', this.onPointerLeave)
   }
 
@@ -83,6 +105,28 @@ export class PointerTracker {
     s.viewY = -((event.clientY / window.innerHeight) * 2 - 1)
     s.inside = Math.abs(s.ndcX) <= 1 && Math.abs(s.ndcY) <= 1
     s.fine = event.pointerType !== 'touch'
+
+    if (s.inside && s.fine) {
+      this.history.push({ x: event.clientX, y: event.clientY, t: event.timeStamp })
+      while (this.history.length > 0 && event.timeStamp - this.history[0].t > HISTORY_MS) this.history.shift()
+    } else {
+      this.history.length = 0
+    }
+  }
+
+  private readonly onPointerDown = (event: PointerEvent) => {
+    this.pressedAt.x = event.clientX
+    this.pressedAt.y = event.clientY
+  }
+
+  // Click rather than pointerdown, so a swipe that scrolls the page never counts as a tap.
+  private readonly onClick = (event: MouseEvent) => {
+    if (event.target instanceof Element && event.target.closest(INTERACTIVE)) return
+    if (Math.hypot(event.clientX - this.pressedAt.x, event.clientY - this.pressedAt.y) > TAP_SLOP) return
+    const rect = this.target.getBoundingClientRect()
+    const inside =
+      event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom
+    if (inside) this.taps.push({ x: event.clientX, y: event.clientY, t: event.timeStamp })
   }
 
   // A finger lifting off the screen shouldn't leave the pointer "inside" forever.
@@ -92,5 +136,6 @@ export class PointerTracker {
 
   private readonly onPointerLeave = () => {
     this.state.inside = false
+    this.history.length = 0
   }
 }

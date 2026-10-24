@@ -21,7 +21,7 @@ export function NavPill() {
           </li>
         ))}
       </ul>
-      <a className="nav-pill__cta" href="#early-access">
+      <a className="nav-pill__cta" href="#early-access" data-magnetic>
         Early access
       </a>
     </nav>

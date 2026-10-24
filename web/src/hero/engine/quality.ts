@@ -143,7 +143,9 @@ export function probeGpu(): GpuSupport | null {
 export function detectTier(support: GpuSupport | null): TierName {
   if (!support) return 'lite'
   const coarse = window.matchMedia('(pointer: coarse)').matches
-  const small = Math.min(window.screen.width, window.screen.height) < 720
+  // Some embedded and emulated browsers report a 0×0 screen; fall back to the window then.
+  const shortSide = Math.min(window.screen.width, window.screen.height) || Math.min(window.innerWidth, window.innerHeight)
+  const small = shortSide < 720
   const cores = navigator.hardwareConcurrency ?? 4
   const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8
   if (coarse || small || cores <= 4 || memory <= 4) return 'low'
