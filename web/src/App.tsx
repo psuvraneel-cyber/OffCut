@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { startSmoothScroll } from './lib/smoothScroll'
 import { NavPill } from './components/NavPill'
+import { Hero } from './hero/Hero'
 import './App.css'
 
 export default function App() {
@@ -9,18 +10,10 @@ export default function App() {
   return (
     <>
       <main>
-        {/* Placeholder until the particle hero is built */}
-        <section className="hero" aria-labelledby="hero-title">
-          <p className="mono hero__eyebrow">Free · Private · Runs in your browser</p>
-          <h1 id="hero-title" className="hero__title">
-            Long videos in.
-            <br />
-            <em>Reels</em> out.
-          </h1>
-          <p className="hero__lede">
-            Drop in a podcast, vlog or lecture. Get back captioned vertical clips. Your video never
-            leaves your computer.
-          </p>
+        <Hero />
+        {/* Placeholder until the "How it works" section is built */}
+        <section id="how-it-works" className="next-placeholder">
+          <p className="mono">Next up: how it works</p>
         </section>
       </main>
       <NavPill />

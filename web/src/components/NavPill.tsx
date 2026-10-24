@@ -1,3 +1,4 @@
+import { Logo } from './Logo'
 import './NavPill.css'
 
 const links = [
@@ -10,8 +11,8 @@ const links = [
 export function NavPill() {
   return (
     <nav className="nav-pill" aria-label="Main">
-      <a className="nav-pill__brand" href="#top">
-        clipper
+      <a className="nav-pill__brand" href="#top" aria-label="Offcut, back to top">
+        <Logo />
       </a>
       <ul className="nav-pill__links">
         {links.map((link) => (

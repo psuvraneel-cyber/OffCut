@@ -1,4 +1,4 @@
-# clipper · website
+# Offcut · website
 
 The marketing site and (later) the in-browser clipping tool. React + TypeScript + Vite, with GSAP, Lenis and Three.js for animation.
 

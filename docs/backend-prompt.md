@@ -6,11 +6,11 @@ Copy everything below the line into your backend AI tool. The "API contract" sec
 
 ## Role and goal
 
-You are a senior backend engineer. Build the complete backend for a website called **[TOOL NAME]** (internal codename: `clipper`). Work in TypeScript, keep the code simple and readable, and do not add anything that is not asked for below.
+You are a senior backend engineer. Build the complete backend for a website called **Offcut** (internal codename: `clipper`). Work in TypeScript, keep the code simple and readable, and do not add anything that is not asked for below.
 
 ### What the product is (read this first, it shapes every decision)
 
-[TOOL NAME] is a **free, open-source, in-browser AI video clipping tool**. A creator drops a long video into the web page and gets back short, captioned, vertical clips (Reels/Shorts). **All video and AI processing happens on the user's own device**, in the browser (Whisper speech-to-text via Transformers.js/WebGPU, face tracking, WebCodecs encoding). The AI model files load from Hugging Face's CDN.
+Offcut is a **free, open-source, in-browser AI video clipping tool**. A creator drops a long video into the web page and gets back short, captioned, vertical clips (Reels/Shorts). **All video and AI processing happens on the user's own device**, in the browser (Whisper speech-to-text via Transformers.js/WebGPU, face tracking, WebCodecs encoding). The AI model files load from Hugging Face's CDN.
 
 This means:
 

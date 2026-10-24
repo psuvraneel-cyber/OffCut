@@ -1,3 +1,4 @@
+/* Dark glass, so the menu reads on both the night hero and the light sections below it. */
 .nav-pill {
   position: fixed;
   left: 50%;
@@ -9,15 +10,16 @@
   gap: var(--space-4);
   max-width: calc(100vw - 2rem);
   padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-pill);
-  background: var(--glass);
+  background: var(--glass-dark);
+  color: var(--white);
   backdrop-filter: blur(18px) saturate(1.4);
   -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  --logo-frame: var(--lilac);
 }
 
 .nav-pill__brand {
-  font-family: var(--font-display);
   font-size: var(--text-lg);
   text-decoration: none;
 }
@@ -29,16 +31,17 @@
   padding: 0;
   list-style: none;
   font-size: var(--text-sm);
+  white-space: nowrap;
 }
 
 .nav-pill__links a {
-  color: var(--ink-soft);
+  color: rgba(255, 255, 255, 0.68);
   text-decoration: none;
   transition: color var(--dur-fast) var(--ease-out);
 }
 
 .nav-pill__links a:hover {
-  color: var(--ink);
+  color: var(--white);
 }
 
 .nav-pill__cta {

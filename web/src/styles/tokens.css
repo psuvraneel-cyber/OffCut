@@ -7,6 +7,7 @@
   --ink-soft: #5b5078;      /* secondary text */
   --violet: #7a4dff;        /* brand accent */
   --violet-deep: #4b23c8;
+  --lilac: #c9b8ff;         /* logo frame on dark backgrounds */
   --orchid: #d77bff;        /* warm glow accent */
   --signal: #6fe3ff;        /* cool highlight, used sparingly */
   --night: #120b24;         /* dark scenes */
@@ -15,7 +16,7 @@
 
   /* Glass surfaces (pill menu, cards) */
   --glass: rgba(255, 255, 255, 0.55);
-  --glass-dark: rgba(29, 21, 48, 0.55);
+  --glass-dark: rgba(29, 21, 48, 0.8);
   --glass-border: rgba(122, 77, 255, 0.22);
 
   /* Type */

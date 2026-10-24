@@ -1,0 +1,41 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.logo__mark {
+  flex: none;
+  width: 1.6em;
+  height: 1.6em;
+  overflow: visible;
+}
+
+.logo__frame {
+  stroke: var(--logo-frame, var(--violet-deep));
+}
+
+/* The slice tilts out of the frame, and lifts a little further on hover. */
+.logo__slice {
+  transform-box: view-box;
+  transform-origin: 46px 24px;
+  transform: rotate(8deg);
+  transition: transform var(--dur-med) var(--ease-out);
+}
+
+a:hover .logo__slice {
+  transform: translate(1px, -3px) rotate(13deg);
+}
+
+.logo__word {
+  font-family: var(--font-display);
+  font-size: 1.2em;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a:hover .logo__slice {
+    transform: rotate(8deg);
+  }
+}

@@ -1,0 +1,145 @@
+.hero {
+  position: relative;
+  background: var(--night);
+  color: var(--white);
+}
+
+.hero__stage {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  background:
+    radial-gradient(70% 55% at 72% 45%, rgba(122, 77, 255, 0.35), transparent 70%),
+    radial-gradient(60% 45% at 15% 100%, rgba(215, 123, 255, 0.22), transparent 70%),
+    linear-gradient(180deg, #160d2e 0%, var(--night) 60%);
+}
+
+.hero__canvas,
+.hero__trail {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Sparkle trail sits above the particles but below the text, and never blocks clicks. */
+.hero__trail {
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero__copy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  align-content: center;
+  gap: var(--space-4);
+  height: 100%;
+  max-width: min(44rem, 50vw);
+  padding: var(--space-6) var(--gutter) calc(var(--space-6) + 3rem);
+}
+
+.hero__eyebrow {
+  color: var(--orchid);
+}
+
+/* All steps sit in the same grid cell; GSAP crossfades between them on scroll. */
+.hero__steps {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hero__step {
+  grid-area: 1 / 1;
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+}
+
+.hero__step:not(:first-child) {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.hero__step-label {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.hero__step-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 6.5vw, 6.25rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+.hero__step-body {
+  max-width: 26rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: var(--text-lg);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.hero__progress {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: var(--gutter);
+  transform: translateY(-50%);
+  display: grid;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.hero__progress span {
+  transition: color var(--dur-med) var(--ease-out);
+}
+
+.hero__progress .is-active {
+  color: var(--white);
+}
+
+.hero__hint {
+  position: absolute;
+  z-index: 2;
+  left: var(--gutter);
+  bottom: var(--space-5);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Narrow screens: shape above, text below, with a fade so the text stays readable. */
+@media (max-width: 899px) {
+  .hero__stage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(180deg, transparent 40%, rgba(18, 11, 36, 0.85) 72%);
+    pointer-events: none;
+  }
+
+  .hero__copy {
+    max-width: none;
+    align-content: end;
+    gap: var(--space-3);
+    padding-bottom: calc(var(--space-6) + 3.5rem);
+  }
+
+  .hero__progress {
+    top: var(--space-5);
+    transform: none;
+    grid-auto-flow: column;
+  }
+
+  .hero__hint {
+    display: none;
+  }
+}
