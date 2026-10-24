@@ -1,4 +1,5 @@
 import { curlNoise } from '../glsl/noise'
+import { INTRO } from '../choreography/intro'
 import { CUT_REACH, SHOCK_LIFE, SHOCK_SPEED } from '../interaction/ImpactEffects'
 
 // GPGPU passes for the particles (run by GPUComputationRenderer, which declares texturePosition,
@@ -13,6 +14,8 @@ uniform float uMotion;
 uniform float uMorph;
 uniform float uIntro;
 uniform sampler2D tCloud;
+// Where each particle starts the intro: in the spark, or lying on the timeline floor.
+uniform sampler2D tOrigin;
 uniform sampler2D tFrom;
 uniform sampler2D tTo;
 uniform float uStiffness;
@@ -41,6 +44,8 @@ uniform float uFluidStrength;
 #endif
 
 #define CUT_REACH ${CUT_REACH.toFixed(3)}
+#define INTRO_BURST ${INTRO.burst.toFixed(3)}
+#define SPARK_SHARE ${INTRO.sparkShare.toFixed(3)}
 #define SHOCK_SPEED ${SHOCK_SPEED.toFixed(3)}
 #define SHOCK_LIFE ${SHOCK_LIFE.toFixed(3)}
 #define SHOCK_WIDTH 0.18
@@ -57,9 +62,14 @@ void main() {
   vec3 vel = velocityData.xyz;
 
   // Each particle switches to the next shape once the morph passes its own threshold, so shapes
-  // dissolve and re-form organically (v1's stagger). The intro gathers them out of the dust cloud.
+  // dissolve and re-form organically (v1's stagger).
   vec3 target = uMorph > 0.1 + 0.8 * rnd ? texture2D(tTo, uv).xyz : texture2D(tFrom, uv).xyz;
-  if (uIntro < 0.05 + 0.6 * rnd) target = texture2D(tCloud, uv).xyz;
+
+  // The intro: spark particles wait in the spark and burst into the dust cloud; the rest lie on the
+  // timeline floor and rise into it; then everyone gathers into the first shape.
+  float leave = rnd < SPARK_SHARE ? INTRO_BURST : 0.2 + 0.3 * fract(rnd * 3.7);
+  float gather = 0.4 + 0.35 * fract(rnd * 7.31);
+  if (uIntro < gather) target = uIntro < leave ? texture2D(tOrigin, uv).xyz : texture2D(tCloud, uv).xyz;
 
   // Spring towards the target, a little stiffer or softer per particle so it doesn't look mechanical.
   vec3 toTarget = target - pos;

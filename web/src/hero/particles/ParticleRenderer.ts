@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { WIDE_LAYOUT_MIN } from '../engine/layout'
+import { INTRO } from '../choreography/intro'
 import type { FrameState, HeroSystem } from '../engine/types'
 import { sceneColor } from '../post/tone'
 import type { ParticleSim } from './ParticleSim'
@@ -32,6 +33,7 @@ uniform vec3 uColorHot;
 // Depth of field (high tier): particles nearer than the focus distance swell and dim.
 uniform float uFocus;
 uniform float uDepthOfField;
+uniform float uIntro;
 
 // Quad position in particle radii: x runs along the particle's motion, the tail trails behind.
 varying vec2 vLocal;
@@ -48,6 +50,12 @@ void main() {
   float scale = 0.5 + pow(fract(rnd * 91.37), 2.0) * 1.4;
 
   vec4 mvPosition = modelViewMatrix * vec4(data.xyz, 1.0);
+  // The camera flies right up to (and round) the shape: drop particles that would sit on the lens.
+  float depth = -mvPosition.z;
+  if (depth < 0.25) {
+    gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+    return;
+  }
   vec4 clip = projectionMatrix * mvPosition;
   // Where the particle was a moment ago, on screen: fast particles stretch along that line.
   vec4 clipBefore = projectionMatrix * (modelViewMatrix * vec4(data.xyz - velocity * uStreak, 1.0));
@@ -57,7 +65,8 @@ void main() {
   // Size attenuation as in v1 (gl_PointSize was this diameter), with a floor against flicker.
   float radius = max(0.5 * uSize * scale * uPixelRatio / -mvPosition.z, 0.75 * uPixelRatio);
   float blur = uDepthOfField * clamp((uFocus + mvPosition.z) * 1.2, 0.0, 3.0);
-  radius *= 1.0 + blur;
+  // Capped, so a particle passing the lens can't flood the screen.
+  radius = min(radius * (1.0 + blur), 36.0 * uPixelRatio);
   // Only genuinely fast particles streak; slow drifters stay round so the shapes read as dust.
   float speed = length(velocity);
   float tail = min(trailLength, radius * 5.0) / radius * smoothstep(2.0, 4.5, speed) * uMotion;
@@ -80,6 +89,12 @@ void main() {
   float twinkle = 0.55 + 0.45 * (0.5 + 0.5 * sin(uTime * 2.0 + rnd * 40.0));
   // A streak spreads its light along its length, but fast particles still read brighter.
   vAlpha = uAlpha * mix(1.0, twinkle, uMotion) * (1.0 + heat * 0.8) / (1.0 + tail * 0.3) / ((1.0 + blur) * (1.0 + blur));
+  vAlpha *= smoothstep(0.3, 1.0, depth);
+  // Intro: the spark's particles stay hidden inside it until the burst; the floor's glitter faintly
+  // in the dark and brighten as they rise.
+  vAlpha *= rnd < SPARK_SHARE
+    ? smoothstep(INTRO_BURST - 0.01, INTRO_BURST + 0.03, uIntro)
+    : mix(0.15, 1.0, smoothstep(0.12, 0.35, uIntro));
 }
 `
 
@@ -119,7 +134,7 @@ export class ParticleRenderer implements HeroSystem {
     this.material = new THREE.ShaderMaterial({
       vertexShader,
       fragmentShader,
-      defines: { SIM_SIZE: sim.size },
+      defines: { SIM_SIZE: sim.size, INTRO_BURST: INTRO.burst.toFixed(3), SPARK_SHARE: INTRO.sparkShare.toFixed(3) },
       uniforms: {
         tPosition: { value: null },
         tVelocity: { value: null },
@@ -135,6 +150,7 @@ export class ParticleRenderer implements HeroSystem {
         uColorC: { value: sceneColor(PALETTE.c) },
         uColorHot: { value: sceneColor(PALETTE.hot) },
         uFocus: { value: 6 },
+        uIntro: { value: 1 },
         uDepthOfField: { value: depthOfField && !reducedMotion ? 1 : 0 },
       },
       transparent: true,
@@ -152,6 +168,7 @@ export class ParticleRenderer implements HeroSystem {
     u.tPosition.value = this.sim.positionTexture
     u.tVelocity.value = this.sim.velocityTexture
     u.uTime.value = state.time
+    u.uIntro.value = state.intro
     // Focus on the shape itself.
     u.uFocus.value = state.camera.position.distanceTo(state.anchor.getWorldPosition(this.anchorPosition))
   }

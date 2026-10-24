@@ -1,7 +1,9 @@
 import * as THREE from 'three'
 import { GPUComputationRenderer, type Variable } from 'three/examples/jsm/misc/GPUComputationRenderer.js'
 import type { FrameState, HeroSystem } from '../engine/types'
+import { INTRO } from '../choreography/intro'
 import type { FluidSim } from '../fluid/FluidSim'
+import { GROUND_Y } from '../world/Horizon'
 import { SHOCK_LIFE } from '../interaction/ImpactEffects'
 import { toTexels, type ShapeSet } from './shapes'
 import { positionShader, velocityShader } from './simShaders'
@@ -13,6 +15,7 @@ const LIVELY = { stiffness: 80, damping: 9.5, curlStrength: 40, drift: 0.5 }
 const CALM = { stiffness: 260, damping: 32, curlStrength: 0, drift: 0 }
 const CURL_SCALE = 1.3
 const MAX_SPEED = 6
+const CLOUD_SCALE = 0.6
 // Peak push at the cursor (an acceleration), and how far it reaches. Only used without a fluid.
 const POINTER_PUSH = 22
 const POINTER_RADIUS = 0.5
@@ -28,6 +31,28 @@ export interface ParticleSimOptions {
   scroll: number
   // Medium and high tiers stir the particles with a fluid instead of a direct pointer force.
   fluid: FluidSim | null
+  // World → shape space, to place the particles that lie on the timeline floor before the intro.
+  worldToShape: THREE.Matrix4
+}
+
+// Intro starting points: a share in a tiny spark at the centre, the rest scattered over the
+// timeline floor in front of and behind the shape (spread in world units).
+function introOrigins(shapes: ShapeSet, worldToShape: THREE.Matrix4): Float32Array {
+  const out = new Float32Array(shapes.count * 3)
+  const point = new THREE.Vector3()
+  for (let i = 0; i < shapes.count; i++) {
+    const rnd = shapes.random[i]
+    // Cheap per-particle hashes, so the scatter doesn't line up with the colour random.
+    const a = (rnd * 7919.17) % 1
+    const b = (rnd * 104729.3) % 1
+    if (rnd < INTRO.sparkShare) {
+      point.set(a - 0.5, b - 0.5, ((rnd * 31.7) % 1) - 0.5).multiplyScalar(0.06)
+    } else {
+      point.set((a - 0.5) * 14, GROUND_Y, 2 - b * 16).applyMatrix4(worldToShape)
+    }
+    point.toArray(out, i * 3)
+  }
+  return out
 }
 
 // Position and velocity live in float textures and are integrated on the GPU, one texel per particle.
@@ -36,7 +61,7 @@ export class ParticleSim implements HeroSystem {
   private readonly gpgpu: GPUComputationRenderer
   private readonly positionVariable: Variable
   private readonly velocityVariable: Variable
-  // Spring targets in morph order: dust cloud (intro), frame, phone, captions, laptop.
+  // Spring targets: dust cloud (intro), frame, phone, captions, laptop, then the intro origins.
   private readonly targets: THREE.DataTexture[]
   private readonly velocityUniforms: Record<string, THREE.IUniform>
   private readonly positionUniforms: Record<string, THREE.IUniform>
@@ -57,10 +82,14 @@ export class ParticleSim implements HeroSystem {
       data.needsUpdate = true
       return data
     }
-    const order = [shapes.cloud, shapes.frame, shapes.phone, shapes.captions, shapes.laptop]
+    const origins = introOrigins(shapes, options.worldToShape)
+    // v1's dust cloud is sized for 9k particles; this many would swamp the screen, so draw it in.
+    const cloud = shapes.cloud.map((v) => v * CLOUD_SCALE)
+    const order = [cloud, shapes.frame, shapes.phone, shapes.captions, shapes.laptop, origins]
     this.targets = order.map(texture)
 
-    const startShape = options.reducedMotion ? order[1 + Math.round(THREE.MathUtils.clamp(options.scroll, 0, 3))] : shapes.cloud
+    // Reduced motion has no intro, so it starts on the current shape.
+    const startShape = options.reducedMotion ? order[1 + Math.round(THREE.MathUtils.clamp(options.scroll, 0, 3))] : origins
     this.positionVariable = this.gpgpu.addVariable('texturePosition', positionShader, texture(startShape))
     this.velocityVariable = this.gpgpu.addVariable('textureVelocity', velocityShader, this.gpgpu.createTexture())
     this.gpgpu.setVariableDependencies(this.positionVariable, [this.positionVariable, this.velocityVariable])
@@ -75,6 +104,7 @@ export class ParticleSim implements HeroSystem {
       uMorph: { value: 0 },
       uIntro: { value: 0 },
       tCloud: { value: this.targets[0] },
+      tOrigin: { value: this.targets[5] },
       tFrom: { value: this.targets[1] },
       tTo: { value: this.targets[2] },
       uStiffness: { value: physics.stiffness },

@@ -1,4 +1,6 @@
 import * as THREE from 'three'
+import { RESTING_POSE, sampleCameraPath, type CameraPose } from '../choreography/cameraPath'
+import { IntroEffects } from '../choreography/IntroEffects'
 import { FluidSim } from '../fluid/FluidSim'
 import { CutGesture } from '../interaction/cutGesture'
 import { ImpactEffects } from '../interaction/ImpactEffects'
@@ -7,15 +9,17 @@ import { ParticleRenderer } from '../particles/ParticleRenderer'
 import { ParticleSim } from '../particles/ParticleSim'
 import { buildShapes, type ShapeSet } from '../particles/shapes'
 import { PostChain } from '../post/composer'
-import { Horizon } from '../world/Horizon'
+import { GROUND_Y, Horizon } from '../world/Horizon'
 import { Sky } from '../world/Sky'
-import { frameShape } from './layout'
+import { frameShape, type Framing } from './layout'
 import type { GpuSupport, GpuTier } from './quality'
 import type { FrameState, HeroSystem } from './types'
 
 const FOV = 35
 // The camera orbits the shape at this distance, always looking at it.
 const CAMERA_DISTANCE = 6
+// The camera never dips closer than this to the timeline floor (it would see under the world).
+const FLOOR_CLEARANCE = 0.5
 // Physics runs at a fixed rate so springs behave the same at 30, 60 or 144 fps.
 const STEP = 1 / 60
 const MAX_SUBSTEPS = 2
@@ -59,9 +63,11 @@ export class HeroEngine {
   private readonly planeNormal = new THREE.Vector3()
   private readonly hit = new THREE.Vector3()
   private readonly tilt = { x: 0, y: 0 }
-  // Camera orbit around the shape: the layout sets the pitch (so the horizon lands where it should);
-  // the pointer and scroll add a little drift for world parallax.
+  // Camera orbit around the shape: the scroll path sets distance and yaw, the layout sets the pitch
+  // (so the horizon lands where it should), and the pointer adds a little drift for parallax.
   private readonly orbit = { pitch: 0, driftX: 0, driftY: 0 }
+  private readonly pose: CameraPose = { ...RESTING_POSE }
+  private framing: Framing = { centreX: 0, centreY: 0, scale: 1, horizonY: 0, horizonLift: 1 }
   private readonly particleCount: number
   private readonly fluidGrid: number
   private shaderError = false
@@ -88,6 +94,8 @@ export class HeroEngine {
     this.pointer = new PointerTracker(canvas)
     this.camera.position.set(0, 0, CAMERA_DISTANCE)
     this.camera.updateMatrixWorld()
+    // Yaw first, then pitch, so the shape can face a camera that has orbited round it.
+    this.anchor.rotation.order = 'YXZ'
     this.scene.add(this.anchor)
     this.state = {
       time: 0,
@@ -108,6 +116,13 @@ export class HeroEngine {
     }
 
     try {
+      // Frame the shape first: the intro lays particles on the timeline floor, in the shape's space.
+      this.updateFraming()
+      this.updateCamera(0)
+      this.updateTilt(0)
+      this.anchor.updateMatrixWorld()
+      const worldToShape = this.anchor.matrixWorld.clone().invert()
+
       // The fluid only ever moves under a mouse or pen, so touch screens and reduced motion skip it.
       const { tier } = options
       const stirrable = !options.reducedMotion && window.matchMedia('(pointer: fine)').matches
@@ -118,6 +133,7 @@ export class HeroEngine {
         reducedMotion: options.reducedMotion,
         scroll: this.state.scroll,
         fluid,
+        worldToShape,
       })
       // Order matters: the fluid steps before the particles that sample it.
       this.systems.push(new Sky(this.renderer, this.scene, tier.aurora, options.reducedMotion), new Horizon(this.scene, tier.mountainLayers))
@@ -126,6 +142,7 @@ export class HeroEngine {
         sim,
         new ParticleRenderer(sim, this.anchor, options.reducedMotion, tier.depthOfField),
         new ImpactEffects(this.anchor),
+        new IntroEffects(this.scene, this.anchor),
       )
       this.post = new PostChain(this.renderer, this.scene, this.camera, tier, options.reducedMotion)
       this.particleCount = sim.count
@@ -225,31 +242,47 @@ export class HeroEngine {
     this.post.render(dt)
   }
 
-  // Orbit the camera around the shape. Pitch comes from the layout; the pointer and scroll add a
-  // small drift so the mountains and timeline slide past each other (parallax).
+  // Fly the camera along the scroll path (choreography/cameraPath.ts), orbiting the shape. The pitch
+  // keeps the horizon where the layout wants it, the pointer adds a little drift for parallax, and
+  // the intro opens on a wider shot that pushes in. Reduced motion holds the framed shot.
   private updateCamera(dt: number) {
-    const { pointer, motion, scroll } = this.state
+    const { pointer, motion, scroll, intro } = this.state
+    if (motion > 0) sampleCameraPath(scroll, this.pose)
+    else Object.assign(this.pose, RESTING_POSE)
+
     const ease = 1 - Math.exp(-dt * 2)
     this.orbit.driftX += (pointer.viewX * 0.05 - this.orbit.driftX) * ease
     this.orbit.driftY += (pointer.viewY * 0.025 - this.orbit.driftY) * ease
-    const yaw = (this.orbit.driftX + scroll * 0.03) * motion
+    const framing = this.framing
+    const halfFov = Math.tan(THREE.MathUtils.degToRad(FOV / 2))
+    const horizon = framing.horizonY + this.pose.lift * framing.horizonLift
+    this.orbit.pitch = Math.atan((framing.centreY - horizon) * halfFov)
+
+    const push = 1 + 0.35 * (1 - intro) ** 2 * motion
+    const yaw = this.pose.yaw + this.orbit.driftX * motion
     const pitch = this.orbit.pitch + this.orbit.driftY * motion
+    // Looking up steeply (narrow layouts) while pulled back would put the camera under the floor,
+    // so cap the distance there and shrink the shape to match, which keeps the framing.
+    const wanted = CAMERA_DISTANCE * this.pose.distance * push
+    const ceiling = pitch > 0 ? (-GROUND_Y - FLOOR_CLEARANCE) / Math.sin(pitch) : Infinity
+    const distance = Math.min(wanted, ceiling)
     this.camera.position
       .set(Math.sin(yaw) * Math.cos(pitch), -Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch))
-      .multiplyScalar(CAMERA_DISTANCE)
+      .multiplyScalar(distance)
     this.camera.lookAt(0, 0, 0)
     this.camera.updateMatrixWorld()
+    this.anchor.scale.setScalar(framing.scale * this.pose.size * (distance / wanted))
   }
 
-  // Face the shape towards the camera, then ease towards the pointer for a gentle parallax tilt,
-  // plus a slow idle sway.
+  // Face the shape where the path says (towards the camera at every snap point), then ease towards
+  // the pointer for a gentle parallax tilt, plus a slow idle sway.
   private updateTilt(dt: number) {
     const { pointer, motion, time } = this.state
     const ease = 1 - Math.exp(-dt * 3)
     this.tilt.x += (pointer.viewY * 0.18 - this.tilt.x) * ease
     this.tilt.y += (pointer.viewX * 0.3 - this.tilt.y) * ease
     this.anchor.rotation.x = this.orbit.pitch + this.tilt.x * motion
-    this.anchor.rotation.y = (this.tilt.y + Math.sin(time * 0.25) * 0.12) * motion
+    this.anchor.rotation.y = this.pose.facing + (this.tilt.y + Math.sin(time * 0.25) * 0.12) * motion
   }
 
   // Fade the cursor's influence in and out, and follow it with a little lag so it feels liquid.
@@ -322,17 +355,20 @@ export class HeroEngine {
     s.height = height
     s.pixelRatio = this.renderer.getPixelRatio()
 
-    // Shift the lens rather than the shape, so the camera keeps looking straight at the shape
-    // wherever the layout puts it on screen. Pitching the camera up by the right angle then drops
-    // the horizon to where the layout wants it.
-    const halfFov = Math.tan(THREE.MathUtils.degToRad(FOV / 2))
-    const visibleHeight = 2 * CAMERA_DISTANCE * halfFov
-    const framing = frameShape(width, height, this.options.getTextTop(), visibleHeight)
-    this.anchor.scale.setScalar(framing.scale)
-    this.orbit.pitch = Math.atan((framing.centreY - framing.horizonY) * halfFov)
-    this.camera.setViewOffset(width, height, (-framing.centreX * width) / 2, (framing.centreY * height) / 2, width, height)
-
+    this.updateFraming()
     for (const system of this.systems) system.resize?.(s)
     if (!this.running) this.frame(0)
+  }
+
+  // Shift the lens rather than the shape, so the camera keeps looking straight at the shape
+  // wherever the layout puts it on screen. (The pitch that places the horizon is set per frame,
+  // because camera moves can lift it.)
+  private updateFraming() {
+    const width = this.canvas.clientWidth || 1
+    const height = this.canvas.clientHeight || 1
+    const visibleHeight = 2 * CAMERA_DISTANCE * Math.tan(THREE.MathUtils.degToRad(FOV / 2))
+    this.framing = frameShape(width, height, this.options.getTextTop(), visibleHeight)
+    const { centreX, centreY } = this.framing
+    this.camera.setViewOffset(width, height, (-centreX * width) / 2, (centreY * height) / 2, width, height)
   }
 }

@@ -15,8 +15,9 @@ export interface Framing {
   // Shape scale, so it fits its slot.
   scale: number
   // Where the world's horizon should sit on screen (NDC y). Narrow screens keep it low, behind the
-  // text's bottom fade, so the text stays readable.
+  // text's bottom fade, so the text stays readable, and let camera moves lift it only a little.
   horizonY: number
+  horizonLift: number
 }
 
 // Fit the shape into the free part of the screen: the right half on desktop, or the gap between the
@@ -25,7 +26,7 @@ export interface Framing {
 export function frameShape(width: number, height: number, textTop: number, visibleHeight: number): Framing {
   const visibleWidth = (visibleHeight * width) / height
   if (width >= WIDE_LAYOUT_MIN) {
-    return { centreX: 0.4, centreY: 0, scale: Math.min(1, (visibleWidth * 0.48) / SHAPE_WIDTH), horizonY: -0.3 }
+    return { centreX: 0.4, centreY: 0, scale: Math.min(1, (visibleWidth * 0.48) / SHAPE_WIDTH), horizonY: -0.3, horizonLift: 1 }
   }
 
   const unitsPerPixel = visibleHeight / height
@@ -36,5 +37,6 @@ export function frameShape(width: number, height: number, textTop: number, visib
     centreY: 1 - (2 * centreFromTop) / height,
     scale: Math.min(0.85, visibleWidth / 3.1, (gap * unitsPerPixel) / SHAPE_HEIGHT),
     horizonY: -0.55,
+    horizonLift: 0.3,
   }
 }

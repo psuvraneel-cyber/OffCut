@@ -216,9 +216,10 @@ export class Horizon implements HeroSystem {
       fragmentShader: groundFragment,
       uniforms: { uOffset: { value: 0 } },
     })
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(160, 110), this.groundMaterial)
+    // Big enough to reach the horizon whichever way the camera swings.
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), this.groundMaterial)
     ground.rotation.x = -Math.PI / 2
-    ground.position.set(0, GROUND_Y, -40)
+    ground.position.set(0, GROUND_Y, -30)
     ground.renderOrder = -8
     this.meshes.push(ground)
     this.materials.push(this.groundMaterial)

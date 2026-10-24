@@ -3,6 +3,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { prefersReducedMotion } from '../lib/motion'
 import { CursorTrail } from './CursorTrail'
+import { INTRO, introPlayedThisSession, markIntroPlayed } from './choreography/intro'
 import type { LiteParticleField } from './LiteParticleField'
 import { DebugOverlay } from './engine/debug'
 import type { HeroEngine } from './engine/HeroEngine'
@@ -83,10 +84,18 @@ export function Hero() {
       })
       tl.to({}, { duration: HOLD })
 
-      if (!reducedMotion) {
-        gsap.from('.hero__intro', { autoAlpha: 0, y: 24, duration: 1, ease: 'power3.out', stagger: 0.08, delay: 0.2 })
-      }
+      // The intro text waits for its cue (the end of the intro, or a fallback below).
+      if (!reducedMotion) gsap.set('.hero__intro', { autoAlpha: 0, y: 24 })
     }, section)
+
+    let textShown = reducedMotion
+    const revealText = (delay = 0) => {
+      if (textShown) return
+      textShown = true
+      ctx.add(() => gsap.to('.hero__intro', { autoAlpha: 1, y: 0, duration: 1, ease: 'power3.out', stagger: 0.08, delay }))
+    }
+    // Never make anyone wait for Three.js to download before they can read the hero.
+    const textFallback = window.setTimeout(() => revealText(), 1500)
 
     const getIntro = () => intro.value
     const getScroll = () => scroll.value
@@ -94,14 +103,39 @@ export function Hero() {
       const copy = stage.querySelector('.hero__copy > :first-child')
       return copy ? copy.getBoundingClientRect().top - canvas.getBoundingClientRect().top : canvas.clientHeight * 0.5
     }
-    const playIntro = () => {
+    // Lite and static: v1's gentle gather, with the text straight away.
+    const playLiteIntro = () => {
+      window.clearTimeout(textFallback)
+      revealText(0.2)
       if (!reducedMotion) ctx.add(() => gsap.to(intro, { value: 1, duration: 2.6, ease: 'power2.inOut' }))
+    }
+
+    // GPU tiers: spark, burst, rise, gather, then the text (choreography/intro.ts). Full once per
+    // session, shortened after. Scrolling is never blocked: the first scroll fast-forwards it.
+    let fastForward: (() => void) | null = null
+    const playIntro = () => {
+      if (reducedMotion) return
+      window.clearTimeout(textFallback)
+      const duration = introPlayedThisSession() ? INTRO.short : INTRO.full
+      markIntroPlayed()
+      ctx.add(() => {
+        const timeline = gsap.timeline()
+        timeline.to(intro, { value: 1, duration, ease: 'none' })
+        timeline.call(() => revealText(), undefined, duration * INTRO.textAt)
+        fastForward = () => {
+          timeline.timeScale(6)
+          if (fastForward) window.removeEventListener('scroll', fastForward)
+        }
+        window.addEventListener('scroll', fastForward, { passive: true })
+      })
     }
 
     // The bottom of the fallback ladder: the CSS gradient behind the text.
     const showStatic = () => {
       section.classList.add('hero--static')
       debug?.set('static')
+      window.clearTimeout(textFallback)
+      revealText(0.2)
     }
 
     // v1's particle field, for GPUs that can't run the simulation (or ?tier=lite).
@@ -119,7 +153,7 @@ export function Hero() {
       }
       startTrail()
       debug?.set(`lite · ${shapes.count.toLocaleString()} particles`)
-      playIntro()
+      playLiteIntro()
     }
 
     const startGpu = async (tier: GpuTierName, support: GpuSupport) => {
@@ -159,6 +193,8 @@ export function Hero() {
     return () => {
       disposed = true
       window.clearTimeout(startTimer)
+      window.clearTimeout(textFallback)
+      if (fastForward) window.removeEventListener('scroll', fastForward)
       ctx.revert()
       engine?.dispose()
       lite?.dispose()
