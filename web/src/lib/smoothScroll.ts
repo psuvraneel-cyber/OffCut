@@ -1,13 +1,14 @@
 import Lenis from 'lenis'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { prefersReducedMotion } from './motion'
 
 gsap.registerPlugin(ScrollTrigger)
 
 // Smooth scrolling driven by GSAP's ticker, so scroll-linked animations stay in sync.
 // Returns a cleanup function. Skipped entirely for people who prefer reduced motion.
 export function startSmoothScroll(): () => void {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (prefersReducedMotion()) {
     return () => {}
   }
 

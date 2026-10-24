@@ -1,4 +1,4 @@
-// GLSL for the hero particles. uIntro (0 → 1) gathers the dust cloud into the first shape;
+// GLSL for the lite (v1) hero particles. uIntro (0 → 1) gathers the dust cloud into the first shape;
 // uScroll (0 → 3) then morphs frame → phone → captions → laptop as the visitor scrolls.
 
 export const vertexShader = /* glsl */ `

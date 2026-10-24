@@ -1,5 +1,5 @@
-// Point clouds for each particle shape. Every shape has the same number of points, so the
-// shader can morph particle i of one shape into particle i of the next.
+// Point clouds for each particle shape. Every shape has the same number of points, so particle i
+// of one shape morphs into particle i of the next (in the lite shader, or as GPU spring targets).
 // Units are Three.js world units; shapes are roughly 2.5 units wide, centred on the origin.
 
 export interface ShapeSet {
@@ -219,6 +219,18 @@ async function textPoints(text: string, count: number, width: number, rand: Rand
     out[i * 3] = (hits[j] - canvas.width / 2 + spread(rand, 1)) * scale
     out[i * 3 + 1] = -(hits[j + 1] - canvas.height / 2 + spread(rand, 1)) * scale
     out[i * 3 + 2] = spread(rand, 0.04)
+  }
+  return out
+}
+
+// RGBA texels for the GPU simulation: xyz from the shape, w = the particle's random value.
+export function toTexels(points: Float32Array, random: Float32Array): Float32Array {
+  const out = new Float32Array(random.length * 4)
+  for (let i = 0; i < random.length; i++) {
+    out[i * 4] = points[i * 3]
+    out[i * 4 + 1] = points[i * 3 + 1]
+    out[i * 4 + 2] = points[i * 3 + 2]
+    out[i * 4 + 3] = random[i]
   }
   return out
 }

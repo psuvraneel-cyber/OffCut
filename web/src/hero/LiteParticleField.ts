@@ -1,7 +1,7 @@
 import * as THREE from 'three'
-import { WIDE_LAYOUT_MIN } from './layout'
-import type { ShapeSet } from './shapes'
-import { fragmentShader, vertexShader } from './shaders'
+import { WIDE_LAYOUT_MIN } from './engine/layout'
+import type { ShapeSet } from './particles/shapes'
+import { fragmentShader, vertexShader } from './liteShaders'
 
 // Mirrors the CSS tokens, lightened a touch so the particles glow on the night background.
 const PALETTE = { a: '#9b7bff', b: '#e08bff', c: '#6fe3ff' }
@@ -39,8 +39,9 @@ function createUniforms(pixelRatio: number, reducedMotion: boolean) {
   }
 }
 
+// The v1 hero, kept as the fallback for GPUs without float render targets (see engine/quality.ts).
 // Owns the WebGL scene for the hero: renders only while the canvas is on screen.
-export class ParticleField {
+export class LiteParticleField {
   private readonly canvas: HTMLCanvasElement
   private readonly options: Options
   private readonly renderer: THREE.WebGLRenderer

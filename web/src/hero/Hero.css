@@ -143,3 +143,19 @@
     display: none;
   }
 }
+
+/* ?debug overlay (engine/debug.ts): frame rate and the active tier. */
+.hero-debug {
+  position: fixed;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 100;
+  max-width: calc(100vw - 2 * var(--space-2));
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--space-2);
+  background: var(--glass-dark);
+  color: var(--mist);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  pointer-events: none;
+}

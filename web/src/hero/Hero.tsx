@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import type { ParticleField } from './ParticleField'
+import { prefersReducedMotion } from '../lib/motion'
 import { CursorTrail } from './CursorTrail'
-import { WIDE_LAYOUT_MIN } from './layout'
+import type { LiteParticleField } from './LiteParticleField'
+import { DebugOverlay } from './engine/debug'
+import type { HeroEngine } from './engine/HeroEngine'
+import { WIDE_LAYOUT_MIN } from './engine/layout'
+import { GPU_TIERS, detectTier, isGpuTier, probeGpu, readFlags, type GpuSupport, type GpuTierName } from './engine/quality'
 import './Hero.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// One step per particle shape, in the same order as the morphs in shaders.ts.
+// One step per particle shape, in the same order as the morphs (see particles/ParticleSim.ts).
 const steps = [
   { label: '01', title: 'Long videos in.', body: 'Drop in a podcast, vlog or lecture. Any length.' },
   { label: '02', title: 'Reels out.', body: 'AI finds the best moments and reframes them for vertical.' },
@@ -32,15 +36,19 @@ export function Hero() {
     const canvas = canvasRef.current
     if (!section || !stage || !canvas) return
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = prefersReducedMotion()
+    const flags = readFlags()
     const intro = { value: reducedMotion ? 1 : 0 }
     const scroll = { value: 0 }
-    let field: ParticleField | null = null
+    let engine: HeroEngine | null = null
+    let lite: LiteParticleField | null = null
     let trail: CursorTrail | null = null
+    const debug = flags.debug ? new DebugOverlay() : null
     let disposed = false
 
     // The sparkle trail is for mouse and pen users; touch screens skip it.
-    if (trailRef.current && !reducedMotion && window.matchMedia('(pointer: fine)').matches) {
+    const startTrail = () => {
+      if (!trailRef.current || reducedMotion || !window.matchMedia('(pointer: fine)').matches) return
       try {
         trail = new CursorTrail(trailRef.current)
       } catch {
@@ -78,36 +86,83 @@ export function Hero() {
       }
     }, section)
 
-    // Three.js is big, so load it after the text has painted.
-    const lowPower = window.innerWidth < WIDE_LAYOUT_MIN || (navigator.hardwareConcurrency ?? 8) <= 4
-    Promise.all([import('./ParticleField'), import('./shapes')]).then(async ([{ ParticleField }, { buildShapes }]) => {
+    const getIntro = () => intro.value
+    const getScroll = () => scroll.value
+    const getTextTop = () => {
+      const copy = stage.querySelector('.hero__copy > :first-child')
+      return copy ? copy.getBoundingClientRect().top - canvas.getBoundingClientRect().top : canvas.clientHeight * 0.5
+    }
+    const playIntro = () => {
+      if (!reducedMotion) ctx.add(() => gsap.to(intro, { value: 1, duration: 2.6, ease: 'power2.inOut' }))
+    }
+
+    // The bottom of the fallback ladder: the CSS gradient behind the text.
+    const showStatic = () => {
+      section.classList.add('hero--static')
+      debug?.set('static')
+    }
+
+    // v1's particle field, for GPUs that can't run the simulation (or ?tier=lite).
+    const startLite = async () => {
+      const [{ LiteParticleField }, { buildShapes }] = await Promise.all([import('./LiteParticleField'), import('./particles/shapes')])
+      const lowPower = window.innerWidth < WIDE_LAYOUT_MIN || (navigator.hardwareConcurrency ?? 8) <= 4
       const shapes = await buildShapes(lowPower ? 5000 : 9000)
       if (disposed) return
       try {
-        field = new ParticleField(canvas, shapes, {
-          getIntro: () => intro.value,
-          getScroll: () => scroll.value,
-          getTextTop: () => {
-            const copy = stage.querySelector('.hero__copy > :first-child')
-            return copy ? copy.getBoundingClientRect().top - canvas.getBoundingClientRect().top : canvas.clientHeight * 0.5
-          },
-          reducedMotion,
-        })
+        lite = new LiteParticleField(canvas, shapes, { getIntro, getScroll, getTextTop, reducedMotion })
       } catch (error) {
         console.warn('Particle hero disabled: WebGL is unavailable.', error)
-        section.classList.add('hero--static')
+        showStatic()
         return
       }
-      if (!reducedMotion) {
-        ctx.add(() => gsap.to(intro, { value: 1, duration: 2.6, ease: 'power2.inOut' }))
+      startTrail()
+      debug?.set(`lite · ${shapes.count.toLocaleString()} particles`)
+      playIntro()
+    }
+
+    const startGpu = async (tier: GpuTierName, support: GpuSupport) => {
+      const { createHeroEngine } = await import('./engine/HeroEngine')
+      if (disposed) return
+      let created: HeroEngine
+      try {
+        created = await createHeroEngine(canvas, { tier: GPU_TIERS[tier], support, reducedMotion, getIntro, getScroll, getTextTop })
+      } catch (error) {
+        console.warn('GPU hero unavailable, falling back to the lite particles.', error)
+        if (!disposed) await startLite()
+        return
       }
+      if (disposed) {
+        created.dispose()
+        return
+      }
+      engine = created
+      startTrail()
+      debug?.set(created.describe())
+      // ?debug exposes the engine for measuring from the console.
+      if (debug) Object.assign(window, { offcutHero: created })
+      playIntro()
+    }
+
+    // Three.js is big, so load it after the text has painted. Probing the GPU creates a WebGL
+    // context too, so that waits as well.
+    const startTimer = window.setTimeout(() => {
+      const support = flags.tier === 'lite' || flags.tier === 'static' ? null : probeGpu()
+      const tier = flags.tier ?? detectTier(support)
+      if (tier === 'static') showStatic()
+      else if (isGpuTier(tier) && support) void startGpu(tier, support)
+      else void startLite()
     })
 
     return () => {
       disposed = true
+      window.clearTimeout(startTimer)
       ctx.revert()
-      field?.dispose()
+      engine?.dispose()
+      lite?.dispose()
       trail?.dispose()
+      debug?.dispose()
+      if (debug) Reflect.deleteProperty(window, 'offcutHero')
+      section.classList.remove('hero--static')
     }
   }, [])
 
