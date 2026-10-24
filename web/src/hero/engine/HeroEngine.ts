@@ -7,13 +7,15 @@ import { ParticleRenderer } from '../particles/ParticleRenderer'
 import { ParticleSim } from '../particles/ParticleSim'
 import { buildShapes, type ShapeSet } from '../particles/shapes'
 import { PostChain } from '../post/composer'
-import { Backdrop } from '../world/Backdrop'
+import { Horizon } from '../world/Horizon'
+import { Sky } from '../world/Sky'
 import { frameShape } from './layout'
 import type { GpuSupport, GpuTier } from './quality'
 import type { FrameState, HeroSystem } from './types'
 
 const FOV = 35
-const CAMERA_Z = 6
+// The camera orbits the shape at this distance, always looking at it.
+const CAMERA_DISTANCE = 6
 // Physics runs at a fixed rate so springs behave the same at 30, 60 or 144 fps.
 const STEP = 1 / 60
 const MAX_SUBSTEPS = 2
@@ -57,6 +59,9 @@ export class HeroEngine {
   private readonly planeNormal = new THREE.Vector3()
   private readonly hit = new THREE.Vector3()
   private readonly tilt = { x: 0, y: 0 }
+  // Camera orbit around the shape: the layout sets the pitch (so the horizon lands where it should);
+  // the pointer and scroll add a little drift for world parallax.
+  private readonly orbit = { pitch: 0, driftX: 0, driftY: 0 }
   private readonly particleCount: number
   private readonly fluidGrid: number
   private shaderError = false
@@ -81,7 +86,7 @@ export class HeroEngine {
     }
 
     this.pointer = new PointerTracker(canvas)
-    this.camera.position.set(0, 0, CAMERA_Z)
+    this.camera.position.set(0, 0, CAMERA_DISTANCE)
     this.camera.updateMatrixWorld()
     this.scene.add(this.anchor)
     this.state = {
@@ -115,7 +120,7 @@ export class HeroEngine {
         fluid,
       })
       // Order matters: the fluid steps before the particles that sample it.
-      this.systems.push(new Backdrop(this.scene))
+      this.systems.push(new Sky(this.renderer, this.scene, tier.aurora, options.reducedMotion), new Horizon(this.scene, tier.mountainLayers))
       if (fluid) this.systems.push(fluid)
       this.systems.push(
         sim,
@@ -200,6 +205,7 @@ export class HeroEngine {
     s.scroll = this.options.getScroll()
     s.intro = this.options.getIntro()
     this.pointer.update(dt)
+    this.updateCamera(dt)
     this.updateTilt(dt)
     this.updatePointer(dt)
     this.updateGestures(dt)
@@ -219,13 +225,30 @@ export class HeroEngine {
     this.post.render(dt)
   }
 
-  // Ease towards the pointer for a gentle parallax tilt, plus a slow idle sway.
+  // Orbit the camera around the shape. Pitch comes from the layout; the pointer and scroll add a
+  // small drift so the mountains and timeline slide past each other (parallax).
+  private updateCamera(dt: number) {
+    const { pointer, motion, scroll } = this.state
+    const ease = 1 - Math.exp(-dt * 2)
+    this.orbit.driftX += (pointer.viewX * 0.05 - this.orbit.driftX) * ease
+    this.orbit.driftY += (pointer.viewY * 0.025 - this.orbit.driftY) * ease
+    const yaw = (this.orbit.driftX + scroll * 0.03) * motion
+    const pitch = this.orbit.pitch + this.orbit.driftY * motion
+    this.camera.position
+      .set(Math.sin(yaw) * Math.cos(pitch), -Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch))
+      .multiplyScalar(CAMERA_DISTANCE)
+    this.camera.lookAt(0, 0, 0)
+    this.camera.updateMatrixWorld()
+  }
+
+  // Face the shape towards the camera, then ease towards the pointer for a gentle parallax tilt,
+  // plus a slow idle sway.
   private updateTilt(dt: number) {
     const { pointer, motion, time } = this.state
     const ease = 1 - Math.exp(-dt * 3)
     this.tilt.x += (pointer.viewY * 0.18 - this.tilt.x) * ease
     this.tilt.y += (pointer.viewX * 0.3 - this.tilt.y) * ease
-    this.anchor.rotation.x = this.tilt.x * motion
+    this.anchor.rotation.x = this.orbit.pitch + this.tilt.x * motion
     this.anchor.rotation.y = (this.tilt.y + Math.sin(time * 0.25) * 0.12) * motion
   }
 
@@ -300,10 +323,13 @@ export class HeroEngine {
     s.pixelRatio = this.renderer.getPixelRatio()
 
     // Shift the lens rather than the shape, so the camera keeps looking straight at the shape
-    // wherever the layout puts it on screen.
-    const visibleHeight = 2 * CAMERA_Z * Math.tan(THREE.MathUtils.degToRad(FOV / 2))
+    // wherever the layout puts it on screen. Pitching the camera up by the right angle then drops
+    // the horizon to where the layout wants it.
+    const halfFov = Math.tan(THREE.MathUtils.degToRad(FOV / 2))
+    const visibleHeight = 2 * CAMERA_DISTANCE * halfFov
     const framing = frameShape(width, height, this.options.getTextTop(), visibleHeight)
     this.anchor.scale.setScalar(framing.scale)
+    this.orbit.pitch = Math.atan((framing.centreY - framing.horizonY) * halfFov)
     this.camera.setViewOffset(width, height, (-framing.centreX * width) / 2, (framing.centreY * height) / 2, width, height)
 
     for (const system of this.systems) system.resize?.(s)

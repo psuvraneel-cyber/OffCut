@@ -18,6 +18,9 @@ export interface GpuTier {
   grain: boolean
   vignette: boolean
   chromaticAberration: boolean
+  // The timeline-horizon world: how many waveform mountain ranges, and whether the sky has aurora.
+  mountainLayers: number
+  aurora: boolean
   maxPixelRatio: number
 }
 
@@ -32,6 +35,8 @@ export const GPU_TIERS: Record<GpuTierName, GpuTier> = {
     grain: true,
     vignette: true,
     chromaticAberration: true,
+    mountainLayers: 3,
+    aurora: true,
     maxPixelRatio: 1.75,
   },
   medium: {
@@ -44,6 +49,8 @@ export const GPU_TIERS: Record<GpuTierName, GpuTier> = {
     grain: true,
     vignette: true,
     chromaticAberration: false,
+    mountainLayers: 3,
+    aurora: true,
     maxPixelRatio: 1.5,
   },
   low: {
@@ -56,6 +63,8 @@ export const GPU_TIERS: Record<GpuTierName, GpuTier> = {
     grain: false,
     vignette: true,
     chromaticAberration: false,
+    mountainLayers: 1,
+    aurora: false,
     maxPixelRatio: 1.25,
   },
 }
