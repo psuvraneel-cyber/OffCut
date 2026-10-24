@@ -49,10 +49,10 @@ export class PointerTracker {
   }
   // Recent mouse/pen positions over the canvas, oldest first. Touch never lands here.
   readonly history: PointerSample[] = []
-  // Clicks and taps on the canvas since the systems last looked, in client px.
+  // Finger taps on the canvas since the systems last looked, in client px (mouse clicks don't count).
   readonly taps: PointerSample[] = []
   private readonly target: HTMLElement
-  private readonly pressedAt = { x: 0, y: 0 }
+  private readonly pressedAt = { x: 0, y: 0, touch: false }
   private lastEvent = 0
 
   constructor(target: HTMLElement) {
@@ -117,10 +117,13 @@ export class PointerTracker {
   private readonly onPointerDown = (event: PointerEvent) => {
     this.pressedAt.x = event.clientX
     this.pressedAt.y = event.clientY
+    this.pressedAt.touch = event.pointerType === 'touch'
   }
 
   // Click rather than pointerdown, so a swipe that scrolls the page never counts as a tap.
+  // Only touch taps make a shockwave; mouse and pen clicks keep the hero calm.
   private readonly onClick = (event: MouseEvent) => {
+    if (!this.pressedAt.touch) return
     if (event.target instanceof Element && event.target.closest(INTERACTIVE)) return
     if (Math.hypot(event.clientX - this.pressedAt.x, event.clientY - this.pressedAt.y) > TAP_SLOP) return
     const rect = this.target.getBoundingClientRect()
