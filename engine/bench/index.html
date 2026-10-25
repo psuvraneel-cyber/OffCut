@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OffCut Speech-to-Text Benchmark</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --border: #334155;
+        --text: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --success: #4ade80;
+        --warning: #facc15;
+        --danger: #f87171;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      h1, h2, h3 {
+        margin-top: 0;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 24px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+      }
+      .stat-box {
+        background: rgba(0,0,0,0.2);
+        padding: 12px 16px;
+        border-radius: 6px;
+        border-left: 4px solid var(--accent);
+      }
+      .stat-label {
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .stat-value {
+        font-size: 20px;
+        font-weight: 600;
+        margin-top: 4px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        margin-top: 12px;
+      }
+      th, td {
+        padding: 8px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        background: rgba(0,0,0,0.3);
+        color: var(--muted);
+        font-weight: 600;
+      }
+      tr:hover td {
+        background: rgba(255,255,255,0.02);
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .badge-pass { background: rgba(74, 222, 128, 0.2); color: var(--success); }
+      .badge-warn { background: rgba(250, 204, 21, 0.2); color: var(--warning); }
+      .badge-fail { background: rgba(248, 113, 113, 0.2); color: var(--danger); }
+      #status-box {
+        font-size: 14px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+      }
+      .progress-bar-container {
+        width: 100%;
+        height: 8px;
+        background: #334155;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 12px;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: var(--accent);
+        transition: width 0.2s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>OffCut STT Benchmark</h1>
+
+    <div class="card">
+      <div id="status-title" style="font-weight: 600; font-size: 16px;">Initializing benchmark...</div>
+      <div id="status-box" style="margin-top: 8px; color: var(--muted);">Reading test set metadata and assets...</div>
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+    </div>
+
+    <div class="grid card">
+      <div class="stat-box">
+        <div class="stat-label">Model & Device</div>
+        <div class="stat-value" id="stat-model">-</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">VAD Setting</div>
+        <div class="stat-value" id="stat-vad">-</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total Audio Evaluated</div>
+        <div class="stat-value" id="stat-audio-time">0.0s</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Overall Real-Time Factor (RTF)</div>
+        <div class="stat-value" id="stat-rtf">-</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Category Summaries</h2>
+      <div id="summary-tables">Waiting for results...</div>
+    </div>
+
+    <div class="card">
+      <h2>Sample Results</h2>
+      <div style="overflow-x: auto;">
+        <table id="results-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cat</th>
+              <th>Lang</th>
+              <th>Dur</th>
+              <th>Ref Words</th>
+              <th>Hyp Words</th>
+              <th>WER</th>
+              <th>S/D/I</th>
+              <th>Del Rate</th>
+              <th>CER</th>
+              <th>Max Gap</th>
+              <th>Sil. Words</th>
+              <th>Wall Time</th>
+              <th>RTF</th>
+              <th>VAD</th>
+            </tr>
+          </thead>
+          <tbody id="results-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

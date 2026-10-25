@@ -7,7 +7,9 @@ import {
 } from "../audio/decode";
 import { AbortError, ModelLoadError, toEngineError } from "../errors";
 import type {
+  AudioWindow,
   RawTimedText,
+  TranscribeOptions,
   Transcript,
   WindowTranscript,
 } from "../types";
@@ -16,7 +18,18 @@ import { cleanSegments, cleanWords, groupWordsIntoSegments } from "./clean";
 import { calculateRms, detectLanguage } from "./language";
 import { mergeWindowTranscripts } from "./merge";
 import { MODEL_CONFIG } from "./models";
-import { createWindows } from "./windows";
+import {
+  SileroVadRunner,
+  probabilitiesToSegments,
+  VAD_CONSTANTS,
+  type SpeechSegment,
+} from "./vad";
+import { planWindows, PLANNER_CONSTANTS, createWindows } from "./windows";
+import {
+  assessWindow,
+  RETRY_CONSTANTS,
+  hasRepetitionLoop,
+} from "./retry";
 
 type SpeechPipeline = (audio: Float32Array, options: Record<string, unknown>) => Promise<unknown>;
 
@@ -36,6 +49,7 @@ interface ActiveRequest {
 
 const scope = self as unknown as DedicatedWorkerGlobalScope;
 let speechPipeline: SpeechPipeline | null = null;
+let vadRunner: SileroVadRunner | null = null;
 let loadedRuntime: WorkerRuntimeOptions | null = null;
 let loadMs = 0;
 let activeRequest: ActiveRequest | null = null;
@@ -92,6 +106,7 @@ async function handleRequest(request: WorkerRequest): Promise<void> {
         request.requestId,
         controller.signal,
         runtime,
+        request.options,
       );
       send({ type: "result", requestId: request.requestId, transcript });
       return;
@@ -105,6 +120,7 @@ async function handleRequest(request: WorkerRequest): Promise<void> {
         request.requestId,
         controller.signal,
         runtime,
+        request.options,
       );
       send({ type: "result", requestId: request.requestId, transcript });
       return;
@@ -203,12 +219,49 @@ async function createPipeline(
   return loaded as unknown as SpeechPipeline;
 }
 
+function countWordsInRegion(
+  words: readonly { start: number; end: number }[],
+  region: { start: number; end: number },
+): number {
+  return words.filter((w) => {
+    const mid = (w.start + w.end) / 2;
+    return mid >= region.start && mid <= region.end;
+  }).length;
+}
+
+function calculateRmsSegments(audio: Float32Array, sampleRate = 16000, frameSize = 512): SpeechSegment[] {
+  const frameCount = Math.floor(audio.length / frameSize);
+  if (frameCount === 0) return [];
+  const probs = new Float32Array(frameCount);
+  for (let f = 0; f < frameCount; f++) {
+    let sumSquares = 0;
+    const offset = f * frameSize;
+    for (let i = 0; i < frameSize; i++) {
+      const val = audio[offset + i];
+      sumSquares += val * val;
+    }
+    const rms = Math.sqrt(sumSquares / frameSize);
+    probs[f] = rms >= 0.01 ? 1.0 : 0.0;
+  }
+  const winDuration = audio.length / sampleRate;
+  return probabilitiesToSegments(probs, VAD_CONSTANTS, winDuration);
+}
+
+async function ensureVadRunner(): Promise<SileroVadRunner> {
+  if (!vadRunner) {
+    vadRunner = new SileroVadRunner();
+  }
+  await vadRunner.load();
+  return vadRunner;
+}
+
 async function runTranscription(
   provider: AudioWindowProvider,
   language: string,
   requestId: number,
   signal: AbortSignal,
   runtime: WorkerRuntimeOptions,
+  options: Omit<TranscribeOptions, "signal" | "onProgress"> & { retry?: boolean } = {},
 ): Promise<Transcript> {
   if (!speechPipeline) {
     throw new ModelLoadError();
@@ -216,14 +269,19 @@ async function runTranscription(
 
   const processingStartedAt = performance.now();
   const duration = provider.duration;
-  const windows = createWindows(duration);
 
   let decodeMs = 0;
   let transcribeMs = 0;
+  let vadMs = 0;
+  let speechSeconds = 0;
+  let retriedWindows = 0;
   let lastDecodeSeconds = 0;
   let lastTranscribeSeconds = 0;
-  const windowResults: WindowTranscript[] = [];
-  const preloadedAudio = new Map<number, Float32Array>();
+
+  let vadStatus: "silero" | "failed" | "off" = "silero";
+  let windows: AudioWindow[] = [];
+  let allProbs = new Float32Array(0);
+  let segments: SpeechSegment[] = [];
 
   let latestProgress: Extract<WorkerResponse, { type: "progress" }>["progress"] = {
     stage: "decode",
@@ -241,24 +299,90 @@ async function runTranscription(
     sendProgress(requestId, progress);
   }
 
+  // --- PASS 1: VAD and Window Planning ---
+  if (options.vad === false) {
+    vadStatus = "off";
+    windows = createWindows(duration);
+  } else {
+    try {
+      const runner = await ensureVadRunner();
+      runner.reset();
+
+      const probChunks: Float32Array[] = [];
+      const BLOCK_SIZE = 30;
+      let blockStart = 0;
+      let blockIndex = 0;
+
+      while (blockStart < duration) {
+        throwIfAborted(signal);
+        const blockEnd = Math.min(duration, blockStart + BLOCK_SIZE);
+        const blockWindow: AudioWindow = { index: blockIndex, start: blockStart, end: blockEnd };
+        const isLast = blockEnd >= duration;
+
+        const dStart = performance.now();
+        const chunkAudio = await provider.getWindow(blockWindow, signal, (sec) => {
+          lastDecodeSeconds = Math.max(lastDecodeSeconds, Math.min(duration, sec));
+          emitProgress({ stage: "decode", seconds: lastDecodeSeconds, duration });
+        });
+        decodeMs += performance.now() - dStart;
+        lastDecodeSeconds = Math.max(lastDecodeSeconds, blockEnd);
+        emitProgress({ stage: "decode", seconds: lastDecodeSeconds, duration });
+
+        throwIfAborted(signal);
+        const vStart = performance.now();
+        const chunkProbs = await runner.processChunk(chunkAudio, isLast);
+        vadMs += performance.now() - vStart;
+        probChunks.push(chunkProbs);
+
+        blockStart = blockEnd;
+        blockIndex++;
+      }
+
+      const totalFrames = probChunks.reduce((acc, c) => acc + c.length, 0);
+      allProbs = new Float32Array(totalFrames);
+      let pOffset = 0;
+      for (const c of probChunks) {
+        allProbs.set(c, pOffset);
+        pOffset += c.length;
+      }
+
+      segments = probabilitiesToSegments(allProbs, VAD_CONSTANTS, duration);
+      windows = planWindows(segments, allProbs, duration, PLANNER_CONSTANTS);
+      speechSeconds = segments.reduce((acc, s) => acc + Math.max(0, s.end - s.start), 0);
+    } catch (vadError) {
+      if (signal.aborted) {
+        throw vadError;
+      }
+      console.warn("VAD failed, falling back to fixed windows:", vadError);
+      vadStatus = "failed";
+      windows = createWindows(duration);
+    }
+  }
+
+  const windowResults: WindowTranscript[] = [];
+  const preloadedAudio = new Map<number, Float32Array>();
+
+  // --- LANGUAGE DETECTION ---
   let lockedLanguage = language;
   if (language === "auto") {
     if (windows.length === 0) {
       lockedLanguage = "en";
     } else {
+      const w0 = windows[0];
       const w0StartedAt = performance.now();
-      const w0Audio = await provider.getWindow(windows[0], signal);
+      const w0Audio = await provider.getWindow(w0, signal);
       decodeMs += performance.now() - w0StartedAt;
-      preloadedAudio.set(0, w0Audio);
+      preloadedAudio.set(w0.index, w0Audio);
       let detectionAudio = w0Audio;
 
-      if (calculateRms(w0Audio) < 0.01) {
+      if (vadStatus !== "silero" && calculateRms(w0Audio) < 0.01) {
         for (let i = 1; i < Math.min(3, windows.length); i += 1) {
           throwIfAborted(signal);
+          const wi = windows[i];
           const wiStartedAt = performance.now();
-          const wiAudio = await provider.getWindow(windows[i], signal);
+          const wiAudio = await provider.getWindow(wi, signal);
           decodeMs += performance.now() - wiStartedAt;
-          preloadedAudio.set(i, wiAudio);
+          preloadedAudio.set(wi.index, wiAudio);
           if (calculateRms(wiAudio) >= 0.01) {
             detectionAudio = wiAudio;
             break;
@@ -278,25 +402,32 @@ async function runTranscription(
     }
   }
 
+  // --- PASS 2: Transcribe Planned Windows & Retry ---
+  const retryEnabled = options.retry !== false;
+
   try {
     for (const window of windows) {
       throwIfAborted(signal);
-      emitProgress({ stage: "decode", seconds: lastDecodeSeconds, duration });
 
       let audio: Float32Array;
       if (preloadedAudio.has(window.index)) {
         audio = preloadedAudio.get(window.index)!;
         preloadedAudio.delete(window.index);
-      } else {
+      } else if (vadStatus === "off" || vadStatus === "failed") {
+        emitProgress({ stage: "decode", seconds: lastDecodeSeconds, duration });
         const windowDecodeStartedAt = performance.now();
         audio = await provider.getWindow(window, signal, (seconds) => {
           lastDecodeSeconds = Math.max(lastDecodeSeconds, seconds);
           emitProgress({ stage: "decode", seconds: lastDecodeSeconds, duration });
         });
         decodeMs += performance.now() - windowDecodeStartedAt;
+        lastDecodeSeconds = Math.max(lastDecodeSeconds, window.end);
+        emitProgress({ stage: "decode", seconds: lastDecodeSeconds, duration });
+      } else {
+        const windowDecodeStartedAt = performance.now();
+        audio = await provider.getWindow(window, signal);
+        decodeMs += performance.now() - windowDecodeStartedAt;
       }
-      lastDecodeSeconds = Math.max(lastDecodeSeconds, window.end);
-      emitProgress({ stage: "decode", seconds: lastDecodeSeconds, duration });
 
       throwIfAborted(signal);
       emitProgress({ stage: "transcribe", seconds: lastTranscribeSeconds, duration });
@@ -310,9 +441,129 @@ async function runTranscription(
 
       throwIfAborted(signal);
       transcribeMs += performance.now() - windowTranscribeStartedAt;
+      let windowResult = parseWindowOutput(output, window, lockedLanguage);
+
+      if (retryEnabled) {
+        let segmentsInWindow: SpeechSegment[];
+        if (vadStatus === "silero") {
+          segmentsInWindow = segments
+            .filter((s) => s.end > window.start && s.start < window.end)
+            .map((s) => ({
+              start: Math.max(0, s.start - window.start),
+              end: Math.min(window.end - window.start, s.end - window.start),
+            }));
+        } else {
+          // Brief C1: for vad: false / failed, estimate speech from per-frame RMS >= 0.01
+          segmentsInWindow = calculateRmsSegments(audio);
+        }
+
+        const assess = assessWindow(windowResult, segmentsInWindow, RETRY_CONSTANTS);
+
+        if (assess.flagged) {
+          const retryStartedAt = performance.now();
+          const winDur = window.end - window.start;
+
+          if (winDur >= 1.0) {
+            const midSec = window.start + winDur / 2;
+            const frameSec = VAD_CONSTANTS.frameSize / VAD_CONSTANTS.sampleRate;
+
+            let half1EndRel: number;
+            let half2StartRel: number;
+
+            if (vadStatus === "silero" && allProbs.length > 0) {
+              const searchStartSec = Math.max(window.start + 0.5, midSec - 3);
+              const searchEndSec = Math.min(window.end - 0.5, midSec + 3);
+              const startFrame = Math.max(0, Math.floor(searchStartSec / frameSec));
+              const endFrame = Math.min(allProbs.length - 1, Math.floor(searchEndSec / frameSec));
+
+              let minProb = Infinity;
+              let minFrame = -1;
+              for (let f = startFrame; f <= endFrame; f++) {
+                if (allProbs[f] < minProb) {
+                  minProb = allProbs[f];
+                  minFrame = f;
+                }
+              }
+
+              if (minFrame !== -1 && minProb < VAD_CONSTANTS.negThreshold) {
+                const splitSecAbs = minFrame * frameSec;
+                half1EndRel = Math.max(0.2, Math.min(winDur - 0.2, splitSecAbs - window.start));
+                half2StartRel = half1EndRel;
+              } else {
+                const midRel = winDur / 2;
+                half1EndRel = Math.min(winDur, winDur > 2 ? midRel + 0.5 : midRel);
+                half2StartRel = Math.max(0, winDur > 2 ? midRel - 0.5 : midRel);
+              }
+            } else {
+              // RMS fallback / vad: false split
+              const midRel = winDur / 2;
+              half1EndRel = Math.min(winDur, winDur > 2 ? midRel + 0.5 : midRel);
+              half2StartRel = Math.max(0, winDur > 2 ? midRel - 0.5 : midRel);
+            }
+
+            const half1Samples = Math.round(half1EndRel * 16000);
+            const half2StartSample = Math.round(half2StartRel * 16000);
+            const half1Audio = audio.subarray(0, half1Samples).slice();
+            const half2Audio = audio.subarray(half2StartSample).slice();
+
+            if (half1Audio.length > 0 && half2Audio.length > 0) {
+              const out1 = await speechPipeline(half1Audio, {
+                return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
+                language: lockedLanguage,
+                task: "transcribe",
+              });
+              const out2 = await speechPipeline(half2Audio, {
+                return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
+                language: lockedLanguage,
+                task: "transcribe",
+              });
+
+              const half1Res = parseWindowOutput(out1, { index: 0, start: 0, end: half1EndRel }, lockedLanguage);
+              const half2Res = parseWindowOutput(out2, { index: 1, start: half2StartRel, end: winDur }, lockedLanguage);
+              const retryMerged = mergeWindowTranscripts([half1Res, half2Res], winDur);
+
+              const retryTokens = retryMerged.words
+                .map((w) => w.text.toLowerCase().replace(/[^\p{L}\p{M}\p{N}]/gu, "").trim())
+                .filter(Boolean);
+              const retryHasLoop = hasRepetitionLoop(retryTokens);
+
+              let accepted = false;
+              if (!retryHasLoop) {
+                if (assess.reason === "repetition_loop") {
+                  accepted = true;
+                } else if (assess.flaggedRegion) {
+                  const origCount = countWordsInRegion(windowResult.words, assess.flaggedRegion);
+                  const retryCount = countWordsInRegion(retryMerged.words, assess.flaggedRegion);
+                  accepted = retryCount > origCount;
+                } else {
+                  accepted = retryMerged.words.length > windowResult.words.length;
+                }
+              }
+
+              if (accepted) {
+                windowResult = {
+                  window,
+                  granularity: retryMerged.granularity,
+                  language: lockedLanguage,
+                  segments: retryMerged.segments.map((s) => ({
+                    text: s.text,
+                    start: s.start,
+                    end: s.end,
+                    words: s.words.map((w) => ({ text: w.text, start: w.start, end: w.end })),
+                  })),
+                  words: retryMerged.words.map((w) => ({ text: w.text, start: w.start, end: w.end })),
+                };
+              }
+              retriedWindows++;
+            }
+          }
+          transcribeMs += performance.now() - retryStartedAt;
+        }
+      }
+
       lastTranscribeSeconds = Math.max(lastTranscribeSeconds, window.end);
       emitProgress({ stage: "transcribe", seconds: lastTranscribeSeconds, duration });
-      windowResults.push(parseWindowOutput(output, window, lockedLanguage));
+      windowResults.push(windowResult);
     }
   } finally {
     clearInterval(heartbeat);
@@ -339,6 +590,12 @@ async function runTranscription(
       decodeMs,
       transcribeMs,
       realTimeFactor,
+      vad: vadStatus,
+      vadMs: vadStatus === "silero" ? vadMs : undefined,
+      speechSeconds: vadStatus === "silero" ? speechSeconds : undefined,
+      windows: windows.length,
+      retriedWindows,
+      speechSegments: vadStatus === "silero" ? segments : undefined,
     },
   };
 }
@@ -423,6 +680,7 @@ async function disposePipeline(abortActive = false): Promise<void> {
   disposable?.dispose?.();
   speechPipeline = null;
   loadedRuntime = null;
+  vadRunner?.reset();
 }
 
 function throwIfAborted(signal: AbortSignal): void {

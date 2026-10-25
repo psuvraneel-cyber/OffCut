@@ -16,7 +16,7 @@ export type WorkerRequest =
       type: "transcribe";
       requestId: number;
       file: Blob;
-      options: Omit<TranscribeOptions, "signal" | "onProgress">;
+      options: Omit<TranscribeOptions, "signal" | "onProgress"> & { retry?: boolean };
       runtime: WorkerRuntimeOptions;
     }
   | {
@@ -25,7 +25,7 @@ export type WorkerRequest =
       pcm: Float32Array;
       sampleRate: number;
       duration?: number;
-      options: Omit<TranscribeOptions, "signal" | "onProgress">;
+      options: Omit<TranscribeOptions, "signal" | "onProgress"> & { retry?: boolean };
       runtime: WorkerRuntimeOptions;
     }
   | { type: "cancel"; requestId: number }

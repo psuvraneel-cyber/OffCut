@@ -43,6 +43,7 @@ const transcriber = createTranscriber({ model: "base", device: "auto" });
 
 const transcript = await transcriber.transcribe(file, {
   language: "auto",
+  vad: true, // defaults to true; set false for fixed 30s/5s windows
   onProgress: (progress) => console.log(progress),
 });
 
@@ -53,12 +54,50 @@ transcriber.dispose();
 
 Cancellation uses `AbortSignal`. The public implementation terminates and recreates the worker immediately when the signal aborts, rejecting all in-flight pending requests with `AbortError` so no orphaned promises linger. The next run loads from the browser cache rather than reusing a half-cancelled session. `dispose()` is safe to call multiple times, and calling `load()` or `transcribe()` after disposal rejects cleanly.
 
+## Two-Pass Architecture and Silero VAD
+
+Whisper's attention mechanism easily skips speech or hallucinates repetitively when 30-second fixed windows cut through words or contain long stretches of silence. The engine uses a two-pass pipeline powered by Silero VAD (`onnx-community/silero-vad` running on single-threaded WASM):
+
+1. **Pass 1 — Streaming VAD with Bounded Memory:**
+   - The audio provider streams consecutive, non-overlapping blocks of at most 30 seconds.
+   - Silero VAD processes 16 kHz mono audio in 512-sample frames with persistent 64-sample context and hidden state tensors across blocks.
+   - Decoded audio is immediately garbage-collected after each block. Only the resulting frame speech probabilities are retained (~450 KB for a 60-minute file).
+   - Reports `decode` progress monotonically from 0 to `duration`.
+   - If VAD fails to load or run, the engine logs a single warning, sets `stats.vad: "failed"`, and transparently falls back to fixed windows. A VAD issue never fails transcription.
+
+2. **Window Planning (`planWindows`):**
+   - Pure function `probabilitiesToSegments` converts probabilities into padded speech segments (`threshold: 0.5`, `negThreshold: 0.35`, `minSpeechMs: 250`, `minSilenceMs: 300`, `speechPadMs: 200`).
+   - `planWindows` greedily aggregates speech segments into windows bounded strictly to $\le 28\text{ s}$ ($\le 448,000$ samples), completely eliminating Whisper's $>30\text{ s}$ audio warning.
+   - Silence between windows is never fed to Whisper, eliminating silence hallucinations.
+   - Continuous speech runs $>28\text{ s}$ with no pause are split at the lowest-probability frame between 20 s and 28 s, or hard-split at 28 s with a 2-second forced overlap.
+   - Short files (<5 s) or files with <1 s total speech fall back to a single window or fixed windows so quiet speech is never missed.
+
+3. **Pass 2 — Transcribe & Retry Safety Net:**
+   - Decodes and transcribes only the planned speech windows.
+   - Reports `transcribe` progress monotonically from 0 to `duration`.
+   - `language: "auto"` detects language using the first planned window, which contains speech by construction.
+
+## The Retry Safety Net
+
+Even with pause-based windowing, Whisper can occasionally drop speech or get stuck in autoregressive loops. Each window's output is evaluated by `assessWindow`:
+
+- **Too few words:** $\ge 5\text{ s}$ of speech in the window but $<0.8\text{ words/speech second}$.
+- **Stopped early:** last word ends $>4\text{ s}$ before speech ends in the window.
+- **Started late:** first word starts $>4\text{ s}$ after speech begins in the window.
+- **Repetition loop:** any 1–4-word phrase repeated 4 or more times consecutively.
+- **VAD-off fallback:** when `vad: false`, speech presence is estimated using per-frame audio loudness (RMS $\ge 0.01$).
+
+When a window is flagged, it is retried **once** by splitting into two halves:
+- Split at the lowest-probability frame near the middle (or midpoint with 1 s overlap if unpaused).
+- Both halves are transcribed and merged using cut-point merging.
+- The retry is accepted only if it contains more words within the flagged region than the original window, or if it breaks a repetition loop. Otherwise, the original transcript is preserved.
+- Monotonic progress is maintained (`seconds` stays clamped to the window end).
+
 ## Audio pipeline and fallback
 
 1. `mediabunny` reads the local `Blob` in chunks and uses WebCodecs-backed audio decoding when the container and codec are supported (`input.canRead()` and `track.canDecode()`).
-2. Each inference window is 30 seconds with a 5-second overlap.
-3. Downsampling uses an anti-aliasing windowed-sinc FIR low-pass filter (Blackman window, 65 taps, cutoff $0.45 \times \text{targetRate} = 7.2\text{ kHz}$) before linear interpolation. This prevents frequencies above 8 kHz from aliasing back into the speech band when downsampling 48 kHz or 44.1 kHz to 16 kHz.
-4. **Main-thread decoding fallback:** if Mediabunny cannot read the container, the primary audio track cannot be decoded, or duration is invalid, the worker posts a `needs-fallback-decode` message to the main thread.
+2. Downsampling uses an anti-aliasing windowed-sinc FIR low-pass filter (Blackman window, 65 taps, cutoff $0.45 \times \text{targetRate} = 7.2\text{ kHz}$) before linear interpolation. This prevents frequencies above 8 kHz from aliasing back into the speech band when downsampling 48 kHz or 44.1 kHz to 16 kHz.
+3. **Main-thread decoding fallback:** if Mediabunny cannot read the container, the primary audio track cannot be decoded, or duration is invalid, the worker posts a `needs-fallback-decode` message to the main thread.
    - For files up to 200 MB, the main thread decodes the file using `OfflineAudioContext(1, 1, 16000).decodeAudioData(...)`.
    - Web Audio automatically resamples to 16 kHz during decode; the channels are downmixed to mono via `downmixToMono`.
    - The resulting `Float32Array` PCM buffer is transferred (zero-copy) back to the worker via a `transcribe-pcm` message and processed through a PCM window provider.
@@ -67,7 +106,7 @@ Cancellation uses `AbortSignal`. The public implementation terminates and recrea
 ## Language detection
 
 When `language: "auto"` is specified, the engine detects language on-device instead of defaulting to English:
-1. It selects the first window with audio RMS $\ge 0.01$ (checking up to the first 3 windows, falling back to window 0).
+1. With VAD enabled, it uses the first planned window (guaranteed to contain speech). With `vad: false`, it selects the first window with audio RMS $\ge 0.01$ (checking up to the first 3 windows).
 2. It extracts log-mel filterbank features with Whisper's processor and performs a single decoder step using the `<|startoftranscript|>` token.
 3. It evaluates logits restricted exclusively to Whisper's language token set (`lang_to_id`) to find the maximum-likelihood language code. If a direct forward pass is unavailable, it uses `model.generate` with `max_new_tokens: 1` as a fallback.
 4. The detected ISO code is locked for the entire file so window captions never flip languages mid-stream, and the final `transcript.language` reflects the detected code (falling back to `"en"` if detection fails).
@@ -85,10 +124,46 @@ Overlapping inference windows are merged using a deterministic cut-point strateg
 ## Stats definitions
 
 `transcript.stats` reports:
+- `model`: the selected model size (`tiny`, `base`, `small`).
+- `device`: execution device (`webgpu` or `wasm`).
+- `dtype`: precision (`fp16`, `fp32`, `q8`).
 - `loadMs`: model compilation and warmup duration (0 ms if already warm).
 - `decodeMs`: cumulative time spent demuxing and decoding audio across all windows.
-- `transcribeMs`: cumulative time spent running Whisper inference plus initial language detection.
+- `transcribeMs`: cumulative time spent running Whisper inference, retries, and language detection.
 - `realTimeFactor`: media duration in seconds divided by total wall-clock processing time (excluding initial model load), representing media seconds processed per second of wall time.
+- `vad`: `"silero"`, `"off"`, or `"failed"`.
+- `vadMs`: time spent running Silero VAD on WASM during Pass 1.
+- `speechSeconds`: total seconds of detected speech in the recording.
+- `windows`: total planned inference windows processed.
+- `retriedWindows`: number of windows retried by the safety net.
+
+## Benchmarks & Evaluation
+
+An automated evaluation harness is included for regression and accuracy benchmarking against standardized reference datasets.
+
+### Running the Benchmarks
+
+1. Start the dev server:
+   ```powershell
+   npm --prefix engine run dev
+   ```
+2. Navigate to the benchmark page in Chrome:
+   - Baseline (no VAD, fixed windows): `http://localhost:5180/bench/index.html?model=tiny&device=webgpu&vad=off&set=all&runs=1&label=baseline`
+   - Silero VAD: `http://localhost:5180/bench/index.html?model=tiny&device=webgpu&vad=on&set=all&runs=1&label=vad`
+   - Silero VAD + Retry: `http://localhost:5180/bench/index.html?model=tiny&device=webgpu&vad=on&set=all&runs=1&label=vad-retry`
+
+URL options:
+- `model`: `tiny` | `base` (default `tiny`)
+- `device`: `webgpu` | `wasm` (default `webgpu` when available, otherwise `wasm`)
+- `vad`: `on` | `off` (default `off`)
+- `set`: `short` (11 clips, 17 evaluations) | `long` (full episode, 10m loop, stitched clips) | `all` (22 evaluations)
+- `runs`: number of repetitions for variance testing (e.g. `3`)
+- `label`: output prefix for results JSON
+
+Results are automatically saved to `asr-evaluation-assets/results/<label>-<model>-<timestamp>.json` and appended as numbers-only summary tables to `engine/bench/RESULTS.md`.
+
+> [!IMPORTANT]
+> Evaluation media and reference transcripts located in `asr-evaluation-assets/` are local evaluation assets and are never committed to the git repository. Results files in `asr-evaluation-assets/results/` and derived files remain local.
 
 ## Models and runtime choices
 

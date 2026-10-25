@@ -205,4 +205,38 @@ describe("mergeWindowTranscripts", () => {
     expect(merged.segments[1].start).toBe(29);
     expect(merged.segments[1].end).toBe(31);
   });
+
+  it("merges non-overlapping windows cleanly", () => {
+    // Window 0: [0, 10], Window 1: [25, 35] (gap 10s to 25s)
+    const results: WindowTranscript[] = [
+      {
+        window: { index: 0, start: 0, end: 10 },
+        granularity: "word",
+        language: "en",
+        words: [
+          { text: "first", start: 2.0, end: 3.0 },
+          { text: "part", start: 4.0, end: 5.0 },
+        ],
+        segments: [],
+      },
+      {
+        window: { index: 1, start: 25, end: 35 },
+        granularity: "word",
+        language: "en",
+        words: [
+          { text: "second", start: 1.0, end: 2.0 },
+          { text: "part", start: 3.0, end: 4.0 },
+        ],
+        segments: [],
+      },
+    ];
+
+    const merged = mergeWindowTranscripts(results, 40);
+    expect(merged.words).toHaveLength(4);
+    expect(merged.words.map((w) => w.text)).toEqual(["first", "part", "second", "part"]);
+    expect(merged.words[0].start).toBe(2.0);
+    expect(merged.words[1].end).toBe(5.0);
+    expect(merged.words[2].start).toBe(26.0); // 1.0 + 25.0
+    expect(merged.words[3].end).toBe(29.0);   // 4.0 + 25.0
+  });
 });

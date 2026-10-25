@@ -10,6 +10,7 @@ export interface TranscribeOptions {
   language?: string;
   signal?: AbortSignal;
   onProgress?: (progress: Progress) => void;
+  vad?: boolean;
 }
 
 export type Progress =
@@ -45,6 +46,12 @@ export interface Transcript {
     decodeMs: number;
     transcribeMs: number;
     realTimeFactor: number;
+    vad?: "silero" | "off" | "failed";
+    vadMs?: number;
+    speechSeconds?: number;
+    windows?: number;
+    retriedWindows?: number;
+    speechSegments?: { start: number; end: number }[];
   };
 }
 

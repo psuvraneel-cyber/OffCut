@@ -87,7 +87,11 @@ class BrowserTranscriber implements Transcriber {
       type: "transcribe",
       requestId,
       file,
-      options: { language: options.language ?? "auto" },
+      options: {
+        language: options.language ?? "auto",
+        vad: options.vad,
+        retry: (options as { retry?: boolean }).retry,
+      },
       runtime,
     };
     const result = await this.request(
@@ -237,7 +241,11 @@ class BrowserTranscriber implements Transcriber {
         pcm,
         sampleRate: 16000,
         duration,
-        options: { language: pending.options?.language ?? "auto" },
+        options: {
+          language: pending.options?.language ?? "auto",
+          vad: pending.options?.vad,
+          retry: (pending.options as { retry?: boolean } | undefined)?.retry,
+        },
         runtime,
       };
 
