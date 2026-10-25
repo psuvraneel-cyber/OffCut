@@ -1,0 +1,206 @@
+.roadmap {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--gutter);
+}
+
+.roadmap__intro {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 40rem;
+}
+
+.roadmap__eyebrow {
+  color: var(--violet);
+}
+
+.roadmap__title {
+  font-size: clamp(2.75rem, 6vw, 5.25rem);
+}
+
+.roadmap__title em {
+  color: var(--violet);
+}
+
+.roadmap__lede {
+  max-width: 32rem;
+  color: var(--ink-soft);
+  font-size: var(--text-lg);
+}
+
+.roadmap__board {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.roadmap__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.roadmap__card {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  justify-items: start;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  background: var(--glass);
+  box-shadow: 0 30px 80px -50px rgba(75, 35, 200, 0.35);
+}
+
+/* Placeholder cards hold the layout while the list loads. */
+.roadmap__card--skeleton {
+  min-height: 13rem;
+  background: linear-gradient(100deg, var(--glass) 30%, rgba(255, 255, 255, 0.85) 50%, var(--glass) 70%);
+  background-size: 300% 100%;
+  animation: roadmap-shimmer 1.6s linear infinite;
+}
+
+@keyframes roadmap-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+.roadmap__status {
+  padding: 0.3em 0.8em;
+  border-radius: var(--radius-pill);
+  background: rgba(122, 77, 255, 0.1);
+  color: var(--violet-deep);
+  font-size: 0.6875rem;
+}
+
+.roadmap__card--planned .roadmap__status {
+  background: rgba(215, 123, 255, 0.16);
+  color: #8a2fb0;
+}
+
+.roadmap__card--building .roadmap__status {
+  background: var(--violet);
+  color: var(--white);
+}
+
+.roadmap__card--shipped .roadmap__status {
+  background: var(--night);
+  color: var(--signal);
+}
+
+.roadmap__feature {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  line-height: 1.05;
+}
+
+.roadmap__desc {
+  color: var(--ink-soft);
+}
+
+/* Outlined until it's yours, then filled, so the pressed state reads without colour alone ("Your vote"). */
+.roadmap__vote {
+  border-color: rgba(122, 77, 255, 0.4);
+  background: var(--white);
+  color: var(--violet-deep);
+  cursor: pointer;
+}
+
+.roadmap__vote:hover {
+  border-color: var(--violet);
+}
+
+.roadmap__vote.is-voted {
+  border-color: var(--violet);
+  background: var(--violet);
+  color: var(--white);
+}
+
+.roadmap__vote.is-voted:hover {
+  background: var(--violet-deep);
+}
+
+.roadmap__vote[aria-disabled='true'] {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.roadmap__arrow {
+  width: 0.9em;
+  height: 0.9em;
+  fill: currentColor;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.roadmap__vote.is-voted .roadmap__arrow {
+  transform: translateY(-2px);
+}
+
+.roadmap__mine {
+  opacity: 0.8;
+}
+
+.roadmap__shipped {
+  color: var(--ink-soft);
+}
+
+.roadmap__problem {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px dashed var(--glass-border);
+  border-radius: var(--radius-card);
+  color: var(--ink-soft);
+}
+
+.roadmap__problem .button {
+  border: 0;
+  cursor: pointer;
+}
+
+.roadmap__check:empty {
+  display: none;
+}
+
+.roadmap__message {
+  font-size: var(--text-sm);
+}
+
+.roadmap__message:empty {
+  display: none;
+}
+
+.roadmap__message--info {
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--violet);
+  color: var(--ink);
+}
+
+.roadmap__message--error {
+  padding: var(--space-3);
+  border: 1px solid rgba(215, 123, 255, 0.6);
+  border-radius: var(--space-3);
+  background: rgba(215, 123, 255, 0.1);
+  color: var(--ink);
+}
+
+.roadmap__note {
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roadmap__card--skeleton {
+    animation: none;
+  }
+}

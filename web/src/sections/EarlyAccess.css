@@ -1,8 +1,7 @@
-/* Bottom padding clears the floating NavPill, so the last section is never hidden behind it. */
 .early {
   max-width: 76rem;
   margin: 0 auto;
-  padding: var(--space-6) var(--gutter) calc(var(--space-6) + 5rem);
+  padding: var(--space-6) var(--gutter) calc(var(--space-6) * 1.5);
 }
 
 /* A slice of the night hero, set into the light page. */
@@ -219,4 +218,13 @@
     gap: var(--space-6);
     align-items: center;
   }
+}
+
+.early__hint a {
+  color: var(--lilac);
+  text-underline-offset: 0.2em;
+}
+
+.early__hint a:focus-visible {
+  outline-color: var(--lilac);
 }

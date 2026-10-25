@@ -21,6 +21,9 @@ Then open http://localhost:5173.
   system (GPU particle simulation in `particles/`, pointer input in `interaction/`). `LiteParticleField.ts`
   is the v1 fallback for GPUs without float render targets, and the CSS gradient is the last resort.
 - `public/_headers`: Cloudflare Pages response headers.
+- `privacy.html`, `terms.html`: the legal pages, as extra Vite entries (see `vite.config.ts`). They're plain
+  HTML styled by `src/legal/`, served at `/privacy` and `/terms`. Both are drafts with `[blanks]` to fill in.
+- `src/lib/site.ts`: GitHub and Instagram links for the footer (empty until the owner adds them).
 
 The backend (`/functions`, `/migrations`, `/shared`) lives at the repo root and is specified in `docs/backend-prompt.md`.
 

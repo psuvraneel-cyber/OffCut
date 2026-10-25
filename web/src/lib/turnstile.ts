@@ -28,6 +28,8 @@ export interface TurnstileOptions {
   theme?: 'light' | 'dark' | 'auto'
   size?: 'normal' | 'flexible' | 'compact'
   action?: string
+  // 'interaction-only' keeps the widget hidden unless Cloudflare needs the visitor to click it.
+  appearance?: 'always' | 'execute' | 'interaction-only'
   callback?: (token: string) => void
   'expired-callback'?: () => void
   'error-callback'?: () => void
