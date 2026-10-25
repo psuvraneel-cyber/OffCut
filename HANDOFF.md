@@ -1,6 +1,6 @@
 # Offcut handoff
 
-_Last updated: 2026-10-25 (after the move to C:\OffCut and the live launch)_
+_Last updated: 2026-10-26 (Engine Round 1 committed as `5eab197`; after the move to C:\OffCut and the live launch)_
 
 Read this first if you're picking up the project in a new session.
 
@@ -25,7 +25,7 @@ The project lives at **`C:\OffCut`** (moved out of OneDrive, which kept locking 
 - **Legal & License:** Owner blanks filled in `web/privacy.html` and `web/terms.html`, draft notices removed, and Apache License 2.0 with `NOTICE` added.
 - **GitHub:** Pushed to `https://github.com/psuvraneel-cyber/OffCut` on branch `main`.
 - **Smoke test verified:** Health check (`/api/health`) answers `ok:true`, roadmap features load from D1, owner verified waitlist signup lands in D1 (1 verified row), branded 404 works.
-- **Engine:** Transcription engine (Whisper in browser) committed by Omnirush (`c3d6892`). Round 1 changes in `engine/` are still uncommitted (see Work in progress).
+- **Engine:** Transcription engine (Whisper in browser) committed by Omnirush (`c3d6892`). Round 1 (Silero VAD windows, retry safety net, benchmark) committed as `5eab197` on `main`, not pushed (see Work in progress).
 - **What's left for later:** Formal legal review, and before ads: custom domain, Google AdSense application, and certified consent tool.
 
 ## Repo map
@@ -40,7 +40,7 @@ The project lives at **`C:\OffCut`** (moved out of OneDrive, which kept locking 
 | `web/public/` | Favicon, app icons, `og.png` share card, `site.webmanifest`, `_headers` | Committed |
 | `web/scripts/brand-images/` | HTML sources for `og.png` and the icons; `node web/scripts/brand-images/render.mjs` re-renders them with headless Edge/Chrome | Committed |
 | `functions/`, `migrations/`, `shared/`, `test/` | Backend: Cloudflare Pages Functions + D1 + Turnstile (waitlist, feedback, feature votes, clip counter, error reports) | Committed (`b02384b`), 12/12 tests pass |
-| `engine/` | Transcription engine (Whisper in the browser) | Base committed (`c3d6892`). Round 1 edits (`engine/tsconfig.json`, `engine/vite.config.ts`, `engine/bench/`, `engine/test/`) are uncommitted, owned by Omnirush. Don't touch or commit them without review |
+| `engine/` | Transcription engine (Whisper in the browser) | Base committed (`c3d6892`). Round 1 committed (`5eab197`): Silero VAD two-pass windows, retry safety net, dev-only benchmark in `engine/bench/`. Test-set results stay local (`asr-evaluation-assets/` is git-ignored) |
 | `docs/launch.md` | Production checklist: what's verified, go-live commands, Turnstile and Web Analytics steps | Committed |
 | `docs/backend-prompt.md` | Backend spec and API contract (source of truth) | Committed |
 | `docs/backend.md` | Backend setup and deploy guide | Committed |
@@ -50,7 +50,14 @@ The page order is Hero, How it works, Roadmap, FAQ, Early access, then the foote
 
 ## Work in progress
 
-- **Transcription engine, Round 1** (Omnirush, brief: `docs/engine-round1-prompt.md`). Works only in `engine/` and does **not** commit. Review it against the brief (run its tests and the demo on port 5180), then commit.
+- **Transcription engine, Round 1: committed (`5eab197`), not pushed.** Built by Omnirush from `docs/engine-round1-prompt.md` and verified by Claude. On `tiny`/WebGPU, the full 28-min NPR episode's deletion rate fell from 19.7% to 1.6% and the 10-min loop's from 21.4% to 0.7%, with no long gaps. Short-clip error rates didn't get worse. Silence test: 0 words in silent parts. 56/56 tests pass.
+  - **Known gaps (carry into Round 2):**
+    - Full-episode wall time is +43% over baseline (262 s → 374 s); the brief's target was +10%. Retries and the VAD pass are the cost.
+    - The `base` model's output is still broken (1 word on the 101 s clip, 0 on the 10-min file). Not investigated.
+    - With `vad: false`, the retry also runs (the brief said exact old behaviour). `retry: false` is an internal flag that restores it.
+    - Hindi and Hinglish stay poor with `tiny`. That's a model limit.
+    - On a repetition loop, retry acceptance takes a loop-free retry even with fewer words (a deliberate deviation).
+  - Benchmark runs and the bench page need the dev server (`npm --prefix engine run dev`, port 5180). `asr-evaluation-assets/` stays local and untracked.
 - **Going live:** follow `docs/launch.md`. The site is built and checked; what's left needs the owner's accounts.
 
 ## Key decisions (don't undo without a reason)
@@ -90,7 +97,7 @@ Before ads: buy a domain, apply for AdSense, add a certified cookie-consent tool
 ## What's next
 
 1. Go live (above).
-2. Review and commit Omnirush's Round 1 `engine/` changes.
+2. Engine Round 2: fix the `base` model, bring the full-episode time within +10% of baseline, then decide whether to push `main` (the Round 1 commit is local only).
 3. Build the tool, one station at a time, starting with the free auto-captioner:
    1. split the audio out
    2. transcribe (from `engine/`)
