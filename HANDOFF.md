@@ -12,39 +12,34 @@ The owner is building it in public on a new Instagram tech channel, so every mil
 
 **How it makes money (later):** display ads on the processing screen, plus optional rewarded ads through Google's opt-in AdSense Offerwall to unlock extras. Normal downloads stay free, with no watermark and no forced ad.
 
+## Where it lives
+
+The project lives at **`C:OffCut`** (moved out of OneDrive, which kept locking files). Ignore any old copy under OneDrive. GitHub: `https://github.com/psuvraneel-cyber/offcut` (`main` there has only the README so far; nothing from this session has been pushed).
+
 ## Repo map
 
 | Path | What | Status |
 |---|---|---|
-| `web/` | Website (React 19 + TS + Vite 8, GSAP/ScrollTrigger, Lenis, Three.js r186) | Committed |
-| `web/src/hero/` | Particle hero v1: scroll-pinned morphs (video → phone → "captions" → laptop), cursor heat and parting, sparkle trail | Committed (`c999c31`) |
-| `web/src/components/` | `NavPill` (floating dark-glass menu), `Logo` (Offcut mark) | Committed |
-| `functions/`, `migrations/`, `shared/`, `test/` | Backend: Cloudflare Pages Functions + D1 + Turnstile (waitlist, feedback, feature votes, clip counter, error reports) | Committed (`b02384b`), reviewed and fixed |
-| `engine/` | Transcription engine (Whisper in the browser) | **Not started.** Omnirush builds it from `docs/engine-transcription-prompt.md` |
+| `web/` | Website (React 19 + TS + Vite 8, GSAP/ScrollTrigger, Lenis, Three.js r186) | Committed, launch-ready apart from the owner's blanks |
+| `web/src/hero/` | Particle hero v2: GPU particle physics with quality tiers (GPU high/medium, lite, static) and a frame watchdog that steps down a tier when frames run long; fluid cursor with swipe-to-cut; bloom/post-processing; timeline-horizon world; camera choreography and intro | Finished (phases 1–6, `a878f08`…`444801c`) |
+| `web/src/sections/` | How it works, Roadmap (feature voting), FAQ, Early access (waitlist form) | Finished and merged |
+| `web/src/components/` | `NavPill` (floating menu), `Logo`, `Footer`, site-wide `CustomCursor` and `PointerEffects` | Finished |
+| `web/privacy.html`, `web/terms.html`, `web/404.html` | Legal drafts (owner blanks highlighted) and the branded 404 page, as extra Vite entries | Committed |
+| `web/public/` | Favicon, app icons, `og.png` share card, `site.webmanifest`, `_headers` | Committed |
+| `web/scripts/brand-images/` | HTML sources for `og.png` and the icons; `node web/scripts/brand-images/render.mjs` re-renders them with headless Edge/Chrome | Committed |
+| `functions/`, `migrations/`, `shared/`, `test/` | Backend: Cloudflare Pages Functions + D1 + Turnstile (waitlist, feedback, feature votes, clip counter, error reports) | Committed (`b02384b`), 12/12 tests pass |
+| `engine/` | Transcription engine (Whisper in the browser) | **In progress, uncommitted.** Omnirush builds it from `docs/engine-transcription-prompt.md`. Don't touch or commit it |
+| `docs/launch.md` | Production checklist: what's verified, go-live commands, Turnstile and Web Analytics steps | Committed |
 | `docs/backend-prompt.md` | Backend spec and API contract (source of truth) | Committed |
 | `docs/backend.md` | Backend setup and deploy guide | Committed |
-| `docs/hero-v2-prompt.md` | Six-phase hero upgrade brief for a new Claude session | Uncommitted |
-| `docs/engine-transcription-prompt.md` | Transcription engine brief for Omnirush | Uncommitted |
+| `docs/hero-v2-prompt.md`, `docs/engine-transcription-prompt.md` | Briefs for the hero v2 session and Omnirush | Committed |
 
-Commits on `main`, oldest first:
+The page order is Hero, How it works, Roadmap, FAQ, Early access, then the footer. The site-wide cursor (`CustomCursor` + `PointerEffects`) steps aside inside the hero, which draws its own pointer effects.
 
-1. `d2b75df`: the backend prompt
-2. `7034a30`: the website skeleton
-3. `c999c31`: the hero, effects and branding
-4. `b02384b`: the backend
+## Work in progress
 
-## Work in progress (in parallel)
-
-1. **Hero v2** (new Claude session, brief: `docs/hero-v2-prompt.md`). Six phases, in order:
-   1. GPU particles
-   2. Fluid cursor + swipe-to-cut
-   3. Bloom/post-processing
-   4. Timeline-horizon world
-   5. Camera + intro
-   6. Quality tiers
-
-   It edits `web/` only and commits each phase itself.
-2. **Transcription engine** (Omnirush, brief: `docs/engine-transcription-prompt.md`). It works only in `engine/` and does **not** commit. Review it against the brief afterwards (run its tests and the demo on port 5180), then commit.
+- **Transcription engine** (Omnirush, brief: `docs/engine-transcription-prompt.md`). It works only in `engine/` and does **not** commit. Review it against the brief afterwards (run its tests and the demo on port 5180), then commit.
+- **Going live:** follow `docs/launch.md`. The site is built and checked; what's left needs the owner's accounts.
 
 ## Key decisions (don't undo without a reason)
 
@@ -67,30 +62,24 @@ Commits on `main`, oldest first:
 ## Gotchas
 
 - **Build the website locally with `npm run build:web`** (or `npm --prefix web run build`). The root `npm run build` runs `npm ci` inside `web/` (it's meant for Cloudflare) and wiped `web/node_modules` once.
-- **The project lives in OneDrive,** so file locks happen. If `web/node_modules` breaks: stop the dev server, run `npm ci` in `web/`, restart. Moving the project out of OneDrive (e.g. `C:\Projects\offcut`) would help.
+- **The project moved from OneDrive to `C:\OffCut`.** Old worktrees and notes may still point at the OneDrive path; ignore them. If `web/node_modules` ever breaks: stop the dev server, run `npm ci` in `web/`, restart. npm paused some install scripts at the root after the move; if wrangler misbehaves, run `npm approve-scripts`.
 - **There's a stray `C:\postcss.config.mjs` on the C: drive.** `web/vite.config.ts` sets an inline PostCSS config to ignore it.
 - **Two AIs work in this folder.** Only one of them commits at a time; Omnirush never commits.
-- **The local dev server for the site** is the "web" config in `.claude/launch.json` (port 5173). The backend runs locally with `npm run dev:api` (port 8788, serves `web/dist`).
+- **The local dev server for the site** is the "web" config in `.claude/launch.json` (port 5173). The backend runs locally with `npm run dev:api` (port 8788, serves `web/dist`). Run `npm run db:migrate:local` once per checkout first.
+- **Never add COOP/COEP headers** (see Key decisions). `web/public/_headers` says so too.
+- **Keyboard order:** the skip link and the NavPill come before `<main>` in `App.tsx` on purpose, even though the pill floats at the bottom. The hero's first-Tab handler shows the intro text at once so its buttons can take focus.
 
-## Before going live (not done yet)
+## Before going live
 
-1. `npx wrangler d1 create clipper-db`, then paste the ID into **both** D1 sections of `wrangler.toml`.
-2. Run `npm run db:migrate:remote`.
-3. Create a real Turnstile widget. Set the secret with `npx wrangler pages secret put TURNSTILE_SECRET_KEY`, and add the site key to the frontend.
-4. Deploy: `npm run build:web`, then `npx wrangler pages deploy web/dist --project-name offcut`. Check that the production `ALLOWED_ORIGINS` matches the address you got.
-5. Write a privacy policy and terms (India DPDP, Turnstile, later AdSense cookies) before collecting emails.
-6. Before ads: buy a domain, apply for AdSense, add a certified cookie-consent tool for EU/UK visitors.
+Everything that can be done without the owner's accounts is done and checked. The full checklist, with the exact commands and click-by-click Turnstile and Web Analytics steps, is in **`docs/launch.md`**. In short: owner blanks (links, legal pages, licence) → D1 database + remote migrations → Turnstile widget → Pages project + deploy → Turnstile secret → smoke test → push to GitHub. Each outward step needs the owner's explicit yes.
 
-## What's next after the parallel work
+Before ads: buy a domain, apply for AdSense, add a certified cookie-consent tool for EU/UK visitors.
 
-1. Review and commit Omnirush's `engine/`.
-2. Website sections:
-   - How it works
-   - Early-access form (wired to `/api/waitlist` with Turnstile)
-   - Feature-voting roadmap (`/api/features`)
-   - FAQ
-   - Footer
-3. Build the tool, one station at a time:
+## What's next
+
+1. Go live (above).
+2. Review and commit Omnirush's `engine/`.
+3. Build the tool, one station at a time, starting with the free auto-captioner:
    1. split the audio out
    2. transcribe (from `engine/`)
    3. pick the best moments
@@ -98,6 +87,4 @@ Commits on `main`, oldest first:
    5. paint captions
    6. encode with WebCodecs
    7. download
-
-   Ship the free auto-captioner first.
-4. Installable app (PWA, works offline), then launch.
+4. Installable app (PWA, works offline). The web manifest and icons already exist.
