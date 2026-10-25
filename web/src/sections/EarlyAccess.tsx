@@ -262,7 +262,7 @@ export function EarlyAccess() {
                 aria-describedby={emailError ? `${emailErrorId} ${emailHint}` : emailHint}
               />
               <p id={emailHint} className="early__hint">
-                Only used to tell you when Offcut launches.
+                Only used to tell you when Offcut launches. See the <a href="/privacy">privacy policy</a>.
               </p>
               {emailError && (
                 <p id={emailErrorId} className="early__error">

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#120b24" />
+    <meta name="description" content="What Offcut stores, what it never sees, and your rights. In plain language." />
+    <title>Privacy · Offcut</title>
+    <script type="module" src="/src/legal/legal.ts"></script>
+  </head>
+  <body>
+    <!--
+      ▼▼▼ OWNER: this is a DRAFT. Before launch:
+        1. Fill in every highlighted [blank] (search this file for "legal__todo").
+        2. Have it reviewed, ideally by someone who knows Indian data-protection law.
+        3. Update it again before turning on AdSense (section "Ads, later").
+        4. Remove the draft notice below.
+      ▲▲▲
+    -->
+    <header class="legal-header">
+      <div class="legal-header__inner">
+        <a class="legal-header__logo" href="/" aria-label="Offcut home">
+          <span class="logo">
+            <svg class="logo__mark" viewBox="0 0 64 64" aria-hidden="true">
+              <g transform="translate(1.5 5)">
+                <rect class="logo__frame" x="4" y="20" width="44" height="28" rx="5" fill="none" stroke-width="3.5" />
+                <rect class="logo__frame" x="30" y="20" width="12" height="28" fill="none" stroke-width="1.5" stroke-dasharray="2 3" opacity="0.6" />
+                <g class="logo__slice">
+                  <rect x="37" y="6" width="19" height="34" rx="4" fill="#7a4dff" />
+                  <path d="M43.5 17v12l9-6z" fill="#f1ecff" />
+                </g>
+              </g>
+            </svg>
+            <span class="logo__word">offcut</span>
+          </span>
+        </a>
+        <a class="legal-header__back" href="/">← Back to Offcut</a>
+      </div>
+    </header>
+
+    <main class="legal">
+      <p class="mono legal__meta">Privacy policy · Draft of 25 October 2026</p>
+      <h1>Your video stays <em>yours</em>.</h1>
+
+      <div class="legal__draft" role="note">
+        <p>
+          <strong>Draft for review.</strong> This policy is a plain-language draft written for the owner to check
+          before launch. It is not legal advice and hasn’t been reviewed by a lawyer yet.
+        </p>
+      </div>
+
+      <div class="legal__summary">
+        <h2>The short version</h2>
+        <ul>
+          <li><strong>Your videos never leave your device.</strong> All the AI runs inside your browser.</li>
+          <li>We only keep your email if you join the waitlist and tick the consent box.</li>
+          <li>Votes, the clips counter and error reports are anonymous.</li>
+          <li>We don’t store IP addresses, we don’t set cookies and we don’t run analytics or tracking.</li>
+          <li>Ads may come later. When they do, we’ll ask about ad cookies first where the law requires it.</li>
+        </ul>
+      </div>
+
+      <h2>Who we are</h2>
+      <p>
+        Offcut is a free, open-source video clipper run by <span class="legal__todo">[owner’s name]</span>, based
+        in India. In this policy, “we” means the person running Offcut. You can reach us at
+        <span class="legal__todo">[contact email]</span>.
+      </p>
+
+      <h2>Your videos</h2>
+      <p>
+        When you use Offcut, your browser opens the video straight from your disk. Transcribing, picking clips,
+        reframing, captioning and exporting all happen on your device. <strong>No part of your video, audio,
+        transcript or clips is ever sent to us</strong>, and we have no way to see it.
+      </p>
+      <p>
+        To do that work, your browser downloads the AI models the first time you use them, from Hugging Face’s
+        public servers (huggingface.co). Like any download, Hugging Face sees the request, including your IP
+        address, under <a href="https://huggingface.co/privacy">its own privacy policy</a>. The models are then kept
+        in your browser so later visits don’t need to download them again.
+      </p>
+
+      <h2>What we store, and why</h2>
+      <p>Our small server stores only the following, in a database hosted by Cloudflare:</p>
+      <table class="legal__table">
+        <thead>
+          <tr>
+            <th scope="col">What</th>
+            <th scope="col">Details</th>
+            <th scope="col">How long</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="What"><strong>Waitlist email</strong></td>
+            <td data-label="Details">
+              Your email address, the time you gave consent, and a short tag saying where you signed up (for example
+              “instagram”). Stored only if you tick the consent box. Used to send you one email when Offcut is ready.
+            </td>
+            <td data-label="How long">Until you ask us to remove it, or shortly after launch once that email is sent.</td>
+          </tr>
+          <tr>
+            <td data-label="What"><strong>Feature votes</strong></td>
+            <td data-label="Details">
+              Which feature was voted for, the time, and a random ID your browser made up (see “On your device”
+              below). It isn’t linked to your name, email or IP address.
+            </td>
+            <td data-label="How long">Until you take the vote back, or the feature is removed from the roadmap.</td>
+          </tr>
+          <tr>
+            <td data-label="What"><strong>Clips counter</strong></td>
+            <td data-label="Details">
+              Two running totals for the whole site: how many clips have been exported and how many minutes of video
+              were processed. Nothing about who made them.
+            </td>
+            <td data-label="How long">As long as Offcut runs.</td>
+          </tr>
+          <tr>
+            <td data-label="What"><strong>Error reports</strong></td>
+            <td data-label="Details">
+              Only if you choose to send one: which step failed, the error’s name and message, and optionally the
+              app version, browser, operating system and whether WebGPU was available.
+            </td>
+            <td data-label="How long">Deleted automatically after 90 days.</td>
+          </tr>
+          <tr>
+            <td data-label="What"><strong>Feedback</strong></td>
+            <td data-label="Details">
+              If you send feedback: your message, its category, and a contact email only if you choose to add one.
+            </td>
+            <td data-label="How long">Until it has been dealt with, or you ask us to delete it.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        <strong>What we never store:</strong> IP addresses, browser “user agent” strings, cookies, or any kind of
+        analytics or fingerprint. Our server never sends email by itself and never sells or shares your data.
+      </p>
+
+      <h2>On your device</h2>
+      <p>
+        Offcut sets <strong>no cookies</strong>. To make voting work without an account, your browser keeps a few small
+        items in its local storage: a random ID (sent only when you vote, so you can’t vote twice), plus the list of
+        features you voted for and the time of your last vote (both never sent). Clearing your browser’s site data deletes both.
+      </p>
+
+      <h2>Cloudflare and Turnstile</h2>
+      <p>
+        The site is hosted on Cloudflare Pages. To deliver any website, the host has to see your IP address;
+        Cloudflare handles that under <a href="https://www.cloudflare.com/privacypolicy/">its privacy policy</a>.
+      </p>
+      <p>
+        Forms and votes are protected by <strong>Cloudflare Turnstile</strong>, a privacy-friendly alternative to
+        CAPTCHAs. It looks at signals from your browser to tell people from bots. When you submit, our server passes
+        the Turnstile result and your IP address to Cloudflare once to check it, and then forgets the IP address: it
+        is never written to our database. Cloudflare says it doesn’t use Turnstile data for advertising. See the
+        <a href="https://www.cloudflare.com/turnstile-privacy-policy/">Turnstile privacy addendum</a>.
+      </p>
+
+      <h2>Ads, later</h2>
+      <p>
+        There are <strong>no ads yet</strong>. Later, we plan to show display ads from Google AdSense on the
+        processing screen, and possibly an optional “watch an ad to unlock an extra” offer. Ads never get access to
+        your videos.
+      </p>
+      <p>
+        Google and its partners use cookies and similar technology to show and measure ads. Before ads go live, we
+        will update this policy, add a consent banner where the law requires it (including a certified consent tool
+        for visitors from the EU, UK and Switzerland), and let you refuse personalised ads. You can read
+        <a href="https://policies.google.com/technologies/partner-sites">how Google uses data on partner sites</a>.
+      </p>
+
+      <h2>Your rights</h2>
+      <p>
+        Under India’s Digital Personal Data Protection Act, 2023 (and similar laws elsewhere), you can:
+      </p>
+      <ul>
+        <li><strong>Ask what we hold</strong> about you and how it’s used.</li>
+        <li><strong>Correct</strong> anything that’s wrong, or <strong>have it deleted</strong>.</li>
+        <li>
+          <strong>Withdraw your consent</strong> at any time, as easily as you gave it. For the waitlist, email us and
+          we’ll remove your address.
+        </li>
+        <li><strong>Nominate someone</strong> to exercise these rights for you if you die or can’t act yourself.</li>
+        <li>
+          <strong>Complain.</strong> Contact us first at <span class="legal__todo">[contact email]</span> and we’ll
+          reply within <span class="legal__todo">[30]</span> days. If you’re not satisfied, you can complain to the
+          Data Protection Board of India.
+        </li>
+      </ul>
+      <p>
+        Because votes and error reports are anonymous, we usually can’t tell which ones are yours. Clearing your
+        browser’s site data is the simplest way to cut the link between you and your votes.
+      </p>
+
+      <h2>Children</h2>
+      <p>
+        Joining the waitlist is for people aged 18 or over. If you’re younger, please ask a parent or guardian to
+        sign up instead. If we learn that a child’s email has been added, we’ll delete it.
+      </p>
+
+      <h2>Where your data lives</h2>
+      <p>
+        Cloudflare may store and process data on servers outside India. We only keep the small amount listed above,
+        and access to the database is limited to the person running Offcut.
+      </p>
+
+      <h2>Changes</h2>
+      <p>
+        If this policy changes, we’ll update the date at the top. If a change affects how we use your email, we’ll
+        tell waitlist members before it takes effect.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions, requests or complaints: <span class="legal__todo">[contact email]</span>. See also our
+        <a href="/terms">terms of use</a>.
+      </p>
+    </main>
+
+    <footer class="legal-footer">
+      <div class="legal-footer__inner">
+        <p>© 2026 Offcut · Built in public</p>
+        <nav aria-label="Legal">
+          <a href="/privacy" aria-current="page">Privacy</a>
+          <a href="/terms">Terms</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

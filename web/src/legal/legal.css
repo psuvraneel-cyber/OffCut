@@ -1,0 +1,208 @@
+/* Long-form reading pages: one calm column on the mist background. */
+.legal-header {
+  --logo-frame: var(--lilac);
+  background:
+    radial-gradient(50% 90% at 85% 0%, rgba(122, 77, 255, 0.4), transparent 70%),
+    var(--night);
+  color: var(--white);
+}
+
+.legal-header__inner,
+.legal,
+.legal-footer__inner {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+.legal-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+}
+
+.legal-header a {
+  color: var(--white);
+  text-decoration: none;
+}
+
+.legal-header a:focus-visible {
+  outline-color: var(--lilac);
+}
+
+.legal-header__logo {
+  font-size: var(--text-lg);
+}
+
+.legal-header__back {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: var(--text-sm);
+}
+
+.legal {
+  display: grid;
+  gap: var(--space-4);
+  padding-block: var(--space-6);
+}
+
+.legal h1 {
+  font-size: clamp(2.75rem, 8vw, 4.5rem);
+}
+
+.legal h1 em {
+  color: var(--violet);
+}
+
+.legal h2 {
+  margin-top: var(--space-4);
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  line-height: 1.1;
+}
+
+.legal h3 {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.legal p,
+.legal li {
+  color: var(--ink-soft);
+}
+
+.legal strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.legal ul {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.legal a {
+  color: var(--violet-deep);
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+}
+
+.legal__meta {
+  color: var(--ink-soft);
+}
+
+/* Impossible to miss, so a draft never goes live by accident. */
+.legal__draft {
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--violet);
+  border-radius: var(--space-3);
+  background: rgba(122, 77, 255, 0.08);
+}
+
+.legal__draft p {
+  color: var(--ink);
+}
+
+/* Blanks the owner still has to fill in. */
+.legal__todo {
+  padding: 0 0.3em;
+  border-radius: 4px;
+  background: rgba(215, 123, 255, 0.25);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.legal__summary {
+  padding: var(--space-4);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  background: var(--glass);
+}
+
+/* Data tables collapse to stacked rows on phones, so nothing scrolls sideways. */
+.legal__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.legal__table th,
+.legal__table td {
+  padding: var(--space-3) var(--space-2);
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--ink-soft);
+  text-align: left;
+  vertical-align: top;
+}
+
+.legal__table th {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .legal__table thead {
+    display: none;
+  }
+
+  .legal__table tr {
+    display: grid;
+    gap: var(--space-1);
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .legal__table td {
+    padding: 0;
+    border: 0;
+  }
+
+  .legal__table td::before {
+    content: attr(data-label) ': ';
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* The first cell is already a bold heading. */
+  .legal__table td:first-child::before {
+    content: none;
+  }
+}
+
+.legal-footer {
+  background: var(--night);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: var(--text-sm);
+}
+
+.legal-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding-block: var(--space-5);
+}
+
+.legal-footer nav {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.legal-footer a {
+  color: var(--white);
+  text-underline-offset: 0.3em;
+}
+
+.legal-footer a:focus-visible {
+  outline-color: var(--lilac);
+}
+
+.legal__summary h2 {
+  margin-top: 0;
+}
