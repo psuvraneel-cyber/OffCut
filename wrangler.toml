@@ -8,7 +8,7 @@ pages_build_output_dir = "web/dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "clipper-db"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "d0ad6cad-064b-432f-80f9-f883d91ad009"
 
 [vars]
 APP_ENV = "development"
@@ -21,7 +21,7 @@ ALLOWED_ORIGINS = "http://localhost:8788,http://localhost:5173"
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "clipper-db"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "d0ad6cad-064b-432f-80f9-f883d91ad009"
 
 [env.production.vars]
 APP_ENV = "production"
