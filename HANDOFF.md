@@ -14,7 +14,21 @@ The owner is building it in public on a new Instagram tech channel, so every mil
 
 ## Where it lives
 
-The project lives at **`C:OffCut`** (moved out of OneDrive, which kept locking files). Ignore any old copy under OneDrive. GitHub: `https://github.com/psuvraneel-cyber/offcut` (`main` there has only the README so far; nothing from this session has been pushed).
+The project lives at **`C:\OffCut`** (moved out of OneDrive, which kept locking files). Ignore any old copy under OneDrive. GitHub: `https://github.com/psuvraneel-cyber/offcut` (`main` there has only the README commit `c1389ec`).
+
+## Status right now (2026-10-25, end of the Claude session)
+
+- Local `main` is **ahead of `origin/main` and not pushed**. The last Claude commits, oldest first:
+  - `2cfc40c` head tags, `og.png`, icons, manifest, 404 page, opt-in Cloudflare Web Analytics
+  - `9aa4e58` keyboard and contrast fixes
+  - `7069696` `docs/launch.md` and root `@types/node` (fixes `npm run typecheck:api`)
+  - the HANDOFF commits after that
+- Checks that pass: `npm --prefix web run build`, `npm --prefix web run lint`, `npm run typecheck:api`, `npm run test:api` (12/12), `npx wrangler pages functions build`.
+- **Cloudflare:** `npx wrangler whoami` is logged in (OAuth, the owner's account). The account has **no Pages project and no D1 database yet**. The wrangler login lacks the Turnstile scope, so the Turnstile widget has to be made in the dashboard by the owner.
+- **Nothing is deployed.** The next step is waiting for the owner's yes: create the D1 database (`docs/launch.md` §2). Every outward step needs its own yes.
+- Still placeholders: `PRODUCTION_SITE_KEY` in `web/src/lib/turnstile.ts`, `CF_ANALYTICS_TOKEN` in `web/vite.config.ts`, both `database_id` lines in `wrangler.toml`, `GITHUB_URL`/`INSTAGRAM_URL` in `web/src/lib/site.ts`, the `legal__todo` blanks in `web/privacy.html` and `web/terms.html`, and there's no `LICENSE` file.
+- The local D1 (`.wrangler/`, ignored) has one test waitlist row, `keyboard-test@example.com`. It's local only.
+- The work continues in Antigravity from the brief in **`docs/antigravity-prompt.md`**.
 
 ## Repo map
 
