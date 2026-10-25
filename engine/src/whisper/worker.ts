@@ -18,6 +18,7 @@ import { cleanSegments, cleanWords, groupWordsIntoSegments } from "./clean";
 import { calculateRms, detectLanguage } from "./language";
 import { mergeWindowTranscripts } from "./merge";
 import { MODEL_CONFIG, maxNewTokensFor, pipelineDtype } from "./models";
+import { ortWasmPaths } from "./ort-assets";
 import {
   SileroVadRunner,
   probabilitiesToSegments,
@@ -715,9 +716,12 @@ function sameRuntime(left: WorkerRuntimeOptions, right: WorkerRuntimeOptions): b
 }
 
 function configureWasmThreads(): void {
-  const onnx = transformersEnv.backends.onnx as unknown as { wasm?: { numThreads?: number } };
+  const onnx = transformersEnv.backends.onnx as unknown as {
+    wasm?: { numThreads?: number; wasmPaths?: unknown };
+  };
   onnx.wasm ??= {};
   onnx.wasm.numThreads = 1;
+  onnx.wasm.wasmPaths = ortWasmPaths(scope.location.href);
 }
 
 async function disposePipeline(abortActive = false): Promise<void> {

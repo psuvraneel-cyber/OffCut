@@ -179,6 +179,10 @@ The ids are kept in one object at `src/whisper/models.ts`. The worker passes `re
 
 Transformers.js is configured with browser caching enabled and remote models enabled. Raw media is passed to the pipeline as a local `Float32Array`; the model loader is the only code path that fetches from the network.
 
+"fp16" on WebGPU keeps the Whisper encoder in fp32 and only the decoder in fp16, because the fp16 encoder produces garbage on WebGPU. Each Whisper call is capped at 30 output tokens per second of audio (`GENERATION_CONSTANTS` in `src/whisper/models.ts`) so runaway output stops early.
+
+ONNX Runtime's WebAssembly binary (`ort-wasm-simd-threaded.jsep.wasm`, 21.6 MB) is served from our own origin as a build asset (`src/whisper/ort-assets.ts`). Transformers.js would otherwise load it from cdn.jsdelivr.net. Model files are the only thing fetched from a third party (Hugging Face). `test/ort-assets.test.ts` checks that the file exists and that its `onnxruntime-web` version matches the one Transformers.js pins.
+
 ### Clearing the model cache
 
 Transformers.js stores model files in the Cache Storage cache named `transformers-cache`. The demo's **Clear model cache** button deletes that cache. You can also remove it in Chrome DevTools → **Application** → **Storage** → **Cache Storage**. The next run will download the selected model again.
