@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cleanSegments, cleanWords, groupWordsIntoSegments, normalizeWords } from "../src/whisper/clean";
+import { cleanSegments, cleanWords, groupWordsIntoSegments, normalizeWords, stripSpeakerDash } from "../src/whisper/clean";
 
 describe("clean transcript text", () => {
   it("removes artefacts (including [BLANK_AUDIO] and [blank_audio]), merges continuation tokens, clamps timestamps, and drops empties", () => {
@@ -83,5 +83,32 @@ describe("clean transcript text", () => {
     expect(segments[0].text).toBe("Hello.");
     expect(segments[1].text).toBe("How are you?");
     expect(segments[2].text).toBe("Pause");
+  });
+});
+
+describe("speaker-change dashes", () => {
+  it("strips a leading dash before a word, with or without a space", () => {
+    expect(stripSpeakerDash("- Oh!")).toBe("Oh!");
+    expect(stripSpeakerDash("- I'm")).toBe("I'm");
+    expect(stripSpeakerDash("-Yeah")).toBe("Yeah");
+    expect(stripSpeakerDash("— Okay.")).toBe("Okay.");
+  });
+
+  it("keeps dashes that are part of the word", () => {
+    expect(stripSpeakerDash("flip-o")).toBe("flip-o");
+    expect(stripSpeakerDash("-5")).toBe("-5");
+    expect(stripSpeakerDash("well-known")).toBe("well-known");
+  });
+
+  it("removes the dash from cleaned words and drops dash-only words", () => {
+    const words = cleanWords(
+      [
+        { text: " - Oh!", start: 0, end: 0.4 },
+        { text: " -", start: 0.4, end: 0.5 },
+        { text: " The", start: 0.5, end: 0.8 },
+      ],
+      5,
+    );
+    expect(words.map((w) => w.text)).toEqual(["Oh!", "The"]);
   });
 });

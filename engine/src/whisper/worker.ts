@@ -17,7 +17,7 @@ import type { WorkerRequest, WorkerResponse, WorkerRuntimeOptions } from "../pro
 import { cleanSegments, cleanWords, groupWordsIntoSegments } from "./clean";
 import { calculateRms, detectLanguage } from "./language";
 import { mergeWindowTranscripts } from "./merge";
-import { MODEL_CONFIG, pipelineDtype } from "./models";
+import { MODEL_CONFIG, maxNewTokensFor, pipelineDtype } from "./models";
 import {
   SileroVadRunner,
   probabilitiesToSegments,
@@ -453,6 +453,7 @@ async function runTranscription(
         return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
         language: lockedLanguage,
         task: "transcribe",
+        max_new_tokens: maxNewTokensFor(audio.length / 16000),
       });
 
       throwIfAborted(signal);
@@ -527,11 +528,13 @@ async function runTranscription(
                 return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
                 language: lockedLanguage,
                 task: "transcribe",
+                max_new_tokens: maxNewTokensFor(half1Audio.length / 16000),
               });
               const out2 = await speechPipeline(half2Audio, {
                 return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
                 language: lockedLanguage,
                 task: "transcribe",
+                max_new_tokens: maxNewTokensFor(half2Audio.length / 16000),
               });
 
               const half1Res = parseWindowOutput(out1, { index: 0, start: 0, end: half1EndRel }, lockedLanguage);

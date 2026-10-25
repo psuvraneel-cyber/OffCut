@@ -8,7 +8,19 @@ export const RETRY_CONSTANTS = {
   minRepeats: 4,
   maxPhraseLength: 4,
   maxJunkWordRatio: 0.3,
+  // The longest real word in the test-set references is 19 characters; runaway output reached 296.
+  maxWordCharacters: 40,
 } as const;
+
+const graphemes = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+
+function characterCount(text: string): number {
+  let count = 0;
+  for (const _ of graphemes.segment(text)) {
+    count++;
+  }
+  return count;
+}
 
 export type AssessmentReason =
   | "too_few_words"
@@ -28,9 +40,9 @@ export function normalizeToken(text: string): string {
   return text.toLowerCase().replace(/[^\p{L}\p{M}\p{N}]/gu, "");
 }
 
-// A word with no letters or digits ("-", "- - - -", "...") is never speech.
+// A word with no letters or digits ("-", "- - - -", "...") or an impossibly long one is never speech.
 export function isJunkWord(text: string): boolean {
-  return normalizeToken(text) === "";
+  return normalizeToken(text) === "" || characterCount(text) > RETRY_CONSTANTS.maxWordCharacters;
 }
 
 export function removeJunkWords<T extends { text: string }>(words: readonly T[]): T[] {

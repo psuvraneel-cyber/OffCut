@@ -4,12 +4,19 @@ const ARTEFACT = /^(?:\[(?:blank[_ ]audio|music|applause|laughter|silence|noise|
 
 export const MIN_WORD_SECONDS = 0.08;
 
+// Whisper marks a speaker change with a leading dash ("- Oh!", "-Yeah"). It never belongs in a caption.
+const SPEAKER_DASH = /^[-–—]+(?:\s+|(?=\p{L})|$)/u;
+
+export function stripSpeakerDash(text: string): string {
+  return text.replace(SPEAKER_DASH, "");
+}
+
 export function cleanWords(raw: readonly RawTimedText[], duration: number): Word[] {
   const merged = mergeLeadingSpaceTokens(raw);
   const words: Word[] = [];
 
   for (const item of merged) {
-    const text = item.text.trim();
+    const text = stripSpeakerDash(item.text.trim()).trim();
     if (!text || ARTEFACT.test(text)) {
       continue;
     }

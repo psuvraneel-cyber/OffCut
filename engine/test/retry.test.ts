@@ -174,3 +174,21 @@ describe("Junk output and loop cleanup", () => {
     expect(removeRepetitionLoops(words)).toEqual(words);
   });
 });
+
+describe("Runaway long words", () => {
+  it("treats a word over 40 characters as junk", () => {
+    expect(isJunkWord("क".repeat(296))).toBe(true);
+    expect(isJunkWord("a".repeat(41))).toBe(true);
+  });
+
+  it("keeps long real words, including Devanagari with combining marks", () => {
+    expect(isJunkWord("Donaudampfschifffahrtsgesellschaft")).toBe(false);
+    expect(isJunkWord("उत्तरप्रदेश")).toBe(false);
+    expect(isJunkWord("a".repeat(40))).toBe(false);
+  });
+
+  it("drops runaway words before merging", () => {
+    const kept = removeJunkWords([at("नमस्ते"), at("क".repeat(296)), at("दोस्तों")]);
+    expect(kept.map((w) => w.text)).toEqual(["नमस्ते", "दोस्तों"]);
+  });
+});

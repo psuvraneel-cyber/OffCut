@@ -27,6 +27,19 @@ export function chooseDtype(device: "webgpu" | "wasm", shaderF16: boolean): stri
   return shaderF16 ? "fp16" : "fp32";
 }
 
+// Hindi and Hinglish references need up to 15.2 Whisper tokens per second of audio, English 3–5.
+// Twice the highest real rate stops runaway output early; Whisper's decoder holds 448 tokens.
+export const GENERATION_CONSTANTS = {
+  maxTokensPerSecond: 30,
+  minNewTokens: 64,
+  maxNewTokens: 440,
+} as const;
+
+export function maxNewTokensFor(seconds: number): number {
+  const byDuration = Math.ceil(seconds * GENERATION_CONSTANTS.maxTokensPerSecond);
+  return Math.min(GENERATION_CONSTANTS.maxNewTokens, Math.max(GENERATION_CONSTANTS.minNewTokens, byDuration));
+}
+
 export type ModuleDtypes = string | { encoder_model: string; decoder_model_merged: string };
 
 // The fp16 Whisper encoder produces garbage on WebGPU (measured on base: dashes and
