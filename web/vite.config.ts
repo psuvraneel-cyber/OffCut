@@ -9,4 +9,9 @@ export default defineConfig({
     // in parent folders (there is one at C:\ on the dev machine).
     postcss: {},
   },
+  server: {
+    // The API runs separately (`npm run dev:api`, port 8788). Proxying keeps calls same-origin;
+    // the browser's Origin stays http://localhost:5173, which ALLOWED_ORIGINS already lists.
+    proxy: { '/api': 'http://localhost:8788' },
+  },
 })
