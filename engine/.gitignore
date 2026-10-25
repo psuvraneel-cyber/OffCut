@@ -1,0 +1,5 @@
+# Local manual-test leftovers (recordings and benchmark harness)
+*.wav
+manual-run.html
+manual-run.ts
+make-long-wav.py

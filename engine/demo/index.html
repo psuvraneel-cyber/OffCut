@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offcut transcription engine</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        background: #120b24;
+        color: #fff;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; background: radial-gradient(circle at top right, #2a1754, #120b24 48%); }
+      main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 72px; }
+      h1, h2, p { margin-top: 0; }
+      h1 { font-size: clamp(2rem, 5vw, 4rem); letter-spacing: -0.05em; margin-bottom: 8px; }
+      h2 { font-size: 1rem; letter-spacing: 0.08em; text-transform: uppercase; color: #cbb8ff; }
+      .lede { max-width: 720px; color: #d9d0e9; line-height: 1.6; }
+      .panel { background: rgba(27, 17, 49, 0.84); border: 1px solid #49366e; border-radius: 18px; padding: 20px; margin-top: 20px; box-shadow: 0 16px 60px rgba(0, 0, 0, 0.18); }
+      .capabilities, .controls, .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+      .metric { background: #1b1131; border: 1px solid #3b2a59; border-radius: 12px; padding: 12px; }
+      .metric strong { display: block; font-size: 1.05rem; color: #fff; }
+      .metric span { display: block; font-size: 0.78rem; color: #ab9cc7; margin-bottom: 6px; }
+      label { display: grid; gap: 6px; color: #cbb8ff; font-size: 0.85rem; }
+      select, input[type=file], button { font: inherit; }
+      select, input[type=file] { width: 100%; color: #fff; background: #261741; border: 1px solid #5a4382; border-radius: 10px; padding: 10px; }
+      input[type=file] { padding: 8px; }
+      button { border: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer; color: #150c28; background: #d9c7ff; font-weight: 700; }
+      button.secondary { color: #fff; background: #332252; border: 1px solid #5a4382; }
+      button:disabled { opacity: 0.45; cursor: not-allowed; }
+      .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+      .dropzone { position: relative; display: grid; place-items: center; min-height: 120px; text-align: center; border: 1px dashed #8062b7; border-radius: 14px; color: #cbb8ff; transition: background 140ms ease, border-color 140ms ease; overflow: hidden; }
+      .dropzone.dragging { background: #2d1c50; border-color: #fff; }
+      .dropzone input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+      video { display: block; width: 100%; max-height: 480px; margin-top: 18px; background: #08050e; border-radius: 12px; }
+      .progress-line { display: flex; justify-content: space-between; gap: 12px; color: #cbb8ff; font-size: 0.9rem; }
+      progress { width: 100%; height: 12px; accent-color: #c5a7ff; }
+      .transcript { line-height: 2.15; }
+      .word { display: inline-block; margin: 0 3px 5px 0; padding: 2px 7px; border-radius: 7px; color: #eadfff; background: #261741; border: 1px solid transparent; cursor: pointer; }
+      .word:hover { border-color: #bda0ff; }
+      .word.active { color: #150c28; background: #d9c7ff; }
+      .muted { color: #ab9cc7; }
+      .error { color: #ffb7c2; white-space: pre-wrap; }
+      .small { font-size: 0.82rem; }
+      @media (max-width: 640px) { main { width: min(100% - 20px, 1120px); padding-top: 24px; } .panel { padding: 16px; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Offcut transcription engine</h1>
+      <p class="lede">Private, on-device Whisper transcription. Choose a local media file, run the model in a worker, and click any word to seek the preview.</p>
+
+      <section class="panel">
+        <h2>Capabilities</h2>
+        <div id="capabilities" class="capabilities"><p class="muted">Checking the browser…</p></div>
+      </section>
+
+      <section class="panel">
+        <h2>Input</h2>
+        <div id="dropzone" class="dropzone">
+          <label for="file-input">Drop a video or audio file here<br /><span class="small">or click to choose one</span></label>
+          <input id="file-input" type="file" accept="audio/*,video/*,.mkv,.webm,.mp4,.mov,.mp3,.wav,.ogg,.flac" />
+        </div>
+        <p id="file-name" class="muted small">No file selected.</p>
+        <video id="preview" controls preload="metadata" hidden></video>
+      </section>
+
+      <section class="panel">
+        <h2>Run</h2>
+        <div class="controls">
+          <label>Model<select id="model"><option value="tiny">tiny</option><option value="base" selected>base</option><option value="small">small</option></select></label>
+          <label>Device<select id="device"><option value="auto" selected>auto</option><option value="webgpu">webgpu</option><option value="wasm">wasm</option></select></label>
+          <label>Language<select id="language"><option value="auto" selected>auto</option><option value="en">en</option><option value="hi">hi</option></select></label>
+        </div>
+        <div class="actions">
+          <button id="transcribe" type="button" disabled>Transcribe</button>
+          <button id="cancel" class="secondary" type="button" disabled>Cancel</button>
+          <button id="clear-cache" class="secondary" type="button">Clear model cache</button>
+        </div>
+        <div class="panel" style="margin-top: 16px; padding: 14px;">
+          <div class="progress-line"><span id="progress-stage">Idle</span><span id="elapsed">0.0 s</span></div>
+          <progress id="progress" value="0" max="1"></progress>
+          <p id="status" class="muted small">Nothing is running.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Transcript</h2>
+        <p id="transcript-meta" class="muted small">No transcript yet.</p>
+        <div id="transcript" class="transcript"><p class="muted">Words will appear here after transcription.</p></div>
+        <div class="actions"><button id="download" class="secondary" type="button" disabled>Download JSON</button></div>
+      </section>
+
+      <section class="panel">
+        <h2>Stats</h2>
+        <div id="stats" class="stats"><p class="muted">No stats yet.</p></div>
+      </section>
+
+      <p id="error" class="error"></p>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

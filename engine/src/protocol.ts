@@ -1,0 +1,40 @@
+import type { ModelSize, Progress, Transcript, TranscribeOptions } from "./types";
+
+export interface WorkerRuntimeOptions {
+  model: ModelSize;
+  device: "webgpu" | "wasm";
+  dtype: string;
+}
+
+export type WorkerRequest =
+  | {
+      type: "load";
+      requestId: number;
+      options: WorkerRuntimeOptions;
+    }
+  | {
+      type: "transcribe";
+      requestId: number;
+      file: Blob;
+      options: Omit<TranscribeOptions, "signal" | "onProgress">;
+      runtime: WorkerRuntimeOptions;
+    }
+  | {
+      type: "transcribe-pcm";
+      requestId: number;
+      pcm: Float32Array;
+      sampleRate: number;
+      duration?: number;
+      options: Omit<TranscribeOptions, "signal" | "onProgress">;
+      runtime: WorkerRuntimeOptions;
+    }
+  | { type: "cancel"; requestId: number }
+  | { type: "dispose"; requestId: number };
+
+export type WorkerResponse =
+  | { type: "progress"; requestId: number; progress: Progress }
+  | { type: "loaded"; requestId: number; runtime: WorkerRuntimeOptions }
+  | { type: "result"; requestId: number; transcript: Transcript }
+  | { type: "error"; requestId: number; name: string; message: string }
+  | { type: "disposed"; requestId: number }
+  | { type: "needs-fallback-decode"; requestId: number };
