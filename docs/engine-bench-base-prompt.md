@@ -33,7 +33,11 @@ The project root is `C:\OffCut`. All paths below are relative to it.
 
 Run these from `C:\OffCut` in a terminal.
 
-1. `git log -1 --oneline` must show the commit that added this prompt (message starting `Bench: brief and summary script`). The commit before it must be `1e7eda9 Engine: fix base on WebGPU, drop junk and loops from output`. Check with `git log -3 --oneline`.
+1. The current branch must be `main` (`git branch --show-current`), and both of these commits must be in its history. Each command must print `yes`:
+   - `git merge-base --is-ancestor 1e7eda9 HEAD && echo yes` (the `base` model fix)
+   - `git merge-base --is-ancestor 7a16a79 HEAD && echo yes` (this prompt and the summary script)
+
+   Also report the output of `git log -3 --oneline`. Later commits that only add documents are fine.
 2. `git status --short` must print nothing. If it prints anything, stop and report it.
 3. `engine/node_modules` must exist. If it's missing, run `npm --prefix engine ci` once and report that you did.
 4. `npm --prefix engine run typecheck` must finish with no errors.
