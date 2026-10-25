@@ -1,0 +1,194 @@
+.how {
+  --node: 2.5rem;
+  display: grid;
+  gap: var(--space-5);
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: calc(var(--space-6) * 1.5) var(--gutter) var(--space-6);
+}
+
+.how__intro {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+}
+
+.how__eyebrow {
+  color: var(--violet);
+}
+
+.how__title {
+  font-size: clamp(2.75rem, 6vw, 5.25rem);
+}
+
+.how__title em {
+  color: var(--violet);
+}
+
+.how__lede {
+  max-width: 28rem;
+  color: var(--ink-soft);
+  font-size: var(--text-lg);
+}
+
+/* The stations sit inside a browser-window frame: the whole pipeline lives in your tab. */
+.how__frame {
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  background: var(--glass);
+  box-shadow: 0 30px 80px -40px rgba(75, 35, 200, 0.35);
+  overflow: hidden;
+}
+
+.how__frame-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--ink-soft);
+}
+
+.how__dots {
+  display: flex;
+  gap: 6px;
+}
+
+.how__dots i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--mist-deep);
+}
+
+.how__track {
+  position: relative;
+  padding: var(--space-5) var(--space-4) var(--space-3);
+}
+
+/* Runs down through the centre of the number nodes, from the first one to the export. */
+.how__line {
+  position: absolute;
+  top: calc(var(--space-5) + var(--node) / 2);
+  bottom: var(--space-3);
+  left: calc(var(--space-4) + var(--node) / 2 - 1px);
+  width: 2px;
+  border-radius: 2px;
+  background: var(--mist-deep);
+}
+
+.how__line-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, var(--violet), var(--orchid));
+  transform-origin: top;
+}
+
+.how__stations {
+  display: grid;
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.how__station {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--node) 1fr;
+  gap: var(--space-4);
+}
+
+.how__node {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--node);
+  height: var(--node);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  background: var(--mist);
+  color: var(--ink-soft);
+  letter-spacing: 0;
+  transition:
+    background var(--dur-med) var(--ease-out),
+    color var(--dur-med) var(--ease-out),
+    border-color var(--dur-med) var(--ease-out),
+    box-shadow var(--dur-med) var(--ease-out);
+}
+
+/* Lit nodes are the default, so reduced motion (no scroll triggers) shows a finished pipeline. */
+.how__station .how__node,
+.how__station.is-lit .how__node {
+  border-color: var(--violet);
+  background: var(--violet);
+  color: var(--white);
+  box-shadow: 0 0 0 6px rgba(122, 77, 255, 0.14);
+}
+
+.how--animated .how__station:not(.is-lit) .how__node {
+  border-color: var(--glass-border);
+  background: var(--mist);
+  color: var(--ink-soft);
+  box-shadow: none;
+}
+
+.how__station-copy {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+  min-width: 0;
+  padding-top: 0.2rem;
+}
+
+.how__station-title {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  line-height: 1.05;
+}
+
+.how__station-body {
+  max-width: 34rem;
+  color: var(--ink-soft);
+}
+
+.how__tag {
+  padding: 0.3em 0.8em;
+  border-radius: var(--radius-pill);
+  background: rgba(122, 77, 255, 0.1);
+  color: var(--violet-deep);
+  font-size: 0.6875rem;
+}
+
+.how__footnote {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--glass-border);
+  color: var(--ink-soft);
+}
+
+.how__footnote strong {
+  color: var(--violet-deep);
+  font-weight: 400;
+}
+
+/* Wide screens: the intro stays put on the left while the pipeline scrolls past it. */
+@media (min-width: 900px) {
+  .how {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  .how__intro {
+    position: sticky;
+    top: var(--space-6);
+  }
+
+  .how__track {
+    padding: var(--space-5) var(--space-5) var(--space-3);
+  }
+
+  .how__line {
+    left: calc(var(--space-5) + var(--node) / 2 - 1px);
+  }
+}

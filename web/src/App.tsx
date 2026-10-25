@@ -2,7 +2,8 @@ import { useEffect } from 'react'
 import { startSmoothScroll } from './lib/smoothScroll'
 import { NavPill } from './components/NavPill'
 import { Hero } from './hero/Hero'
-import './App.css'
+import { HowItWorks } from './sections/HowItWorks'
+import { EarlyAccess } from './sections/EarlyAccess'
 
 export default function App() {
   useEffect(() => startSmoothScroll(), [])
@@ -11,10 +12,8 @@ export default function App() {
     <>
       <main>
         <Hero />
-        {/* Placeholder until the "How it works" section is built */}
-        <section id="how-it-works" className="next-placeholder">
-          <p className="mono">Next up: how it works</p>
-        </section>
+        <HowItWorks />
+        <EarlyAccess />
       </main>
       <NavPill />
     </>
