@@ -16,19 +16,17 @@ The owner is building it in public on a new Instagram tech channel, so every mil
 
 The project lives at **`C:\OffCut`** (moved out of OneDrive, which kept locking files). Ignore any old copy under OneDrive. GitHub: `https://github.com/psuvraneel-cyber/offcut` (`main` there has only the README commit `c1389ec`).
 
-## Status right now (2026-10-25, end of the Claude session)
+## Status right now (2026-10-25, live on offcut-ai.pages.dev)
 
-- Local `main` is **ahead of `origin/main` and not pushed**. The last Claude commits, oldest first:
-  - `2cfc40c` head tags, `og.png`, icons, manifest, 404 page, opt-in Cloudflare Web Analytics
-  - `9aa4e58` keyboard and contrast fixes
-  - `7069696` `docs/launch.md` and root `@types/node` (fixes `npm run typecheck:api`)
-  - the HANDOFF commits after that
-- Checks that pass: `npm --prefix web run build`, `npm --prefix web run lint`, `npm run typecheck:api`, `npm run test:api` (12/12), `npx wrangler pages functions build`.
-- **Cloudflare:** `npx wrangler whoami` is logged in (OAuth, the owner's account). The account has **no Pages project and no D1 database yet**. The wrangler login lacks the Turnstile scope, so the Turnstile widget has to be made in the dashboard by the owner.
-- **Nothing is deployed.** The next step is waiting for the owner's yes: create the D1 database (`docs/launch.md` §2). Every outward step needs its own yes.
-- Still placeholders: `PRODUCTION_SITE_KEY` in `web/src/lib/turnstile.ts`, `CF_ANALYTICS_TOKEN` in `web/vite.config.ts`, both `database_id` lines in `wrangler.toml`, `GITHUB_URL`/`INSTAGRAM_URL` in `web/src/lib/site.ts`, the `legal__todo` blanks in `web/privacy.html` and `web/terms.html`, and there's no `LICENSE` file.
-- The local D1 (`.wrangler/`, ignored) has one test waitlist row, `keyboard-test@example.com`. It's local only.
-- The work continues in Antigravity from the brief in **`docs/antigravity-prompt.md`**.
+- **The marketing site and backend are LIVE** at **`https://offcut-ai.pages.dev`** on Cloudflare Pages free tier.
+- **Database:** D1 database `clipper-db` (ID: `d0ad6cad-064b-432f-80f9-f883d91ad009`) created and migrated (`0001_init.sql` and `0002_seed_features.sql`). Both IDs set in `wrangler.toml`.
+- **Bot protection:** Production Cloudflare Turnstile widget is active with real site key in `web/src/lib/turnstile.ts` and secret key in Cloudflare Pages secrets (`TURNSTILE_SECRET_KEY`).
+- **Analytics:** Cloudflare Web Analytics active with token in `web/vite.config.ts`.
+- **Legal & License:** Owner blanks filled in `web/privacy.html` and `web/terms.html`, draft notices removed, and Apache License 2.0 with `NOTICE` added.
+- **GitHub:** Pushed to `https://github.com/psuvraneel-cyber/OffCut` on branch `main`.
+- **Smoke test verified:** Health check (`/api/health`) answers `ok:true`, roadmap features load from D1, owner verified waitlist signup lands in D1 (1 verified row), branded 404 works.
+- **Engine:** Transcription engine (Whisper in browser) committed by Omnirush (`c3d6892`).
+- **What's left for later:** Formal legal review, and before ads: custom domain, Google AdSense application, and certified consent tool.
 
 ## Repo map
 

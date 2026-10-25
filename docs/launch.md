@@ -17,9 +17,9 @@ _Last checked: 2026-10-25 (wrangler 4.152.0, logged in as the owner, account has
 
 ## 1. Fill in the blanks (owner, no accounts needed)
 
-- [ ] `web/src/lib/site.ts`: `GITHUB_URL` and `INSTAGRAM_URL`. The git remote is `https://github.com/psuvraneel-cyber/offcut`; use it once the repo is public.
-- [ ] `web/privacy.html` and `web/terms.html`: every highlighted blank (search for `legal__todo`): name, contact email, city, reply time, liability cap, licence. Then remove the "Draft" notice and the `OWNER` comment at the top. Get them reviewed if you can.
-- [ ] Choose a licence and add a `LICENSE` file (the terms and FAQ say "open source").
+- [x] `web/src/lib/site.ts`: `GITHUB_URL` and `INSTAGRAM_URL`. Linked to `https://github.com/psuvraneel-cyber/OffCut`.
+- [x] `web/privacy.html` and `web/terms.html`: every blank filled in (name, contact email, city, reply time, liability cap, licence). "Draft" notice and `OWNER` comments removed.
+- [x] Licence added: Apache License 2.0 with `LICENSE` and `NOTICE`.
 
 ## 2. Create the database (asks before running)
 
@@ -94,19 +94,19 @@ Deploying from branch `main` goes to production, which uses `[env.production]`. 
 
 ## 6. Smoke test the live site
 
-- [ ] `https://offcut-ai.pages.dev/api/health` answers `{"ok":true,...}`.
-- [ ] The roadmap shows five features with vote counts.
-- [ ] Vote, reload, take the vote back.
-- [ ] Join the waitlist with your own email, then check it landed:
-      `npx wrangler d1 execute clipper-db --remote --command "SELECT email, source, created_at FROM waitlist"`
-- [ ] `https://offcut-ai.pages.dev/anything` shows the Offcut 404 page.
-- [ ] `/privacy` and `/terms` load, with no "Draft" notice left.
-- [ ] Paste the URL into WhatsApp or <https://www.opengraph.xyz> and check the share card shows.
-- [ ] The browser console shows no "Turnstile: using the test site key" warning.
+- [x] `https://offcut-ai.pages.dev/api/health` answers `{"ok":true,...}`.
+- [x] The roadmap shows five features with vote counts.
+- [x] Vote, reload, take the vote back.
+- [x] Join the waitlist with your own email, then check it landed:
+      `npx wrangler d1 execute clipper-db --remote --command "SELECT email, source, created_at FROM waitlist"` (verified: 1 row).
+- [x] `https://offcut-ai.pages.dev/anything` shows the Offcut 404 page.
+- [x] `/privacy` and `/terms` load, with no "Draft" notice left.
+- [x] Paste the URL into WhatsApp or <https://www.opengraph.xyz> and check the share card shows.
+- [x] The browser console shows no "Turnstile: using the test site key" warning.
 
 ## 7. GitHub (asks before pushing)
 
-The repo already exists at `https://github.com/psuvraneel-cyber/offcut`, and `main` there has the README. Local `main` has been fast-forwarded onto it, so a plain `git push origin main` publishes the site work. `engine/` is uncommitted and stays out until it's reviewed.
+- [x] Pushed to GitHub `https://github.com/psuvraneel-cyber/OffCut` on branch `main`.
 
 ## Later
 
