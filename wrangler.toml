@@ -1,6 +1,6 @@
-# Cloudflare Pages project. The project name becomes the free address: https://offcut.pages.dev
+# Cloudflare Pages project. The project name becomes the free address: https://offcut-ai.pages.dev
 # (if that subdomain is taken, Cloudflare adds a suffix; update the production origins below to match).
-name = "offcut"
+name = "offcut-ai"
 compatibility_date = "2026-08-22"
 pages_build_output_dir = "web/dist"
 
@@ -25,4 +25,4 @@ database_id = "d0ad6cad-064b-432f-80f9-f883d91ad009"
 
 [env.production.vars]
 APP_ENV = "production"
-ALLOWED_ORIGINS = "https://offcut.pages.dev"
+ALLOWED_ORIGINS = "https://offcut-ai.pages.dev"
