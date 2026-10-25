@@ -30,4 +30,16 @@ Add these to the URL while testing the hero:
 
 - `?tier=high|medium|low|lite|static` forces a quality tier (otherwise it's picked from the device).
 - `?motion=reduce` behaves as if the OS asked for reduced motion.
-- `?debug` shows frame rate, tier and particle count, and exposes the engine as `window.offcutHero`.
+- `?debug` shows frame rate, tier and particle count, and exposes the engine as `window.offcutHero`
+  (and `window.offcutHeroSwitch('low')` to swap tiers by hand).
+- `?debug=slow` adds fake GPU load, so you can watch the watchdog step the hero down a tier at a time.
+
+Quality tiers (`src/hero/engine/quality.ts`): high, medium, low, lite (v1), static (CSS). Detection
+picks the start; a watchdog then times each frame (GPU timer queries where available) and, if the
+average stays above 20 ms, steps down one tier for the rest of the session. It never steps up.
+
+Other code can stop the hero's rendering, e.g. to give the clipping tool the GPU:
+
+```ts
+import { pauseHero, resumeHero } from './hero/heroControl'
+```

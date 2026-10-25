@@ -69,7 +69,7 @@ export class IntroEffects implements HeroSystem {
   private readonly spark = new THREE.Mesh(this.geometry, this.sparkMaterial)
 
   constructor(scene: THREE.Scene, anchor: THREE.Object3D) {
-    // After the world (mountains are -6…-4) but before the dye glow and the particles.
+    // After the world (mountains are -6…-4) but before the particles.
     this.veil.renderOrder = -3
     this.veil.frustumCulled = false
     this.spark.renderOrder = 1

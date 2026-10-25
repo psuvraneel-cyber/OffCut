@@ -27,8 +27,9 @@ export interface ParticleSimOptions {
   size: number
   textureType: 'float' | 'half'
   reducedMotion: boolean
-  // Reduced motion starts on the current shape rather than the dust cloud.
+  // Reduced motion, and a rebuild after the watchdog steps down, start on the current shape.
   scroll: number
+  startOnShape: boolean
   // Medium and high tiers stir the particles with a fluid instead of a direct pointer force.
   fluid: FluidSim | null
   // World → shape space, to place the particles that lie on the timeline floor before the intro.
@@ -88,8 +89,8 @@ export class ParticleSim implements HeroSystem {
     const order = [cloud, shapes.frame, shapes.phone, shapes.captions, shapes.laptop, origins]
     this.targets = order.map(texture)
 
-    // Reduced motion has no intro, so it starts on the current shape.
-    const startShape = options.reducedMotion ? order[1 + Math.round(THREE.MathUtils.clamp(options.scroll, 0, 3))] : origins
+    // No intro to play (reduced motion, or rebuilt mid-session): start on the current shape.
+    const startShape = options.startOnShape ? order[1 + Math.round(THREE.MathUtils.clamp(options.scroll, 0, 3))] : origins
     this.positionVariable = this.gpgpu.addVariable('texturePosition', positionShader, texture(startShape))
     this.velocityVariable = this.gpgpu.addVariable('textureVelocity', velocityShader, this.gpgpu.createTexture())
     this.gpgpu.setVariableDependencies(this.positionVariable, [this.positionVariable, this.velocityVariable])

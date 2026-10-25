@@ -6,6 +6,13 @@ import * as THREE from 'three'
 // only the extra energy (overlapping particles, bloom) gets the filmic highlight roll-off.
 // Assumes toneMappingExposure = 1.
 
+const ACES_INPUT = new THREE.Matrix3().set(0.59719, 0.35458, 0.04823, 0.076, 0.90834, 0.01566, 0.0284, 0.13383, 0.83777)
+const ACES_OUTPUT = new THREE.Matrix3().set(1.60475, -0.53108, -0.07367, -0.10208, 1.10813, -0.00605, -0.00327, -0.07276, 1.07602)
+const INPUT_INVERSE = ACES_INPUT.clone().invert()
+const OUTPUT_INVERSE = ACES_OUTPUT.clone().invert()
+// Column-major, like GLSL's mat3 constructor; inverted here once rather than per pixel.
+const glslMat3 = (m: THREE.Matrix3) => `mat3(${m.elements.map((v) => v.toFixed(6)).join(', ')})`
+
 // Inverse of RRTAndODTFit: y = (x² + 0.0245786x − 0.000090537) / (0.983729x² + 0.4329510x + 0.238081),
 // solved for x (the positive root).
 export const displayToScene = /* glsl */ `
@@ -22,26 +29,11 @@ vec3 srgbToLinear(vec3 c) {
 
 // Display sRGB (0..1) → the scene-linear value that tone maps back to it.
 vec3 displayToScene(vec3 srgb) {
-  const mat3 acesInput = mat3(
-    vec3(0.59719, 0.07600, 0.02840),
-    vec3(0.35458, 0.90834, 0.13383),
-    vec3(0.04823, 0.01566, 0.83777)
-  );
-  const mat3 acesOutput = mat3(
-    vec3(1.60475, -0.10208, -0.00327),
-    vec3(-0.53108, 1.10813, -0.07276),
-    vec3(-0.07367, -0.00605, 1.07602)
-  );
-  vec3 v = inverse(acesOutput) * clamp(srgbToLinear(srgb), 0.0, 0.98);
+  vec3 v = ${glslMat3(OUTPUT_INVERSE)} * clamp(srgbToLinear(srgb), 0.0, 0.98);
   v = inverseRRTAndODTFit(max(v, 0.0));
-  return max(inverse(acesInput) * v * 0.6, 0.0);
+  return max(${glslMat3(INPUT_INVERSE)} * v * 0.6, 0.0);
 }
 `
-
-const ACES_INPUT = new THREE.Matrix3().set(0.59719, 0.35458, 0.04823, 0.076, 0.90834, 0.01566, 0.0284, 0.13383, 0.83777)
-const ACES_OUTPUT = new THREE.Matrix3().set(1.60475, -0.53108, -0.07367, -0.10208, 1.10813, -0.00605, -0.00327, -0.07276, 1.07602)
-const INPUT_INVERSE = ACES_INPUT.clone().invert()
-const OUTPUT_INVERSE = ACES_OUTPUT.clone().invert()
 
 function inverseFit(y: number) {
   const a = 1 - 0.983729 * y

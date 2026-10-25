@@ -161,24 +161,24 @@ void main() {
 }
 `
 
-// The faint dye, drawn behind the particles as a soft glow.
-export const underlayVertex = /* glsl */ `
-varying vec2 vUv;
-
-void main() {
-  vUv = position.xy * 0.5 + 0.5;
-  gl_Position = vec4(position.xy, 0.0, 1.0);
-}
-`
-
-export const underlayFragment = /* glsl */ `
+// The faint dye, glowing behind the particles. The world shaders (sky, mountains, ground) add it
+// themselves, because a separate full-screen pass cost ~1 ms of fill on an integrated GPU.
+// Compiled out (returns black) unless DYE is defined.
+export const dyeGlow = /* glsl */ `
+#ifdef DYE
 uniform sampler2D tDye;
-uniform float uIntensity;
-varying vec2 vUv;
+uniform float uDyeIntensity;
+// Drawing-buffer size, to turn gl_FragCoord into canvas uv.
+uniform vec2 uDyeViewport;
 
-void main() {
-  vec3 dye = texture2D(tDye, vUv).rgb;
+vec3 dyeGlow() {
+  vec3 dye = texture2D(tDye, gl_FragCoord.xy / uDyeViewport).rgb;
   // Soft knee so dense dye glows instead of clipping.
-  gl_FragColor = vec4(dye / (1.0 + dye) * uIntensity, 1.0);
+  return dye / (1.0 + dye) * uDyeIntensity;
 }
+#else
+vec3 dyeGlow() {
+  return vec3(0.0);
+}
+#endif
 `

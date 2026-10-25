@@ -11,8 +11,9 @@ import { buildShapes, type ShapeSet } from '../particles/shapes'
 import { PostChain } from '../post/composer'
 import { GROUND_Y, Horizon } from '../world/Horizon'
 import { Sky } from '../world/Sky'
+import { FrameTimer } from './frameTimer'
 import { frameShape, type Framing } from './layout'
-import type { GpuSupport, GpuTier } from './quality'
+import { FrameWatchdog, type GpuSupport, type GpuTier } from './quality'
 import type { FrameState, HeroSystem } from './types'
 
 const FOV = 35
@@ -23,15 +24,43 @@ const FLOOR_CLEARANCE = 0.5
 // Physics runs at a fixed rate so springs behave the same at 30, 60 or 144 fps.
 const STEP = 1 / 60
 const MAX_SUBSTEPS = 2
+// ?debug=slow: extra (zero-length) simulation passes every frame, adding up to this many particle
+// updates whatever the tier (at most SLOW_MAX_STEPS passes), so every tier runs slow enough for
+// the watchdog to step down.
+const SLOW_EXTRA_PARTICLE_STEPS = 40_000_000
+const SLOW_MAX_STEPS = 600
+// The watchdog starts this long after the intro, once the scene has settled.
+const WATCHDOG_DELAY = 0.5
 
 export interface HeroEngineOptions {
   tier: GpuTier
   support: GpuSupport
   reducedMotion: boolean
+  // Rebuilt after a step down: skip the intro and start on the current shape.
+  resume: boolean
+  // ?debug=slow
+  slow: boolean
+  // Called (once) when frames keep running long; the owner swaps in a lower tier.
+  onSlow: () => void
   getIntro: () => number
   getScroll: () => number
   // Narrow layout only: px from the top of the canvas where the hero text begins.
   getTextTop: () => number
+}
+
+// One renderer per canvas, kept across engine rebuilds (StrictMode remounts, watchdog step-downs):
+// three's renderer.dispose() leaves a few internal textures and framebuffers behind, and
+// GPUComputationRenderer never frees its pass-through shader, so a fresh renderer each time leaked.
+const renderers = new WeakMap<HTMLCanvasElement, THREE.WebGLRenderer>()
+
+function rendererFor(canvas: HTMLCanvasElement) {
+  let renderer = renderers.get(canvas)
+  if (!renderer) {
+    // Throws when WebGL is unavailable; the caller falls back to the lite tier.
+    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: 'high-performance' })
+    renderers.set(canvas, renderer)
+  }
+  return renderer
 }
 
 // Shapes are built for the tier's particle count before the engine starts.
@@ -70,6 +99,12 @@ export class HeroEngine {
   private framing: Framing = { centreX: 0, centreY: 0, scale: 1, horizonY: 0, horizonLift: 1 }
   private readonly particleCount: number
   private readonly fluidGrid: number
+  private readonly sim: ParticleSim
+  private readonly watchdog = new FrameWatchdog()
+  private readonly timer: FrameTimer
+  private settledFor = 0
+  private reportedSlow = false
+  private paused = false
   private shaderError = false
   private onScreen = false
   private running = false
@@ -82,7 +117,8 @@ export class HeroEngine {
     this.options = options
 
     // Throws when WebGL is unavailable; the caller falls back to the lite tier.
-    this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: 'high-performance' })
+    this.renderer = rendererFor(canvas)
+    this.timer = new FrameTimer(this.renderer.getContext() as WebGL2RenderingContext)
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, options.tier.maxPixelRatio))
     this.renderer.setClearColor(0x000000, 0)
     // A shader that fails to compile should send us down a tier, not leave a blank hero.
@@ -126,17 +162,21 @@ export class HeroEngine {
       // The fluid only ever moves under a mouse or pen, so touch screens and reduced motion skip it.
       const { tier } = options
       const stirrable = !options.reducedMotion && window.matchMedia('(pointer: fine)').matches
-      const fluid = stirrable && tier.fluidGrid > 0 ? new FluidSim(this.renderer, this.scene, tier.fluidGrid, tier.fluidIterations) : null
+      const fluid = stirrable && tier.fluidGrid > 0 ? new FluidSim(this.renderer, tier.fluidGrid, tier.fluidIterations) : null
       const sim = new ParticleSim(this.renderer, shapes, {
         size: tier.simSize,
         textureType: options.support.textureType,
         reducedMotion: options.reducedMotion,
         scroll: this.state.scroll,
+        startOnShape: options.reducedMotion || options.resume,
         fluid,
         worldToShape,
       })
       // Order matters: the fluid steps before the particles that sample it.
-      this.systems.push(new Sky(this.renderer, this.scene, tier.aurora, options.reducedMotion), new Horizon(this.scene, tier.mountainLayers))
+      this.systems.push(
+        new Sky(this.renderer, this.scene, tier.aurora, options.reducedMotion, fluid),
+        new Horizon(this.scene, tier.mountainLayers, fluid),
+      )
       if (fluid) this.systems.push(fluid)
       this.systems.push(
         sim,
@@ -145,6 +185,7 @@ export class HeroEngine {
         new IntroEffects(this.scene, this.anchor),
       )
       this.post = new PostChain(this.renderer, this.scene, this.camera, tier, options.reducedMotion)
+      this.sim = sim
       this.particleCount = sim.count
       this.fluidGrid = fluid ? tier.fluidGrid : 0
       // Run every shader once (a zero-length step changes nothing) so compile errors surface here.
@@ -171,7 +212,8 @@ export class HeroEngine {
   describe() {
     const { tier, support } = this.options
     const fluid = this.fluidGrid ? `fluid ${this.fluidGrid}/${tier.fluidIterations}` : 'no fluid'
-    return `${tier.name} · ${this.particleCount.toLocaleString()} particles (${tier.simSize}²) · ${fluid} · ${support.textureType} · dpr ${this.state.pixelRatio}`
+    const slow = this.options.slow ? ' · SLOW (debug)' : ''
+    return `${tier.name} · ${this.particleCount.toLocaleString()} particles (${tier.simSize}²) · ${fluid} · ${support.textureType} · dpr ${this.state.pixelRatio}${slow}`
   }
 
   dispose() {
@@ -186,13 +228,22 @@ export class HeroEngine {
     for (const system of this.systems) system.dispose()
     this.systems.length = 0
     this.post?.dispose()
+    this.timer.dispose()
     this.pointer.dispose()
-    this.renderer.dispose()
+    // The renderer itself is kept for the next engine on this canvas; just drop its cached lists.
+    this.renderer.renderLists.dispose()
+    this.renderer.setRenderTarget(null)
   }
 
-  // Render only while the hero is on screen and the tab is visible.
+  // Lets the page stop the hero entirely (e.g. while the clipping tool needs the GPU).
+  setPaused(paused: boolean) {
+    this.paused = paused
+    this.updateRunning()
+  }
+
+  // Render only while the hero is on screen, the tab is visible and nobody has paused it.
   private readonly updateRunning = () => {
-    if (this.onScreen && !document.hidden) this.start()
+    if (this.onScreen && !document.hidden && !this.paused) this.start()
     else this.stop()
   }
 
@@ -217,6 +268,7 @@ export class HeroEngine {
   }
 
   private frame(dt: number) {
+    this.timer.begin()
     const s = this.state
     s.time += dt
     s.scroll = this.options.getScroll()
@@ -237,9 +289,30 @@ export class HeroEngine {
       substeps++
     }
     this.accumulator = Math.min(this.accumulator, STEP / 2)
+    if (this.options.slow) {
+      const extra = Math.min(Math.round(SLOW_EXTRA_PARTICLE_STEPS / this.sim.count), SLOW_MAX_STEPS)
+      for (let i = 0; i < extra; i++) this.sim.step(0, s)
+    }
 
     for (const system of this.systems) system.update(dt, s)
     this.post.render(dt)
+    this.timer.end()
+    this.watch(dt)
+  }
+
+  // After the intro has settled, keep an eye on what each frame costs (see frameTimer.ts) and ask
+  // for a lower tier when it runs long. Only ever down, and only once per engine (the owner
+  // replaces it).
+  private watch(dt: number) {
+    const costs = this.timer.collect(dt * 1000)
+    if (this.reportedSlow || this.state.intro < 1) return
+    this.settledFor += dt
+    if (this.settledFor < WATCHDOG_DELAY) return
+    if (costs.some((cost) => this.watchdog.sample(cost))) {
+      this.reportedSlow = true
+      // Outside this frame: the owner disposes this engine in response.
+      window.setTimeout(this.options.onSlow)
+    }
   }
 
   // Fly the camera along the scroll path (choreography/cameraPath.ts), orbiting the shape. The pitch

@@ -27,17 +27,15 @@ export class PostChain {
     this.composer = new EffectComposer(renderer, { frameBufferType: THREE.HalfFloatType })
     this.composer.addPass(new RenderPass(scene, camera))
 
+    // Everything runs in one full-screen pass after the scene (chromatic aberration is the only
+    // convolution effect, so it can share it); a separate pass cost ~0.8 ms at 1900×1200 on an iGPU.
+    const effects: Effect[] = []
     // Tiny colour fringing that grows towards the edges, like a real lens. High tier only.
     if (tier.chromaticAberration) {
-      const aberration = new ChromaticAberrationEffect({
-        offset: new THREE.Vector2(0.0011, 0.0007),
-        radialModulation: true,
-        modulationOffset: 0.3,
-      })
-      this.composer.addPass(new EffectPass(camera, aberration))
+      effects.push(
+        new ChromaticAberrationEffect({ offset: new THREE.Vector2(0.0011, 0.0007), radialModulation: true, modulationOffset: 0.3 }),
+      )
     }
-
-    const effects: Effect[] = []
     if (tier.bloom !== 'none') {
       const bloom = new BloomEffect({
         mipmapBlur: true,

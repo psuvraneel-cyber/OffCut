@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 import type { FrameState, HeroSystem } from '../engine/types'
+import { dyeGlow } from '../fluid/fluidShaders'
+import type { FluidSim } from '../fluid/FluidSim'
 import { simplexNoise3 } from '../glsl/noise'
 import { displayToScene } from '../post/tone'
 import { duskSky } from './dusk'
@@ -10,7 +12,8 @@ varying vec3 vDirection;
 void main() {
   // The dome is centred on the camera, so a vertex's position is its view direction.
   vDirection = position;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  // Pinned to the far plane, so it's drawn after the ground and skips every pixel the ground covers.
+  gl_Position = (projectionMatrix * modelViewMatrix * vec4(position, 1.0)).xyww;
 }
 `
 
@@ -68,6 +71,7 @@ varying vec3 vDirection;
 
 ${duskSky}
 ${displayToScene}
+${dyeGlow}
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -101,7 +105,7 @@ void main() {
     color += DUSK_LILAC * star * (0.5 + 0.5 * hash(id + 5.3));
   }
 
-  gl_FragColor = vec4(displayToScene(clamp(color, 0.0, 1.0)), 1.0);
+  gl_FragColor = vec4(displayToScene(clamp(color, 0.0, 1.0)) + dyeGlow(), 1.0);
 }
 `
 
@@ -114,26 +118,27 @@ export class Sky implements HeroSystem {
   private readonly animated: boolean
   private auroraDrawn = false
 
-  constructor(renderer: THREE.WebGLRenderer, scene: THREE.Scene, aurora: boolean, reducedMotion: boolean) {
+  constructor(renderer: THREE.WebGLRenderer, scene: THREE.Scene, aurora: boolean, reducedMotion: boolean, fluid: FluidSim | null) {
     this.renderer = renderer
     this.animated = !reducedMotion
     this.aurora = aurora ? this.createAurora() : null
     this.material = new THREE.ShaderMaterial({
       vertexShader,
       fragmentShader,
-      defines: aurora ? { AURORA: '' } : {},
+      defines: { ...(aurora ? { AURORA: '' } : {}), ...(fluid ? { DYE: '' } : {}) },
       uniforms: {
         uTime: { value: 0 },
         uMotion: { value: reducedMotion ? 0 : 1 },
         tAurora: { value: this.aurora?.target.texture ?? null },
+        ...fluid?.dyeUniforms,
       },
       side: THREE.BackSide,
-      depthTest: false,
       depthWrite: false,
     })
     this.mesh = new THREE.Mesh(new THREE.SphereGeometry(90, 48, 24), this.material)
     this.mesh.frustumCulled = false
-    this.mesh.renderOrder = -10
+    // Opaque, after the ground (-8), so the depth test can reject what the ground already covers.
+    this.mesh.renderOrder = -7
     scene.add(this.mesh)
   }
 

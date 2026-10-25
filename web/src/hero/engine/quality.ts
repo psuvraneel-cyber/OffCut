@@ -76,10 +76,58 @@ export function isGpuTier(tier: TierName): tier is GpuTierName {
   return tier === 'high' || tier === 'medium' || tier === 'low'
 }
 
+// The next tier down (static is the floor).
+export function lowerTier(tier: TierName): TierName {
+  return TIER_ORDER[Math.min(TIER_ORDER.indexOf(tier) + 1, TIER_ORDER.length - 1)]
+}
+
+// Once the watchdog steps down, later page loads in the same session start there too, so the
+// hero never flickers back up to a tier that already proved too slow. Storage may be blocked.
+const CAP_KEY = 'offcut:tier-cap'
+
+export function capTier(tier: TierName): TierName {
+  try {
+    const cap = TIER_ORDER.find((name) => name === window.sessionStorage.getItem(CAP_KEY))
+    return cap && TIER_ORDER.indexOf(cap) > TIER_ORDER.indexOf(tier) ? cap : tier
+  } catch {
+    return tier
+  }
+}
+
+export function rememberTierCap(tier: TierName) {
+  try {
+    window.sessionStorage.setItem(CAP_KEY, tier)
+  } catch {
+    // Not remembered: the next load just detects again.
+  }
+}
+
+// Averages frame costs (engine/frameTimer.ts) over a window of frames and reports when they run long.
+const SLOW_FRAME_MS = 20
+const WINDOW_FRAMES = 60
+
+export class FrameWatchdog {
+  private total = 0
+  private count = 0
+
+  // True once a full window has averaged slower than SLOW_FRAME_MS; then it starts a new window.
+  sample(frameMs: number): boolean {
+    if (frameMs <= 0) return false
+    this.total += frameMs
+    this.count++
+    if (this.count < WINDOW_FRAMES) return false
+    const slow = this.total / this.count > SLOW_FRAME_MS
+    this.total = 0
+    this.count = 0
+    return slow
+  }
+}
+
 export interface HeroFlags {
   // ?tier=high|medium|low|lite|static
   tier: TierName | null
-  // ?debug shows the overlay; ?debug=slow also fakes a slow GPU so the watchdog can be tested.
+  // ?debug shows the overlay; ?debug=slow also fakes a slow GPU (extra simulation work every
+  // frame) so the watchdog can be seen stepping down.
   debug: boolean
   slow: boolean
 }

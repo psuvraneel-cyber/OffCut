@@ -10,8 +10,6 @@ import {
   gradientShader,
   pressureShader,
   splatShader,
-  underlayFragment,
-  underlayVertex,
   vorticityShader,
 } from './fluidShaders'
 
@@ -26,7 +24,7 @@ const SPLAT_RADIUS = 0.0025
 const SPLAT_FORCE = 0.6
 const SPLAT_SPACING = 0.02
 const DYE_AMOUNT = 0.05
-const UNDERLAY_INTENSITY = 0.32
+const DYE_INTENSITY = 0.32
 // After this long without input the fluid is cleared and the solver sleeps.
 const IDLE_AFTER = 6
 // Dye colours: violet and orchid from tokens.css (in scene light), alternating as the pointer moves.
@@ -99,7 +97,6 @@ export class FluidSim implements HeroSystem {
   private readonly scene = new THREE.Scene()
   private readonly camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
   private readonly quad: THREE.Mesh
-  private readonly underlay: THREE.Mesh
   private readonly materials = {
     splat: pass(splatShader, { tTarget: { value: null }, uAspect: { value: 1 }, uPoint: { value: new THREE.Vector2() }, uValue: { value: new THREE.Vector3() }, uRadius: { value: SPLAT_RADIUS } }),
     advect: pass(advectShader, { tVelocity: { value: null }, tSource: { value: null }, uAspect: { value: 1 }, uDt: { value: 0 }, uDissipation: { value: 0 } }),
@@ -110,7 +107,12 @@ export class FluidSim implements HeroSystem {
     pressure: pass(pressureShader, { tPressure: { value: null }, tDivergence: { value: null }, uCell: { value: 1 } }),
     gradient: pass(gradientShader, { tVelocity: { value: null }, tPressure: { value: null }, uCell: { value: 1 } }),
   }
-  private readonly underlayMaterial: THREE.ShaderMaterial
+  // Shared with the world materials, which draw the dye glow (see dyeGlow in fluidShaders.ts).
+  readonly dyeUniforms = {
+    tDye: { value: null as THREE.Texture | null },
+    uDyeIntensity: { value: 0 },
+    uDyeViewport: { value: new THREE.Vector2(1, 1) },
+  }
   private fields: Fields | null = null
   private aspect = 1
   private lastPointer: THREE.Vector2 | null = null
@@ -120,7 +122,7 @@ export class FluidSim implements HeroSystem {
   private handledShock = 0
   private dyeIndex = 0
 
-  constructor(renderer: THREE.WebGLRenderer, scene: THREE.Scene, grid: number, iterations: number) {
+  constructor(renderer: THREE.WebGLRenderer, grid: number, iterations: number) {
     this.renderer = renderer
     this.grid = grid
     this.iterations = iterations
@@ -129,25 +131,6 @@ export class FluidSim implements HeroSystem {
     this.quad.frustumCulled = false
     this.scene.add(this.quad)
 
-    // Additive colour without touching the canvas alpha, so the page behind still shows through.
-    this.underlayMaterial = new THREE.ShaderMaterial({
-      vertexShader: underlayVertex,
-      fragmentShader: underlayFragment,
-      uniforms: { tDye: { value: null }, uIntensity: { value: UNDERLAY_INTENSITY } },
-      transparent: true,
-      depthTest: false,
-      depthWrite: false,
-      blending: THREE.CustomBlending,
-      blendSrc: THREE.OneFactor,
-      blendDst: THREE.OneFactor,
-      blendSrcAlpha: THREE.ZeroFactor,
-      blendDstAlpha: THREE.OneFactor,
-    })
-    this.underlay = new THREE.Mesh(plane, this.underlayMaterial)
-    this.underlay.frustumCulled = false
-    this.underlay.renderOrder = -1
-    this.underlay.visible = false
-    scene.add(this.underlay)
   }
 
   // Fluid velocity in canvas heights per second (xy), sampled by the particles.
@@ -156,6 +139,7 @@ export class FluidSim implements HeroSystem {
   }
 
   resize(state: FrameState) {
+    this.dyeUniforms.uDyeViewport.value.set(state.width * state.pixelRatio, state.height * state.pixelRatio)
     const aspect = state.width / state.height
     // The grid size applies to the shorter side; cells stay square.
     const height = Math.round(aspect >= 1 ? this.grid : this.grid / aspect)
@@ -204,16 +188,14 @@ export class FluidSim implements HeroSystem {
   }
 
   update() {
-    this.underlay.visible = !this.sleeping
-    this.underlayMaterial.uniforms.tDye.value = this.fields?.dye.read.texture ?? null
+    this.dyeUniforms.tDye.value = this.fields?.dye.read.texture ?? null
+    this.dyeUniforms.uDyeIntensity.value = this.sleeping ? 0 : DYE_INTENSITY
   }
 
   dispose() {
     this.disposeFields()
     for (const material of Object.values(this.materials)) material.dispose()
-    this.underlayMaterial.dispose()
     this.quad.geometry.dispose()
-    this.underlay.removeFromParent()
   }
 
   private disposeFields() {

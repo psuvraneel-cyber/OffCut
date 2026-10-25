@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 import type { FrameState, HeroSystem } from '../engine/types'
+import { dyeGlow } from '../fluid/fluidShaders'
+import type { FluidSim } from '../fluid/FluidSim'
 import { displayToScene } from '../post/tone'
 import { duskSky } from './dusk'
 
@@ -53,6 +55,7 @@ varying vec3 vWorld;
 
 ${duskSky}
 ${displayToScene}
+${dyeGlow}
 
 #define GROUND_Y ${GROUND_Y.toFixed(2)}
 #define BAR_WIDTH 0.9
@@ -100,7 +103,7 @@ void main() {
   // Rim light along the ridge.
   color += DUSK_ORCHID * exp(-max(top - y, 0.0) / 0.08) * uRim * (1.0 - uFog * 0.6);
 
-  gl_FragColor = vec4(displayToScene(clamp(color, 0.0, 0.95)), coverage);
+  gl_FragColor = vec4(displayToScene(clamp(color, 0.0, 0.95)) + dyeGlow(), coverage);
 }
 `
 
@@ -112,6 +115,7 @@ varying vec3 vWorld;
 
 ${duskSky}
 ${displayToScene}
+${dyeGlow}
 
 #define LANE 1.15
 #define PLAYHEAD_Z ${PLAYHEAD_Z.toFixed(2)}
@@ -176,7 +180,7 @@ void main() {
   color += haze * pow(1.0 - abs(dir.y), 8.0) * 0.12;
   color = mix(color, haze, 1.0 - exp(-dist * 0.022));
 
-  gl_FragColor = vec4(displayToScene(clamp(color, 0.0, 0.95)), 1.0);
+  gl_FragColor = vec4(displayToScene(clamp(color, 0.0, 0.95)) + dyeGlow(), 1.0);
 }
 `
 
@@ -187,13 +191,16 @@ export class Horizon implements HeroSystem {
   private readonly materials: THREE.ShaderMaterial[] = []
   private readonly groundMaterial: THREE.ShaderMaterial
 
-  constructor(scene: THREE.Scene, layers: number) {
+  constructor(scene: THREE.Scene, layers: number, fluid: FluidSim | null) {
+    const dye = fluid ? { defines: { DYE: '' }, uniforms: fluid.dyeUniforms } : { defines: {}, uniforms: {} }
     const ranges = layers >= RANGES.length ? RANGES : RANGES.slice(1, 1 + Math.max(layers, 1))
     ranges.forEach((range, i) => {
       const material = new THREE.ShaderMaterial({
         vertexShader: worldVertex,
         fragmentShader: mountainFragment,
+        defines: dye.defines,
         uniforms: {
+          ...dye.uniforms,
           uHeight: { value: range.height },
           uFog: { value: range.fog },
           uSoftness: { value: range.softness },
@@ -214,7 +221,8 @@ export class Horizon implements HeroSystem {
     this.groundMaterial = new THREE.ShaderMaterial({
       vertexShader: worldVertex,
       fragmentShader: groundFragment,
-      uniforms: { uOffset: { value: 0 } },
+      defines: dye.defines,
+      uniforms: { uOffset: { value: 0 }, ...dye.uniforms },
     })
     // Big enough to reach the horizon whichever way the camera swings.
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), this.groundMaterial)

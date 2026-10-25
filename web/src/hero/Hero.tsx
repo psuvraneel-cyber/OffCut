@@ -8,7 +8,20 @@ import type { LiteParticleField } from './LiteParticleField'
 import { DebugOverlay } from './engine/debug'
 import type { HeroEngine } from './engine/HeroEngine'
 import { WIDE_LAYOUT_MIN } from './engine/layout'
-import { GPU_TIERS, detectTier, isGpuTier, probeGpu, readFlags, type GpuSupport, type GpuTierName } from './engine/quality'
+import {
+  GPU_TIERS,
+  capTier,
+  detectTier,
+  isGpuTier,
+  lowerTier,
+  probeGpu,
+  readFlags,
+  rememberTierCap,
+  type GpuSupport,
+  type GpuTierName,
+  type TierName,
+} from './engine/quality'
+import { HERO_PAUSE, HERO_RESUME } from './heroControl'
 import { CustomCursor } from './interaction/CustomCursor'
 import './Hero.css'
 
@@ -46,8 +59,12 @@ export function Hero() {
     let engine: HeroEngine | null = null
     let lite: LiteParticleField | null = null
     let trail: CursorTrail | null = null
+    let support: GpuSupport | null = null
     const debug = flags.debug ? new DebugOverlay() : null
     let disposed = false
+    let paused = false
+    // Bumped by every tier start, so a slow, superseded load can't attach itself afterwards.
+    let startGeneration = 0
 
     // The lite tier's sparkle trail is for mouse and pen users; touch screens skip it.
     const startTrail = () => {
@@ -140,12 +157,15 @@ export function Hero() {
 
     // v1's particle field, for GPUs that can't run the simulation (or ?tier=lite).
     const startLite = async () => {
+      // The page may have gone away, or swapped tiers again, while this was loading.
+      const generation = ++startGeneration
       const [{ LiteParticleField }, { buildShapes }] = await Promise.all([import('./LiteParticleField'), import('./particles/shapes')])
       const lowPower = window.innerWidth < WIDE_LAYOUT_MIN || (navigator.hardwareConcurrency ?? 8) <= 4
       const shapes = await buildShapes(lowPower ? 5000 : 9000)
-      if (disposed) return
+      if (disposed || generation !== startGeneration) return
       try {
         lite = new LiteParticleField(canvas, shapes, { getIntro, getScroll, getTextTop, reducedMotion })
+        lite.setPaused(paused)
       } catch (error) {
         console.warn('Particle hero disabled: WebGL is unavailable.', error)
         showStatic()
@@ -156,35 +176,84 @@ export function Hero() {
       playLiteIntro()
     }
 
-    const startGpu = async (tier: GpuTierName, support: GpuSupport) => {
+    // `resume`: rebuilt mid-session after a step down, so skip the intro and start on the shape.
+    const startGpu = async (tier: GpuTierName, gpu: GpuSupport, resume = false) => {
+      const generation = ++startGeneration
       const { createHeroEngine } = await import('./engine/HeroEngine')
-      if (disposed) return
+      if (disposed || generation !== startGeneration) return
       let created: HeroEngine
       try {
-        created = await createHeroEngine(canvas, { tier: GPU_TIERS[tier], support, reducedMotion, getIntro, getScroll, getTextTop })
+        created = await createHeroEngine(canvas, {
+          tier: GPU_TIERS[tier],
+          support: gpu,
+          reducedMotion,
+          resume,
+          slow: flags.slow,
+          onSlow: () => stepDown(tier),
+          getIntro,
+          getScroll,
+          getTextTop,
+        })
       } catch (error) {
         console.warn('GPU hero unavailable, falling back to the lite particles.', error)
-        if (!disposed) await startLite()
+        if (!disposed && generation === startGeneration) await startLite()
         return
       }
-      if (disposed) {
+      if (disposed || generation !== startGeneration) {
         created.dispose()
         return
       }
       engine = created
+      created.setPaused(paused)
       // The GPU tiers stir a fluid instead of the sparkle trail, and get the ring cursor.
       if (!reducedMotion && window.matchMedia('(pointer: fine) and (hover: hover)').matches) setCustomCursor(true)
       debug?.set(created.describe())
       // ?debug exposes the engine for measuring from the console.
       if (debug) Object.assign(window, { offcutHero: created })
-      playIntro()
+      if (!resume) playIntro()
     }
+
+    // Tear down whatever is running and start another tier in its place.
+    const switchTo = (tier: TierName, resume: boolean) => {
+      engine?.dispose()
+      engine = null
+      lite?.dispose()
+      lite = null
+      trail?.dispose()
+      trail = null
+      setCustomCursor(false)
+      section.classList.remove('hero--static')
+      if (tier === 'static') showStatic()
+      else if (isGpuTier(tier) && support) void startGpu(tier, support, resume)
+      else void startLite()
+    }
+
+    // The watchdog saw frames running long: drop one tier, for the rest of the session.
+    const stepDown = (from: TierName) => {
+      const next = lowerTier(from)
+      console.info(`Hero: frames are running long on the ${from} tier, stepping down to ${next}.`)
+      rememberTierCap(next)
+      switchTo(next, true)
+    }
+    if (debug) Object.assign(window, { offcutHeroSwitch: (tier: TierName) => switchTo(tier, true) })
+
+    // pauseHero() / resumeHero() (heroControl.ts) stop and restart rendering on any tier.
+    const setPaused = (value: boolean) => {
+      paused = value
+      engine?.setPaused(value)
+      lite?.setPaused(value)
+    }
+    const onPause = () => setPaused(true)
+    const onResume = () => setPaused(false)
+    window.addEventListener(HERO_PAUSE, onPause)
+    window.addEventListener(HERO_RESUME, onResume)
 
     // Three.js is big, so load it after the text has painted. Probing the GPU creates a WebGL
     // context too, so that waits as well.
+    // A forced ?tier= wins; otherwise detection, capped by any step down earlier this session.
     const startTimer = window.setTimeout(() => {
-      const support = flags.tier === 'lite' || flags.tier === 'static' ? null : probeGpu()
-      const tier = flags.tier ?? detectTier(support)
+      support = flags.tier === 'lite' || flags.tier === 'static' ? null : probeGpu()
+      const tier = flags.tier ?? capTier(detectTier(support))
       if (tier === 'static') showStatic()
       else if (isGpuTier(tier) && support) void startGpu(tier, support)
       else void startLite()
@@ -195,12 +264,17 @@ export function Hero() {
       window.clearTimeout(startTimer)
       window.clearTimeout(textFallback)
       if (fastForward) window.removeEventListener('scroll', fastForward)
+      window.removeEventListener(HERO_PAUSE, onPause)
+      window.removeEventListener(HERO_RESUME, onResume)
       ctx.revert()
       engine?.dispose()
       lite?.dispose()
       trail?.dispose()
       debug?.dispose()
-      if (debug) Reflect.deleteProperty(window, 'offcutHero')
+      if (debug) {
+        Reflect.deleteProperty(window, 'offcutHero')
+        Reflect.deleteProperty(window, 'offcutHeroSwitch')
+      }
       section.classList.remove('hero--static')
       setCustomCursor(false)
     }

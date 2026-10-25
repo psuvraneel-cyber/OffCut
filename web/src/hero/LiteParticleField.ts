@@ -64,6 +64,8 @@ export class LiteParticleField {
   private pointerInside = false
   private frameId = 0
   private running = false
+  private onScreen = false
+  private paused = false
 
   constructor(canvas: HTMLCanvasElement, shapes: ShapeSet, options: Options) {
     this.canvas = canvas
@@ -103,8 +105,8 @@ export class LiteParticleField {
     this.resizeObserver = new ResizeObserver(() => this.resize())
     this.resizeObserver.observe(canvas)
     this.visibilityObserver = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) this.start()
-      else this.stop()
+      this.onScreen = entry.isIntersecting
+      this.updateRunning()
     })
     this.visibilityObserver.observe(canvas)
     window.addEventListener('pointermove', this.onPointerMove, { passive: true })
@@ -124,6 +126,17 @@ export class LiteParticleField {
     this.geometry.dispose()
     this.material.dispose()
     this.renderer.dispose()
+  }
+
+  // Lets the page stop the hero entirely (e.g. while the clipping tool needs the GPU).
+  setPaused(paused: boolean) {
+    this.paused = paused
+    this.updateRunning()
+  }
+
+  private updateRunning() {
+    if (this.onScreen && !this.paused) this.start()
+    else this.stop()
   }
 
   private start() {
