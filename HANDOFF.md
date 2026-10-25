@@ -53,7 +53,9 @@ The page order is Hero, How it works, Roadmap, FAQ, Early access, then the foote
 - **Transcription engine, Round 1: committed (`5eab197`), not pushed.** Built by Omnirush from `docs/engine-round1-prompt.md` and verified by Claude. On `tiny`/WebGPU, the full 28-min NPR episode's deletion rate fell from 19.7% to 1.6% and the 10-min loop's from 21.4% to 0.7%, with no long gaps. Short-clip error rates didn't get worse. Silence test: 0 words in silent parts. 56/56 tests pass.
   - **Known gaps (carry into Round 2):**
     - Full-episode wall time is +43% over baseline (262 s → 374 s); the brief's target was +10%. Retries and the VAD pass are the cost.
-    - The `base` model's output is still broken (1 word on the 101 s clip, 0 on the 10-min file). Not investigated.
+    - ~~The `base` model's output is broken~~ Fixed: the fp16 Whisper encoder produced garbage on WebGPU, so "fp16" now runs the encoder in fp32 and only the decoder in fp16. `base` scores 4.7% WER on `EN_PODCAST_001` (was ~100%); `tiny` 15.7% (was 15.3%). The full benchmark hasn't been re-run with `base` yet.
+    - The safety net now drops junk words (no letters or digits) and collapses repetition loops that survive a retry.
+    - `stats.speechSegments` was added to the public API without approval and shipped in `5eab197`. Decide whether to keep it.
     - With `vad: false`, the retry also runs (the brief said exact old behaviour). `retry: false` is an internal flag that restores it.
     - Hindi and Hinglish stay poor with `tiny`. That's a model limit.
     - On a repetition loop, retry acceptance takes a loop-free retry even with fewer words (a deliberate deviation).
@@ -97,7 +99,7 @@ Before ads: buy a domain, apply for AdSense, add a certified cookie-consent tool
 ## What's next
 
 1. Go live (above).
-2. Engine Round 2: fix the `base` model, bring the full-episode time within +10% of baseline, then decide whether to push `main` (the Round 1 commit is local only).
+2. Engine Round 2: re-run the full benchmark with `base`, run a head-to-head against OpusClip on clips the owner owns, bring the full-episode time within +10% of baseline, then decide whether to push `main` (Round 1 is local only).
 3. Build the tool, one station at a time, starting with the free auto-captioner:
    1. split the audio out
    2. transcribe (from `engine/`)

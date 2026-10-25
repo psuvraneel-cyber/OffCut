@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { assessWindow, hasRepetitionLoop } from "../src/whisper/retry";
+import {
+  assessWindow,
+  hasRepetitionLoop,
+  isJunkWord,
+  removeJunkWords,
+  removeRepetitionLoops,
+} from "../src/whisper/retry";
 import type { WindowTranscript } from "../src/types";
 
 function makeWindowResult(
@@ -115,5 +121,56 @@ describe("Window assessment and retry detector", () => {
 
     const assessment = assessWindow(result, speech);
     expect(assessment.flagged).toBe(false);
+  });
+});
+
+// Shapes taken from a real base-fp16 failure: dash runs and an "I'm not a "I"" loop.
+const at = (text: string, start = 1) => ({ text, start, end: start + 0.1 });
+
+describe("Junk output and loop cleanup", () => {
+  it("treats words without letters or digits as junk", () => {
+    expect(isJunkWord("-")).toBe(true);
+    expect(isJunkWord("- - - - - -")).toBe(true);
+    expect(isJunkWord("...")).toBe(true);
+    expect(isJunkWord("- I'm")).toBe(false);
+    expect(isJunkWord("\"I\"")).toBe(false);
+    expect(isJunkWord("2")).toBe(false);
+    expect(isJunkWord("नमस्ते")).toBe(false);
+  });
+
+  it("flags a window whose output is mostly dashes", () => {
+    const result = makeWindowResult([at("-"), at("- I'm"), at("- - - - - - - -")]);
+    const assessment = assessWindow(result, [{ start: 0, end: 20 }]);
+    expect(assessment.flagged).toBe(true);
+    expect(assessment.reason).toBe("junk_output");
+  });
+
+  it("does not flag normal speech with no junk", () => {
+    const words = Array.from({ length: 12 }, (_, i) => at(`word${i}`, 1.2 + i * 0.7));
+    expect(assessWindow(makeWindowResult(words), [{ start: 1, end: 10 }]).reason).not.toBe("junk_output");
+  });
+
+  it("removes junk words and keeps real ones", () => {
+    const kept = removeJunkWords([at("-"), at("Yeah,"), at("- - -"), at("it's")]);
+    expect(kept.map((w) => w.text)).toEqual(["Yeah,", "it's"]);
+  });
+
+  it("collapses a looped phrase to one copy", () => {
+    const loop = ["\"I\"", "- I'm", "not", "a"];
+    const words = [at("- The"), ...Array.from({ length: 40 }, (_, i) => at(loop[i % 4])), at("\"I")];
+    const kept = removeRepetitionLoops(words).map((w) => w.text);
+    expect(kept).toEqual(["- The", "\"I\"", "- I'm", "not", "a", "\"I"]);
+  });
+
+  it("collapses a single repeated word and leaves short repeats alone", () => {
+    const thanks = Array.from({ length: 6 }, () => at("thanks"));
+    expect(removeRepetitionLoops(thanks).map((w) => w.text)).toEqual(["thanks"]);
+    const shortRepeat = ["no", "no", "no", "stop"].map((t) => at(t));
+    expect(removeRepetitionLoops(shortRepeat).map((w) => w.text)).toEqual(["no", "no", "no", "stop"]);
+  });
+
+  it("keeps ordinary text unchanged", () => {
+    const words = ["Yeah,", "it's", "a", "Tesla", "Roadster.", "The", "one", "that", "can", "fly."].map((t) => at(t));
+    expect(removeRepetitionLoops(words)).toEqual(words);
   });
 });

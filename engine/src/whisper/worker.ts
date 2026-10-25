@@ -17,7 +17,7 @@ import type { WorkerRequest, WorkerResponse, WorkerRuntimeOptions } from "../pro
 import { cleanSegments, cleanWords, groupWordsIntoSegments } from "./clean";
 import { calculateRms, detectLanguage } from "./language";
 import { mergeWindowTranscripts } from "./merge";
-import { MODEL_CONFIG } from "./models";
+import { MODEL_CONFIG, pipelineDtype } from "./models";
 import {
   SileroVadRunner,
   probabilitiesToSegments,
@@ -28,7 +28,11 @@ import { planWindows, PLANNER_CONSTANTS, createWindows } from "./windows";
 import {
   assessWindow,
   RETRY_CONSTANTS,
+  countJunkWords,
   hasRepetitionLoop,
+  normalizeToken,
+  removeJunkWords,
+  removeRepetitionLoops,
 } from "./retry";
 
 type SpeechPipeline = (audio: Float32Array, options: Record<string, unknown>) => Promise<unknown>;
@@ -205,7 +209,7 @@ async function createPipeline(
 
   const loaded = await pipeline("automatic-speech-recognition", config.id, {
     device: runtime.device,
-    dtype: runtime.dtype as never,
+    dtype: pipelineDtype(runtime.dtype) as never,
     progress_callback: (info: unknown) => {
       const progress = normalizeDownloadProgress(info);
       if (progress) {
@@ -217,6 +221,18 @@ async function createPipeline(
   });
 
   return loaded as unknown as SpeechPipeline;
+}
+
+// Junk words and repetition loops never reach captions, even when a retry didn't fix them.
+function sanitizeWindowResult(result: WindowTranscript): WindowTranscript {
+  if (result.granularity !== "word") {
+    return result;
+  }
+  const words = removeRepetitionLoops(removeJunkWords(result.words));
+  if (words.length === result.words.length) {
+    return result;
+  }
+  return { ...result, words, segments: groupWordsIntoSegments(words) };
 }
 
 function countWordsInRegion(
@@ -522,15 +538,15 @@ async function runTranscription(
               const half2Res = parseWindowOutput(out2, { index: 1, start: half2StartRel, end: winDur }, lockedLanguage);
               const retryMerged = mergeWindowTranscripts([half1Res, half2Res], winDur);
 
-              const retryTokens = retryMerged.words
-                .map((w) => w.text.toLowerCase().replace(/[^\p{L}\p{M}\p{N}]/gu, "").trim())
-                .filter(Boolean);
+              const retryTokens = retryMerged.words.map((w) => normalizeToken(w.text)).filter(Boolean);
               const retryHasLoop = hasRepetitionLoop(retryTokens);
 
               let accepted = false;
               if (!retryHasLoop) {
                 if (assess.reason === "repetition_loop") {
                   accepted = true;
+                } else if (assess.reason === "junk_output") {
+                  accepted = countJunkWords(retryMerged.words) < countJunkWords(windowResult.words);
                 } else if (assess.flaggedRegion) {
                   const origCount = countWordsInRegion(windowResult.words, assess.flaggedRegion);
                   const retryCount = countWordsInRegion(retryMerged.words, assess.flaggedRegion);
@@ -563,7 +579,7 @@ async function runTranscription(
 
       lastTranscribeSeconds = Math.max(lastTranscribeSeconds, window.end);
       emitProgress({ stage: "transcribe", seconds: lastTranscribeSeconds, duration });
-      windowResults.push(windowResult);
+      windowResults.push(sanitizeWindowResult(windowResult));
     }
   } finally {
     clearInterval(heartbeat);

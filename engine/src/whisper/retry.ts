@@ -7,19 +7,78 @@ export const RETRY_CONSTANTS = {
   edgeGapSeconds: 4,
   minRepeats: 4,
   maxPhraseLength: 4,
+  maxJunkWordRatio: 0.3,
 } as const;
 
 export type AssessmentReason =
   | "too_few_words"
   | "stopped_early"
   | "started_late"
-  | "repetition_loop";
+  | "repetition_loop"
+  | "junk_output";
 
 export interface WindowAssessment {
   flagged: boolean;
   reason?: AssessmentReason;
   speechSeconds: number;
   flaggedRegion?: { start: number; end: number };
+}
+
+export function normalizeToken(text: string): string {
+  return text.toLowerCase().replace(/[^\p{L}\p{M}\p{N}]/gu, "");
+}
+
+// A word with no letters or digits ("-", "- - - -", "...") is never speech.
+export function isJunkWord(text: string): boolean {
+  return normalizeToken(text) === "";
+}
+
+export function removeJunkWords<T extends { text: string }>(words: readonly T[]): T[] {
+  return words.filter((word) => !isJunkWord(word.text));
+}
+
+// Keeps the first copy of any 1–maxPhraseLength word phrase repeated minRepeats or more times in a row.
+export function removeRepetitionLoops<T extends { text: string }>(
+  words: readonly T[],
+  minRepeats = RETRY_CONSTANTS.minRepeats,
+  maxPhraseLength = RETRY_CONSTANTS.maxPhraseLength,
+): T[] {
+  const tokens = words.map((word) => normalizeToken(word.text));
+  const kept: T[] = [];
+  let i = 0;
+
+  while (i < words.length) {
+    let bestSpan = 0;
+    let bestLength = 0;
+    for (let length = 1; length <= maxPhraseLength && i + length <= words.length; length++) {
+      let repeats = 1;
+      while (
+        i + (repeats + 1) * length <= words.length &&
+        tokens.slice(i + repeats * length, i + (repeats + 1) * length).join(" ") ===
+          tokens.slice(i, i + length).join(" ")
+      ) {
+        repeats++;
+      }
+      if (repeats >= minRepeats && repeats * length > bestSpan) {
+        bestSpan = repeats * length;
+        bestLength = length;
+      }
+    }
+
+    if (bestSpan > 0) {
+      kept.push(...words.slice(i, i + bestLength));
+      i += bestSpan;
+    } else {
+      kept.push(words[i]);
+      i++;
+    }
+  }
+
+  return kept;
+}
+
+export function countJunkWords(words: readonly { text: string }[]): number {
+  return words.filter((word) => isJunkWord(word.text)).length;
 }
 
 export function hasRepetitionLoop(
@@ -64,6 +123,7 @@ export function assessWindow(
   const edgeGap = constants.edgeGapSeconds ?? RETRY_CONSTANTS.edgeGapSeconds;
   const minRepeats = constants.minRepeats ?? RETRY_CONSTANTS.minRepeats;
   const maxPhraseLen = constants.maxPhraseLength ?? RETRY_CONSTANTS.maxPhraseLength;
+  const maxJunkRatio = constants.maxJunkWordRatio ?? RETRY_CONSTANTS.maxJunkWordRatio;
 
   const winStart = result.window.start;
   const winEnd = result.window.end;
@@ -84,14 +144,23 @@ export function assessWindow(
   }
 
   // 1. Check repetition loop first
-  const tokens = result.words
-    .map((w) => w.text.toLowerCase().replace(/[^\p{L}\p{M}\p{N}]/gu, "").trim())
-    .filter(Boolean);
+  const tokens = result.words.map((w) => normalizeToken(w.text)).filter(Boolean);
 
   if (hasRepetitionLoop(tokens, minRepeats, maxPhraseLen)) {
     return {
       flagged: true,
       reason: "repetition_loop",
+      speechSeconds,
+      flaggedRegion: { start: 0, end: winDuration },
+    };
+  }
+
+  // 1b. Junk output: too many words without letters or digits
+  const junkWords = countJunkWords(result.words);
+  if (junkWords > 0 && junkWords >= maxJunkRatio * result.words.length) {
+    return {
+      flagged: true,
+      reason: "junk_output",
       speechSeconds,
       flaggedRegion: { start: 0, end: winDuration },
     };

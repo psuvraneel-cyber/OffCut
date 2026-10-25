@@ -26,3 +26,14 @@ export function chooseDtype(device: "webgpu" | "wasm", shaderF16: boolean): stri
   }
   return shaderF16 ? "fp16" : "fp32";
 }
+
+export type ModuleDtypes = string | { encoder_model: string; decoder_model_merged: string };
+
+// The fp16 Whisper encoder produces garbage on WebGPU (measured on base: dashes and
+// repetition loops), so "fp16" keeps the encoder in fp32 and only the decoder in fp16.
+export function pipelineDtype(dtype: string): ModuleDtypes {
+  if (dtype === "fp16") {
+    return { encoder_model: "fp32", decoder_model_merged: "fp16" };
+  }
+  return dtype;
+}
