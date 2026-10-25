@@ -22,7 +22,6 @@ import {
   type TierName,
 } from './engine/quality'
 import { HERO_PAUSE, HERO_RESUME } from './heroControl'
-import { CustomCursor } from './interaction/CustomCursor'
 import './Hero.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -44,7 +43,6 @@ export function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const trailRef = useRef<HTMLCanvasElement>(null)
   const [active, setActive] = useState(0)
-  const [customCursor, setCustomCursor] = useState(false)
 
   useEffect(() => {
     const section = sectionRef.current
@@ -172,6 +170,8 @@ export function Hero() {
         return
       }
       startTrail()
+      // The hero draws its own pointer effects, so the site-wide trail steps aside here.
+      stage.dataset.pointerFx = 'own'
       debug?.set(`lite · ${shapes.count.toLocaleString()} particles`)
       playLiteIntro()
     }
@@ -205,8 +205,8 @@ export function Hero() {
       }
       engine = created
       created.setPaused(paused)
-      // The GPU tiers stir a fluid instead of the sparkle trail, and get the ring cursor.
-      if (!reducedMotion && window.matchMedia('(pointer: fine) and (hover: hover)').matches) setCustomCursor(true)
+      // The GPU tiers stir a fluid instead of the sparkle trail, so the site-wide trail steps aside here.
+      stage.dataset.pointerFx = 'own'
       debug?.set(created.describe())
       // ?debug exposes the engine for measuring from the console.
       if (debug) Object.assign(window, { offcutHero: created })
@@ -221,7 +221,7 @@ export function Hero() {
       lite = null
       trail?.dispose()
       trail = null
-      setCustomCursor(false)
+      delete stage.dataset.pointerFx
       section.classList.remove('hero--static')
       if (tier === 'static') showStatic()
       else if (isGpuTier(tier) && support) void startGpu(tier, support, resume)
@@ -276,54 +276,51 @@ export function Hero() {
         Reflect.deleteProperty(window, 'offcutHeroSwitch')
       }
       section.classList.remove('hero--static')
-      setCustomCursor(false)
+      delete stage.dataset.pointerFx
     }
   }, [])
 
   return (
-    <>
-      <section ref={sectionRef} className="hero" id="top" aria-labelledby="hero-title">
-        <div ref={stageRef} className="hero__stage">
-          <canvas ref={canvasRef} className="hero__canvas" aria-hidden="true" />
-          <canvas ref={trailRef} className="hero__trail" aria-hidden="true" />
+    <section ref={sectionRef} className="hero" id="top" aria-labelledby="hero-title">
+      <div ref={stageRef} className="hero__stage">
+        <canvas ref={canvasRef} className="hero__canvas" aria-hidden="true" />
+        <canvas ref={trailRef} className="hero__trail" aria-hidden="true" />
 
-          <div className="hero__copy">
-            <p className="mono hero__eyebrow hero__intro">Free · Private · Runs in your browser</p>
-            <h1 id="hero-title" className="visually-hidden">
-              Offcut turns long videos into captioned Reels for free, right in your browser
-            </h1>
-            <ol className="hero__steps">
-              {steps.map((step, i) => (
-                <li key={step.label} className="hero__step">
-                  <span className={`mono hero__step-label${i === 0 ? ' hero__intro' : ''}`}>{step.label}</span>
-                  <p className={`hero__step-title${i === 0 ? ' hero__intro' : ''}`}>{step.title}</p>
-                  <p className={`hero__step-body${i === 0 ? ' hero__intro' : ''}`}>{step.body}</p>
-                </li>
-              ))}
-            </ol>
-            <div className="hero__actions hero__intro">
-              <a className="button button--primary" href="#early-access" data-magnetic>
-                Join early access
-              </a>
-              <a className="button button--ghost" href="#how-it-works" data-magnetic>
-                How it works
-              </a>
-            </div>
-          </div>
-
-          <div className="hero__progress hero__intro" aria-hidden="true">
+        <div className="hero__copy">
+          <p className="mono hero__eyebrow hero__intro">Free · Private · Runs in your browser</p>
+          <h1 id="hero-title" className="visually-hidden">
+            Offcut turns long videos into captioned Reels for free, right in your browser
+          </h1>
+          <ol className="hero__steps">
             {steps.map((step, i) => (
-              <span key={step.label} className={i === active ? 'is-active' : undefined}>
-                {step.label}
-              </span>
+              <li key={step.label} className="hero__step">
+                <span className={`mono hero__step-label${i === 0 ? ' hero__intro' : ''}`}>{step.label}</span>
+                <p className={`hero__step-title${i === 0 ? ' hero__intro' : ''}`}>{step.title}</p>
+                <p className={`hero__step-body${i === 0 ? ' hero__intro' : ''}`}>{step.body}</p>
+              </li>
             ))}
+          </ol>
+          <div className="hero__actions hero__intro">
+            <a className="button button--primary" href="#early-access" data-magnetic>
+              Join early access
+            </a>
+            <a className="button button--ghost" href="#how-it-works" data-magnetic>
+              How it works
+            </a>
           </div>
-          <p className="mono hero__hint hero__intro" aria-hidden="true">
-            Scroll
-          </p>
         </div>
-      </section>
-      {customCursor && <CustomCursor />}
-    </>
+
+        <div className="hero__progress hero__intro" aria-hidden="true">
+          {steps.map((step, i) => (
+            <span key={step.label} className={i === active ? 'is-active' : undefined}>
+              {step.label}
+            </span>
+          ))}
+        </div>
+        <p className="mono hero__hint hero__intro" aria-hidden="true">
+          Scroll
+        </p>
+      </div>
+    </section>
   )
 }

@@ -1,4 +1,5 @@
-// A soft glow that follows the cursor across the hero, shedding sparks that drift up and fade.
+// A soft glow that follows the cursor, shedding sparks that drift up and fade. Used inside the
+// hero on the lite tier, and site-wide on a fixed canvas (components/PointerEffects.tsx).
 // Plain 2D canvas; it only animates while there is something to draw.
 
 const COLORS = ['155, 123, 255', '224, 139, 255', '111, 227, 255'] // violet, orchid, signal
@@ -38,6 +39,8 @@ export class CursorTrail {
   private readonly ctx: CanvasRenderingContext2D
   private readonly sprites: HTMLCanvasElement[]
   private readonly resizeObserver: ResizeObserver
+  // Areas that draw their own pointer effects; the trail steps aside there.
+  private readonly exclude: string | null
   private readonly sparks: Spark[] = []
   private readonly halo = { x: 0, y: 0, alpha: 0 }
   private readonly cursor = { x: 0, y: 0, inside: false }
@@ -49,10 +52,11 @@ export class CursorTrail {
   private lastTime = 0
   private running = false
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, exclude: string | null = null) {
     const ctx = canvas.getContext('2d')
     if (!ctx) throw new Error('2D canvas unavailable')
     this.canvas = canvas
+    this.exclude = exclude
     this.ctx = ctx
     this.sprites = COLORS.map(makeSprite)
 
@@ -85,7 +89,8 @@ export class CursorTrail {
     const rect = this.canvas.getBoundingClientRect()
     const x = event.clientX - rect.left
     const y = event.clientY - rect.top
-    const inside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height
+    const excluded = this.exclude !== null && event.target instanceof Element && event.target.closest(this.exclude) !== null
+    const inside = !excluded && x >= 0 && y >= 0 && x <= rect.width && y <= rect.height
     this.cursor.inside = inside
     if (!inside) {
       this.last = null

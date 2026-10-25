@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { startSmoothScroll } from './lib/smoothScroll'
 import { NavPill } from './components/NavPill'
+import { PointerEffects } from './components/PointerEffects'
 import { Hero } from './hero/Hero'
 import './App.css'
 
@@ -17,6 +18,7 @@ export default function App() {
         </section>
       </main>
       <NavPill />
+      <PointerEffects />
     </>
   )
 }

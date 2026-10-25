@@ -1,0 +1,10 @@
+/* The site-wide sparkle trail: a fixed, full-viewport canvas over the page (below the cursor and
+   above the nav), which never takes clicks. */
+.page-trail {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
