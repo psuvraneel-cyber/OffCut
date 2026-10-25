@@ -5,7 +5,7 @@ import { defineConfig, loadEnv, type Plugin } from 'vite'
 // ▼▼▼ OWNER: Cloudflare Web Analytics token (free, cookie-less). Empty = no analytics script at all.
 // Get it from Cloudflare dashboard → Analytics & Logs → Web Analytics → Add a site. See docs/launch.md.
 // It is public (it ships in the page), so committing it is fine. VITE_CF_ANALYTICS_TOKEN overrides it.
-const CF_ANALYTICS_TOKEN = ''
+const CF_ANALYTICS_TOKEN = '7ef7c08bf32e4af6ad23a785b8269fd0'
 // ▲▲▲
 
 const page = (file: string) => fileURLToPath(new URL(file, import.meta.url))
