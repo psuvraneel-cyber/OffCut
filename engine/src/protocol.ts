@@ -29,7 +29,9 @@ export type WorkerRequest =
       runtime: WorkerRuntimeOptions;
     }
   | { type: "cancel"; requestId: number }
-  | { type: "dispose"; requestId: number };
+  | { type: "dispose"; requestId: number }
+  // Destroys the worker's GPU device so tests can exercise GPU-loss recovery.
+  | { type: "lose-gpu-for-testing"; requestId: number };
 
 export type WorkerResponse =
   | { type: "progress"; requestId: number; progress: Progress }
@@ -37,4 +39,5 @@ export type WorkerResponse =
   | { type: "result"; requestId: number; transcript: Transcript }
   | { type: "error"; requestId: number; name: string; message: string }
   | { type: "disposed"; requestId: number }
+  | { type: "gpu-lost"; requestId: number; reason: string; message: string }
   | { type: "needs-fallback-decode"; requestId: number };

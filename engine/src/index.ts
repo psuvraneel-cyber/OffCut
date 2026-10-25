@@ -1,6 +1,7 @@
 import { detectCapabilities } from "./capabilities";
 import {
   AbortError,
+  GpuLostError,
   ModelLoadError,
   NoAudioTrackError,
   OutOfMemoryError,
@@ -30,7 +31,14 @@ export type {
   TranscriberOptions,
   TranscribeOptions,
 } from "./types";
-export { AbortError, ModelLoadError, NoAudioTrackError, OutOfMemoryError, UnsupportedFormatError } from "./errors";
+export {
+  AbortError,
+  GpuLostError,
+  ModelLoadError,
+  NoAudioTrackError,
+  OutOfMemoryError,
+  UnsupportedFormatError,
+} from "./errors";
 export { detectCapabilities } from "./capabilities";
 
 interface PendingRequest {
@@ -52,6 +60,7 @@ class BrowserTranscriber implements Transcriber {
   #runtime: WorkerRuntimeOptions | null = null;
   #capabilities: CapabilityReport | null = null;
   #isDisposed = false;
+  #webgpuLost = false;
 
   constructor(options: TranscriberOptions = {}) {
     this.#model = options.model ?? "base";
@@ -123,12 +132,23 @@ class BrowserTranscriber implements Transcriber {
     this.#worker.terminate();
   }
 
+  // Destroys the worker's GPU device to exercise GPU-loss recovery. Not part of the Transcriber interface.
+  loseGpuForTesting(): void {
+    this.#worker.postMessage({ type: "lose-gpu-for-testing", requestId: 0 } satisfies WorkerRequest);
+  }
+
   private createWorker(): Worker {
     const worker = new Worker(new URL("./whisper/worker.ts", import.meta.url), { type: "module" });
     worker.addEventListener("message", (event: MessageEvent<WorkerResponse>) => {
-      this.handleWorkerResponse(event.data);
+      // Ignore anything a replaced worker sent before it was terminated.
+      if (worker === this.#worker) {
+        this.handleWorkerResponse(event.data);
+      }
     });
     worker.addEventListener("error", (event) => {
+      if (worker !== this.#worker) {
+        return;
+      }
       const error = new ModelLoadError(event.message || "The transcription worker stopped unexpectedly.");
       for (const pending of this.#pending.values()) {
         pending.reject(error);
@@ -139,6 +159,11 @@ class BrowserTranscriber implements Transcriber {
   }
 
   private handleWorkerResponse(response: WorkerResponse): void {
+    if (response.type === "gpu-lost" || (response.type === "error" && response.name === "GpuLostError")) {
+      this.handleGpuLost();
+      return;
+    }
+
     const pending = this.#pending.get(response.requestId);
     if (!pending) {
       return;
@@ -171,6 +196,19 @@ class BrowserTranscriber implements Transcriber {
       pending.reject(createNamedError(response.name, response.message));
       this.#pending.delete(response.requestId);
     }
+  }
+
+  // A lost GPU device can never be used again, so the worker and its ONNX Runtime go with it.
+  // Later runs on "auto" use the CPU; an explicit device: "webgpu" still tries the GPU.
+  private handleGpuLost(): void {
+    this.#webgpuLost = true;
+    this.#runtime = null;
+    this.#worker.terminate();
+    for (const pending of this.#pending.values()) {
+      pending.reject(new GpuLostError());
+    }
+    this.#pending.clear();
+    this.#worker = this.createWorker();
   }
 
   private async handleFallbackDecode(requestId: number): Promise<void> {
@@ -331,7 +369,9 @@ class BrowserTranscriber implements Transcriber {
         ? "wasm"
         : this.#requestedDevice === "webgpu"
           ? "webgpu"
-          : this.#capabilities.recommendedDevice;
+          : this.#webgpuLost
+            ? "wasm"
+            : this.#capabilities.recommendedDevice;
     const dtype = chooseDtype(device, this.#capabilities.shaderF16);
     return { model: this.#model, device, dtype };
   }
@@ -353,6 +393,8 @@ function createNamedError(name: string, message: string): Error {
       return new OutOfMemoryError(message);
     case "ModelLoadError":
       return new ModelLoadError(message);
+    case "GpuLostError":
+      return new GpuLostError(message);
     default:
       return new Error(message);
   }

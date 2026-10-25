@@ -198,6 +198,9 @@ The public worker reports these user-facing typed errors:
 - `ModelLoadError`: model download/compile/session creation failed
 - `OutOfMemoryError`: the whole-file fallback would exceed the 200 MB cap
 - `AbortError`: the caller cancelled or disposed the run
+- `GpuLostError`: the GPU device was lost (driver reset, too little GPU memory, or another tab took it). A lost WebGPU device can never be reused, so the engine terminates its worker and starts a fresh one. With `device: "auto"`, later runs use the CPU (WASM, q8) for the rest of the page's life; with `device: "webgpu"` they try the GPU again. Expect lower accuracy on the CPU fallback.
+
+GPU memory is released in full only when the worker ends: ONNX Runtime keeps its own WebGPU device and frees its shared buffer cache only after every session, including Silero VAD's, is released. For tests, `loseGpuForTesting()` on the transcriber destroys the worker's GPU device; it isn't part of the `Transcriber` interface.
 
 ## Known limits
 

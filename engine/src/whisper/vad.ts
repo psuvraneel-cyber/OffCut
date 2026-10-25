@@ -106,6 +106,7 @@ export function probabilitiesToSegments(
 
 export class SileroVadRunner {
   #session: { run: (feeds: Record<string, unknown>) => Promise<Record<string, { data: Float32Array }>> } | null = null;
+  #model: { dispose: () => Promise<unknown> } | null = null;
   #state = new Float32Array(2 * 1 * 128);
   #context = new Float32Array(VAD_CONSTANTS.contextSize);
   #srTensor = new Tensor("int64", new BigInt64Array([BigInt(VAD_CONSTANTS.sampleRate)]), [1]);
@@ -117,8 +118,12 @@ export class SileroVadRunner {
       config: { model_type: "custom" } as never,
       device: "wasm",
       dtype: "fp32",
-    })) as unknown as { sessions: { model: { run: (feeds: Record<string, unknown>) => Promise<Record<string, { data: Float32Array }>> } } };
+    })) as unknown as {
+      sessions: { model: { run: (feeds: Record<string, unknown>) => Promise<Record<string, { data: Float32Array }>> } };
+      dispose: () => Promise<unknown>;
+    };
 
+    this.#model = model;
     this.#session = model.sessions.model;
   }
 
@@ -197,8 +202,12 @@ export class SileroVadRunner {
     this.#leftover = new Float32Array(0);
   }
 
-  dispose(): void {
+  // Releases the ONNX session. ORT clears its shared WebGPU buffer cache only when no session is left.
+  async dispose(): Promise<void> {
+    const model = this.#model;
+    this.#model = null;
     this.#session = null;
     this.reset();
+    await model?.dispose();
   }
 }

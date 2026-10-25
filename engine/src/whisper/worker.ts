@@ -5,7 +5,7 @@ import {
   NeedsFallbackDecodeError,
   type AudioWindowProvider,
 } from "../audio/decode";
-import { AbortError, ModelLoadError, toEngineError } from "../errors";
+import { AbortError, GpuLostError, ModelLoadError, toEngineError } from "../errors";
 import type {
   AudioWindow,
   RawTimedText,
@@ -57,6 +57,10 @@ let vadRunner: SileroVadRunner | null = null;
 let loadedRuntime: WorkerRuntimeOptions | null = null;
 let loadMs = 0;
 let activeRequest: ActiveRequest | null = null;
+let gpuDevice: WatchedGpuDevice | null = null;
+let gpuLost = false;
+
+const GPU_LOSS_CHECK_MS = 250;
 
 transformersEnv.useBrowserCache = true;
 transformersEnv.allowRemoteModels = true;
@@ -64,6 +68,15 @@ configureWasmThreads();
 
 scope.addEventListener("message", (event: MessageEvent<WorkerRequest>) => {
   void handleRequest(event.data);
+});
+
+// When the GPU device is lost, ORT's pending buffer reads reject inside ORT, where nothing awaits them.
+// The loss itself is reported through "gpu-lost", so these leftovers are expected noise.
+scope.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
+  const reason = event.reason as { name?: string; message?: string } | undefined;
+  if (gpuDevice && reason?.name === "AbortError" && reason.message?.includes("GPUBuffer")) {
+    event.preventDefault();
+  }
 });
 
 async function handleRequest(request: WorkerRequest): Promise<void> {
@@ -80,10 +93,19 @@ async function handleRequest(request: WorkerRequest): Promise<void> {
     return;
   }
 
+  if (request.type === "lose-gpu-for-testing") {
+    gpuDevice?.destroy();
+    return;
+  }
+
   const controller = new AbortController();
   activeRequest = { id: request.requestId, controller };
 
   try {
+    if (gpuLost) {
+      throw new GpuLostError();
+    }
+
     if (request.type === "load") {
       const runtime = await ensurePipeline(request.options, request.requestId, controller.signal);
       send({ type: "loaded", requestId: request.requestId, runtime });
@@ -131,7 +153,12 @@ async function handleRequest(request: WorkerRequest): Promise<void> {
     }
   } catch (error) {
     const normalized = toEngineError(error);
-    const typedError = normalized.name === "AbortError" ? new AbortError() : normalized;
+    const typedError =
+      normalized.name === "AbortError"
+        ? new AbortError()
+        : normalized.name !== "GpuLostError" && (await isGpuLost())
+          ? new GpuLostError()
+          : normalized;
     send({
       type: "error",
       requestId: request.requestId,
@@ -171,6 +198,9 @@ async function ensurePipeline(
     }
     loadMs = performance.now() - startedAt;
     loadedRuntime = requestedRuntime;
+    if (requestedRuntime.device === "webgpu") {
+      await watchGpuDevice();
+    }
     send({ type: "progress", requestId, progress: { stage: "load" } });
     return requestedRuntime;
   } catch (error) {
@@ -695,11 +725,50 @@ async function disposePipeline(abortActive = false): Promise<void> {
     activeRequest?.controller.abort();
     activeRequest = null;
   }
-  const disposable = speechPipeline as (SpeechPipeline & { dispose?: () => void }) | null;
-  disposable?.dispose?.();
+  const disposable = speechPipeline as (SpeechPipeline & { dispose?: () => Promise<unknown> }) | null;
+  const vad = vadRunner;
   speechPipeline = null;
   loadedRuntime = null;
-  vadRunner?.reset();
+  vadRunner = null;
+  // Release every session: ORT frees its WebGPU buffer cache only once none is left.
+  await Promise.allSettled([disposable?.dispose?.(), vad?.dispose()]);
+}
+
+interface WatchedGpuDevice {
+  lost: Promise<{ reason: string; message: string }>;
+  destroy(): void;
+}
+
+// After the first WebGPU session exists, ORT exposes the device it created as env.webgpu.device
+// (onnxruntime-web lib/wasm/jsep/backend-webgpu.ts, lines 277–282). Reading it earlier would create a new device.
+async function watchGpuDevice(): Promise<void> {
+  const onnx = transformersEnv.backends.onnx as unknown as { webgpu?: { device?: unknown } };
+  const device = (await onnx.webgpu?.device) as WatchedGpuDevice | undefined;
+  if (!device || device === gpuDevice) {
+    return;
+  }
+  gpuDevice = device;
+  void device.lost.then((info) => {
+    gpuLost = true;
+    send({
+      type: "gpu-lost",
+      requestId: activeRequest?.id ?? 0,
+      reason: info.reason,
+      message: info.message,
+    });
+  });
+}
+
+// An inference error can arrive just before the device's lost promise settles.
+async function isGpuLost(): Promise<boolean> {
+  if (gpuLost || !gpuDevice) {
+    return gpuLost;
+  }
+  const lost = await Promise.race([
+    gpuDevice.lost.then(() => true),
+    new Promise<boolean>((resolve) => setTimeout(() => resolve(false), GPU_LOSS_CHECK_MS)),
+  ]);
+  return lost;
 }
 
 function throwIfAborted(signal: AbortSignal): void {

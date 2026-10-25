@@ -33,6 +33,13 @@ export class AbortError extends Error {
   }
 }
 
+export class GpuLostError extends Error {
+  constructor(message = "The graphics processor stopped responding. Try again; the next run uses the CPU.") {
+    super(message);
+    this.name = "GpuLostError";
+  }
+}
+
 export function toEngineError(error: unknown): Error {
   if (error instanceof Error) {
     return error;

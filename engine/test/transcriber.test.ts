@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createTranscriber } from "../src/index";
-import { AbortError } from "../src/errors";
+import { AbortError, GpuLostError } from "../src/errors";
 
 class MockWorker {
   static instances: MockWorker[] = [];
@@ -173,5 +173,110 @@ describe("BrowserTranscriber lifecycle & cancellation (5a)", () => {
     } finally {
       (globalThis as unknown as { OfflineAudioContext?: unknown }).OfflineAudioContext = originalOfflineCtx;
     }
+  });
+});
+
+describe("BrowserTranscriber GPU loss", () => {
+  const originalWorker = globalThis.Worker;
+  const originalGpu = Object.getOwnPropertyDescriptor(globalThis.navigator, "gpu");
+
+  beforeEach(() => {
+    MockWorker.instances = [];
+    globalThis.Worker = MockWorker as unknown as typeof Worker;
+    Object.defineProperty(globalThis.navigator, "gpu", {
+      configurable: true,
+      value: { requestAdapter: async () => ({ features: new Set(["shader-f16"]) }) },
+    });
+  });
+
+  afterEach(() => {
+    globalThis.Worker = originalWorker;
+    if (originalGpu) {
+      Object.defineProperty(globalThis.navigator, "gpu", originalGpu);
+    } else {
+      delete (globalThis.navigator as unknown as { gpu?: unknown }).gpu;
+    }
+  });
+
+  const tick = () => new Promise((r) => setTimeout(r, 10));
+  const lastRequest = (worker: MockWorker) =>
+    worker.postedMessages.at(-1) as { type: string; requestId: number; options?: { device: string }; runtime?: { device: string } };
+
+  it("starts on WebGPU when the device is auto and a GPU is available", async () => {
+    const transcriber = createTranscriber({ model: "tiny" });
+    void transcriber.load().catch(() => {});
+    await tick();
+    expect(lastRequest(MockWorker.instances[0]).options?.device).toBe("webgpu");
+  });
+
+  it("rejects pending work with GpuLostError and replaces the worker", async () => {
+    const transcriber = createTranscriber({ model: "tiny" });
+    const loadPromise = transcriber.load();
+    await tick();
+
+    const worker = MockWorker.instances[0];
+    worker.emitMessage({ type: "gpu-lost", requestId: lastRequest(worker).requestId, reason: "unknown", message: "lost" });
+
+    await expect(loadPromise).rejects.toBeInstanceOf(GpuLostError);
+    expect(worker.terminated).toBe(true);
+    expect(MockWorker.instances).toHaveLength(2);
+    expect(MockWorker.instances[1].terminated).toBe(false);
+  });
+
+  it("treats a GpuLostError reply from the worker the same way", async () => {
+    const transcriber = createTranscriber({ model: "tiny" });
+    const loadPromise = transcriber.load();
+    await tick();
+
+    const worker = MockWorker.instances[0];
+    worker.emitMessage({ type: "error", requestId: lastRequest(worker).requestId, name: "GpuLostError", message: "lost" });
+
+    await expect(loadPromise).rejects.toBeInstanceOf(GpuLostError);
+    expect(worker.terminated).toBe(true);
+    expect(MockWorker.instances).toHaveLength(2);
+  });
+
+  it("uses the CPU for the next run after a GPU loss on auto", async () => {
+    const transcriber = createTranscriber({ model: "tiny" });
+    const first = transcriber.load();
+    await tick();
+    MockWorker.instances[0].emitMessage({ type: "gpu-lost", requestId: 1, reason: "unknown", message: "lost" });
+    await expect(first).rejects.toBeInstanceOf(GpuLostError);
+
+    void transcriber.load().catch(() => {});
+    await tick();
+    const next = lastRequest(MockWorker.instances[1]);
+    expect(next.options?.device).toBe("wasm");
+  });
+
+  it("keeps trying the GPU when the caller asked for webgpu explicitly", async () => {
+    const transcriber = createTranscriber({ model: "tiny", device: "webgpu" });
+    const first = transcriber.load();
+    await tick();
+    MockWorker.instances[0].emitMessage({ type: "gpu-lost", requestId: 1, reason: "unknown", message: "lost" });
+    await expect(first).rejects.toBeInstanceOf(GpuLostError);
+
+    void transcriber.load().catch(() => {});
+    await tick();
+    expect(lastRequest(MockWorker.instances[1]).options?.device).toBe("webgpu");
+  });
+
+  it("ignores messages from a worker that was already replaced", async () => {
+    const transcriber = createTranscriber({ model: "tiny" });
+    const first = transcriber.load();
+    await tick();
+    const oldWorker = MockWorker.instances[0];
+    oldWorker.emitMessage({ type: "gpu-lost", requestId: 1, reason: "unknown", message: "lost" });
+    await expect(first).rejects.toBeInstanceOf(GpuLostError);
+
+    const second = transcriber.load();
+    await tick();
+    oldWorker.emitMessage({ type: "gpu-lost", requestId: 2, reason: "unknown", message: "late" });
+    await tick();
+
+    expect(MockWorker.instances).toHaveLength(2);
+    const newWorker = MockWorker.instances[1];
+    newWorker.emitMessage({ type: "loaded", requestId: lastRequest(newWorker).requestId, runtime: { model: "tiny", device: "wasm", dtype: "q8" } });
+    await expect(second).resolves.toBeUndefined();
   });
 });
