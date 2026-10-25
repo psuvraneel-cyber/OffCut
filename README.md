@@ -9,6 +9,7 @@
 A free, open-source AI video clipper that runs entirely in your browser.
 No uploads, no account, no watermark.
 
+[![Live Site](https://img.shields.io/badge/live-offcut--ai.pages.dev-7a4dff?style=flat-square)](https://offcut-ai.pages.dev)
 ![Status](https://img.shields.io/badge/status-building%20in%20public-7a4dff?style=flat-square)
 ![Price](https://img.shields.io/badge/price-free-d77bff?style=flat-square)
 ![Privacy](https://img.shields.io/badge/uploads-0%20bytes-6fe3ff?style=flat-square&labelColor=120b24)
@@ -24,7 +25,7 @@ Tools like OpusClip turn a podcast or stream into short vertical clips, but they
 
 Offcut does the same job **inside your browser tab**. The AI runs on your own computer, so your video never touches a server. There's nothing for us to pay for, so it stays free.
 
-> 🚧 **Early days.** The website and backend are live in this repo. The clipping tool is being built one step at a time, in public, on Instagram.
+> 🚀 **Live site:** The marketing site, roadmap voting, and early-access waitlist are live at **[offcut-ai.pages.dev](https://offcut-ai.pages.dev)**. The clipping engine is being built one step at a time, in public, on Instagram.
 
 ## 🎬 How it works
 
@@ -67,7 +68,7 @@ The site has a public roadmap where anyone can upvote the next feature. Ideas so
 | **Website** | React 19, TypeScript, Vite 8, GSAP + ScrollTrigger, Lenis, Three.js |
 | **In-browser AI** *(in progress)* | Whisper via Transformers.js (WebGPU, WASM fallback), WebCodecs |
 | **Backend** | Cloudflare Pages Functions, D1 (SQLite), Turnstile |
-| **Hosting** | Cloudflare Pages (free tier) |
+| **Hosting** | Cloudflare Pages (free tier) · [offcut-ai.pages.dev](https://offcut-ai.pages.dev) |
 
 Budget: **₹0**. Everything heavy runs on the visitor's device, and everything else fits in free tiers.
 
