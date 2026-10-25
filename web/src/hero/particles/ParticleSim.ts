@@ -11,7 +11,9 @@ import { positionShader, velocityShader } from './simShaders'
 // Spring and noise tuning, in shape units and seconds. The lively spring is under-damped
 // (ratio ≈ 0.55), so morphs overshoot a little and settle in about 0.8 s. Reduced motion swaps in
 // a stiff, critically damped spring with no noise: shapes still change, but settle fast and calmly.
-const LIVELY = { stiffness: 80, damping: 9.5, curlStrength: 40, drift: 0.5 }
+// The resting drift is kept tiny: smooth noise bends whole edges together, so anything more makes
+// settled shapes look wobbly instead of crisp (v1 only had a slight shimmer at rest).
+const LIVELY = { stiffness: 80, damping: 9.5, curlStrength: 40, drift: 0.06 }
 const CALM = { stiffness: 260, damping: 32, curlStrength: 0, drift: 0 }
 const CURL_SCALE = 1.3
 const MAX_SPEED = 6
