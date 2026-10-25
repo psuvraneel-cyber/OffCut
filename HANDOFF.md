@@ -1,6 +1,6 @@
 # Offcut handoff
 
-_Last updated: 2026-10-25_
+_Last updated: 2026-10-25 (after the move to C:\OffCut and the live launch)_
 
 Read this first if you're picking up the project in a new session.
 
@@ -25,7 +25,7 @@ The project lives at **`C:\OffCut`** (moved out of OneDrive, which kept locking 
 - **Legal & License:** Owner blanks filled in `web/privacy.html` and `web/terms.html`, draft notices removed, and Apache License 2.0 with `NOTICE` added.
 - **GitHub:** Pushed to `https://github.com/psuvraneel-cyber/OffCut` on branch `main`.
 - **Smoke test verified:** Health check (`/api/health`) answers `ok:true`, roadmap features load from D1, owner verified waitlist signup lands in D1 (1 verified row), branded 404 works.
-- **Engine:** Transcription engine (Whisper in browser) committed by Omnirush (`c3d6892`).
+- **Engine:** Transcription engine (Whisper in browser) committed by Omnirush (`c3d6892`). Round 1 changes in `engine/` are still uncommitted (see Work in progress).
 - **What's left for later:** Formal legal review, and before ads: custom domain, Google AdSense application, and certified consent tool.
 
 ## Repo map
@@ -40,7 +40,7 @@ The project lives at **`C:\OffCut`** (moved out of OneDrive, which kept locking 
 | `web/public/` | Favicon, app icons, `og.png` share card, `site.webmanifest`, `_headers` | Committed |
 | `web/scripts/brand-images/` | HTML sources for `og.png` and the icons; `node web/scripts/brand-images/render.mjs` re-renders them with headless Edge/Chrome | Committed |
 | `functions/`, `migrations/`, `shared/`, `test/` | Backend: Cloudflare Pages Functions + D1 + Turnstile (waitlist, feedback, feature votes, clip counter, error reports) | Committed (`b02384b`), 12/12 tests pass |
-| `engine/` | Transcription engine (Whisper in the browser) | **In progress, uncommitted.** Omnirush builds it from `docs/engine-transcription-prompt.md`. Don't touch or commit it |
+| `engine/` | Transcription engine (Whisper in the browser) | Base committed (`c3d6892`). Round 1 edits (`engine/tsconfig.json`, `engine/vite.config.ts`, `engine/bench/`, `engine/test/`) are uncommitted, owned by Omnirush. Don't touch or commit them without review |
 | `docs/launch.md` | Production checklist: what's verified, go-live commands, Turnstile and Web Analytics steps | Committed |
 | `docs/backend-prompt.md` | Backend spec and API contract (source of truth) | Committed |
 | `docs/backend.md` | Backend setup and deploy guide | Committed |
@@ -50,7 +50,7 @@ The page order is Hero, How it works, Roadmap, FAQ, Early access, then the foote
 
 ## Work in progress
 
-- **Transcription engine** (Omnirush, brief: `docs/engine-transcription-prompt.md`). It works only in `engine/` and does **not** commit. Review it against the brief afterwards (run its tests and the demo on port 5180), then commit.
+- **Transcription engine, Round 1** (Omnirush, brief: `docs/engine-round1-prompt.md`). Works only in `engine/` and does **not** commit. Review it against the brief (run its tests and the demo on port 5180), then commit.
 - **Going live:** follow `docs/launch.md`. The site is built and checked; what's left needs the owner's accounts.
 
 ## Key decisions (don't undo without a reason)
@@ -90,7 +90,7 @@ Before ads: buy a domain, apply for AdSense, add a certified cookie-consent tool
 ## What's next
 
 1. Go live (above).
-2. Review and commit Omnirush's `engine/`.
+2. Review and commit Omnirush's Round 1 `engine/` changes.
 3. Build the tool, one station at a time, starting with the free auto-captioner:
    1. split the audio out
    2. transcribe (from `engine/`)
