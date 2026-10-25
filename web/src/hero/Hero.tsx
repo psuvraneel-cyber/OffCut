@@ -111,6 +111,20 @@ export function Hero() {
     }
     // Never make anyone wait for Three.js to download before they can read the hero.
     const textFallback = window.setTimeout(() => revealText(), 1500)
+    // Keyboard users don't wait for the intro either: hidden buttons can't take focus, so the first
+    // Tab would skip them. It shows the text at once, before the browser moves focus.
+    const onFirstTab = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab') return
+      window.removeEventListener('keydown', onFirstTab, true)
+      window.clearTimeout(textFallback)
+      textShown = true
+      ctx.add(() => {
+        gsap.killTweensOf('.hero__intro')
+        gsap.set('.hero__intro', { autoAlpha: 1, y: 0 })
+      })
+      fastForward?.()
+    }
+    if (!reducedMotion) window.addEventListener('keydown', onFirstTab, true)
 
     const getIntro = () => intro.value
     const getScroll = () => scroll.value
@@ -263,6 +277,7 @@ export function Hero() {
       disposed = true
       window.clearTimeout(startTimer)
       window.clearTimeout(textFallback)
+      window.removeEventListener('keydown', onFirstTab, true)
       if (fastForward) window.removeEventListener('scroll', fastForward)
       window.removeEventListener(HERO_PAUSE, onPause)
       window.removeEventListener(HERO_RESUME, onResume)

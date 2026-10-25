@@ -6,6 +6,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Keeps a focused field from scrolling in underneath the floating menu at the bottom. */
+  scroll-padding-bottom: 6rem;
 }
 
 body {
@@ -109,6 +111,31 @@ p {
 :focus-visible {
   outline: 2px solid var(--violet);
   outline-offset: 3px;
+}
+
+/* The skip target is focused by the link, but doesn't need a ring around the whole page. */
+main:focus {
+  outline: none;
+}
+
+/* Hidden until a keyboard user tabs to it. */
+.skip-link {
+  position: fixed;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 1000;
+  padding: 0.7em 1.2em;
+  border-radius: var(--radius-pill);
+  background: var(--night);
+  color: var(--white);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  outline-color: var(--lilac);
+  transform: none;
 }
 
 /* Lenis smooth scrolling */

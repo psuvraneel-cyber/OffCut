@@ -159,3 +159,8 @@
   text-transform: none;
   pointer-events: none;
 }
+
+/* The default violet ring is too faint on the night sky. */
+.hero :focus-visible {
+  outline-color: var(--lilac);
+}

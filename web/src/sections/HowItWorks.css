@@ -14,7 +14,8 @@
 }
 
 .how__eyebrow {
-  color: var(--violet);
+  /* violet-deep: plain violet is under 4.5:1 on mist at this size. */
+  color: var(--violet-deep);
 }
 
 .how__title {

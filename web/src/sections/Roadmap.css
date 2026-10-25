@@ -13,7 +13,8 @@
 }
 
 .roadmap__eyebrow {
-  color: var(--violet);
+  /* violet-deep: plain violet is under 4.5:1 on mist at this size. */
+  color: var(--violet-deep);
 }
 
 .roadmap__title {
@@ -143,10 +144,6 @@
 
 .roadmap__vote.is-voted .roadmap__arrow {
   transform: translateY(-2px);
-}
-
-.roadmap__mine {
-  opacity: 0.8;
 }
 
 .roadmap__shipped {

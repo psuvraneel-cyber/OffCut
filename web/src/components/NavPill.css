@@ -64,3 +64,8 @@
     display: none;
   }
 }
+
+/* The default violet ring is too faint on dark glass. */
+.nav-pill :focus-visible {
+  outline-color: var(--lilac);
+}

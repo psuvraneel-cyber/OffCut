@@ -14,7 +14,12 @@ export default function App() {
 
   return (
     <>
-      <main>
+      {/* Keyboard order: skip link, menu, page, footer. The menu floats at the bottom but comes first here. */}
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
+      <NavPill />
+      <main id="main" tabIndex={-1}>
         <Hero />
         <HowItWorks />
         <Roadmap />
@@ -22,7 +27,6 @@ export default function App() {
         <EarlyAccess />
       </main>
       <Footer />
-      <NavPill />
       <PointerEffects />
     </>
   )

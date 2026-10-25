@@ -59,7 +59,7 @@
   text-decoration-color: var(--orchid);
 }
 
-.footer__links a:focus-visible {
+.footer a:focus-visible {
   outline-color: var(--lilac);
 }
 
