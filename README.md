@@ -130,11 +130,15 @@ Ads will **never** be forced, never block a download, never add a watermark and 
 
 ## 📣 Built in public
 
-Every milestone is shared on Instagram as it happens. Follow along: **[@your-handle](https://www.instagram.com/your-handle/)**
+Every milestone is shared on Instagram as it happens. Follow along: **[@paulsuvraeel](https://www.instagram.com/paulsuvraeel/)**
 
-## 📄 License
+## 📄 Licence
 
-Open source. License to be added before the public launch.
+Offcut is open-source software licensed under the [Apache License 2.0](LICENSE).
+
+You are free to use, modify, and distribute the code, including for commercial purposes, provided you keep the `LICENSE` and `NOTICE` files intact and credit **Suvraneel Paul** as Offcut’s creator.
+
+The name "Offcut" and the Offcut logo are trademarks of Suvraneel Paul and are not covered by this licence: forks and derivative projects must use a different name and branding.
 
 ---
 

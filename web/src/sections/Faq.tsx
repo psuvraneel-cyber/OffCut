@@ -55,8 +55,8 @@ const questions: { q: string; a: ReactNode }[] = [
     q: 'Is it open source?',
     a: (
       <p>
-        Yes. The code will be public on GitHub, so anyone can check that videos stay on the device, suggest
-        fixes or run their own copy. It’s being built in public on Instagram, one step at a time.
+        Yes. The code is public on GitHub under the Apache-2.0 licence, so anyone can check that videos stay on the
+        device, suggest fixes or run their own copy. It’s being built in public on Instagram, one step at a time.
       </p>
     ),
   },
