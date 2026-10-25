@@ -45,7 +45,7 @@ Seven steps, all on your device:
 ## 🔒 Privacy, by design
 
 - **Your video never leaves your device.** There's no upload endpoint at all.
-- **No cookies, no analytics, no tracking.** The backend never stores IP addresses.
+- **No cookies, no tracking.** The backend never stores IP addresses. Visits are counted with cookie-less Cloudflare Web Analytics.
 - **Anonymous by default.** Feature votes use a random browser ID; the clip counter is just a total.
 - **Your email only with consent.** The waitlist stores an address only if you tick the box.
 - AI models download once from Hugging Face's CDN and are cached by your browser.

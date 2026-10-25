@@ -206,3 +206,55 @@
 .legal__summary h2 {
   margin-top: 0;
 }
+
+/* 404 page: one centred message, with the footer pinned to the bottom of short screens. */
+.not-found-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.not-found {
+  display: grid;
+  flex: 1;
+  align-content: center;
+  justify-items: start;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--gutter);
+}
+
+.not-found__code {
+  color: var(--violet-deep);
+}
+
+.not-found h1 {
+  font-size: clamp(2.75rem, 8vw, 4.5rem);
+}
+
+.not-found h1 em {
+  color: var(--violet);
+}
+
+.not-found__lede {
+  max-width: 32rem;
+  color: var(--ink-soft);
+  font-size: var(--text-lg);
+}
+
+.not-found__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.not-found__secondary {
+  border-color: var(--glass-border);
+  background: var(--glass);
+  color: var(--ink);
+}
+
+.not-found__secondary:hover {
+  border-color: var(--violet);
+}

@@ -1,0 +1,185 @@
+<!doctype html>
+<!-- The 1200×630 share card (public/og.png). Rendered by render.mjs; open it in a browser to tweak. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Offcut share card</title>
+    <style>
+      @font-face {
+        font-family: 'Instrument Serif';
+        src: url('../../node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2');
+      }
+      @font-face {
+        font-family: 'Instrument Serif';
+        font-style: italic;
+        src: url('../../node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2');
+      }
+      @font-face {
+        font-family: 'Inter';
+        font-weight: 100 900;
+        src: url('../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2');
+      }
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: url('../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2');
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+
+      .card {
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background:
+          radial-gradient(60% 80% at 82% 70%, rgba(122, 77, 255, 0.55), transparent 70%),
+          radial-gradient(40% 50% at 95% 15%, rgba(215, 123, 255, 0.35), transparent 70%),
+          radial-gradient(50% 60% at 0% 100%, rgba(75, 35, 200, 0.45), transparent 70%),
+          #120b24;
+        color: #f1ecff;
+        font-family: 'Inter', sans-serif;
+      }
+
+      canvas {
+        position: absolute;
+        inset: 0;
+      }
+
+      .copy {
+        position: absolute;
+        left: 80px;
+        top: 76px;
+        width: 640px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .brand svg {
+        width: 92px;
+        height: 92px;
+        overflow: visible;
+      }
+
+      .brand__word {
+        font-family: 'Instrument Serif', serif;
+        font-size: 96px;
+        line-height: 1;
+        letter-spacing: -0.01em;
+      }
+
+      h1 {
+        margin: 64px 0 0;
+        font-family: 'Instrument Serif', serif;
+        font-weight: 400;
+        font-size: 84px;
+        line-height: 0.98;
+        letter-spacing: -0.02em;
+      }
+
+      h1 em {
+        color: #d77bff;
+      }
+
+      .sub {
+        margin: 28px 0 0;
+        font-size: 30px;
+        color: #c9b8ff;
+      }
+
+      .url {
+        position: absolute;
+        left: 80px;
+        bottom: 56px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 20px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #6fe3ff;
+      }
+
+      /* A wide video frame with the tall clip lifted out of it: the logo idea, at poster size. */
+      .reel {
+        position: absolute;
+        right: 70px;
+        top: 112px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <canvas id="dust" width="1200" height="630"></canvas>
+
+      <div class="copy">
+        <div class="brand">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <g transform="translate(1.5 5)">
+              <rect x="4" y="20" width="44" height="28" rx="5" fill="none" stroke="#c9b8ff" stroke-width="3.5" />
+              <rect x="30" y="20" width="12" height="28" fill="none" stroke="#c9b8ff" stroke-width="1.5" stroke-dasharray="2 3" opacity="0.6" />
+              <g transform="rotate(8 46 24)">
+                <rect x="37" y="6" width="19" height="34" rx="4" fill="#7a4dff" />
+                <path d="M43.5 17v12l9-6z" fill="#f1ecff" />
+              </g>
+            </g>
+          </svg>
+          <span class="brand__word">offcut</span>
+        </div>
+        <h1>Long videos in.<br /><em>Reels out.</em></h1>
+        <p class="sub">Free, in your browser.</p>
+      </div>
+
+      <svg class="reel" width="400" height="420" viewBox="0 0 400 420" aria-hidden="true">
+        <rect x="10" y="150" width="330" height="190" rx="22" fill="rgba(241,236,255,0.04)" stroke="#c9b8ff" stroke-width="4" />
+        <rect x="150" y="150" width="104" height="190" fill="none" stroke="#c9b8ff" stroke-width="2" stroke-dasharray="6 9" opacity="0.55" />
+        <!-- timeline ticks under the wide frame -->
+        <g stroke="#c9b8ff" stroke-width="3" opacity="0.45">
+          <line x1="10" y1="372" x2="340" y2="372" />
+          <line x1="150" y1="362" x2="150" y2="382" />
+          <line x1="254" y1="362" x2="254" y2="382" />
+        </g>
+        <g transform="rotate(9 250 200)">
+          <rect x="190" y="30" width="150" height="266" rx="18" fill="#7a4dff" />
+          <rect x="190" y="30" width="150" height="266" rx="18" fill="url(#sheen)" />
+          <path d="M248 132v62l52-31z" fill="#f1ecff" />
+          <!-- caption bars -->
+          <rect x="210" y="236" width="110" height="14" rx="7" fill="#f1ecff" />
+          <rect x="226" y="258" width="78" height="14" rx="7" fill="#6fe3ff" />
+        </g>
+        <defs>
+          <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#d77bff" stop-opacity="0.55" />
+            <stop offset="0.6" stop-color="#7a4dff" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <p class="url">offcut.pages.dev · open source · nothing uploaded</p>
+    </div>
+
+    <script>
+      // A light dusting of particles, echoing the hero. Seeded so every render matches.
+      const ctx = document.getElementById('dust').getContext('2d')
+      let seed = 7
+      const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646
+      for (let i = 0; i < 420; i++) {
+        const x = rand() * 1200
+        const y = rand() * 630
+        const r = rand() * 1.6 + 0.3
+        const warm = rand() < 0.35
+        ctx.fillStyle = warm ? `rgba(215,123,255,${0.15 + rand() * 0.45})` : `rgba(201,184,255,${0.08 + rand() * 0.35})`
+        ctx.beginPath()
+        ctx.arc(x, y, r, 0, Math.PI * 2)
+        ctx.fill()
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<!-- App icons from the Offcut mark (same paths as src/components/Logo.tsx), on the night background.
+     ?size=180 sets the square size; ?maskable keeps the mark inside the 80% safe zone Android crops to. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Offcut icon</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        overflow: hidden;
+        background: #120b24;
+      }
+
+      .icon {
+        display: grid;
+        place-items: center;
+        background: radial-gradient(70% 70% at 70% 30%, rgba(122, 77, 255, 0.45), transparent 75%), #120b24;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="icon">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <g transform="translate(1.5 5)">
+          <rect x="4" y="20" width="44" height="28" rx="5" fill="none" stroke="#c9b8ff" stroke-width="4.5" />
+          <g transform="rotate(8 46 24)">
+            <rect x="37" y="6" width="19" height="34" rx="4" fill="#7a4dff" />
+            <path d="M43.5 17v12l9-6z" fill="#f1ecff" />
+          </g>
+        </g>
+      </svg>
+    </div>
+    <script>
+      const params = new URLSearchParams(location.search)
+      const size = Number(params.get('size')) || 180
+      const mark = size * (params.has('maskable') ? 0.62 : 0.8)
+      Object.assign(document.querySelector('.icon').style, { width: `${size}px`, height: `${size}px` })
+      Object.assign(document.querySelector('svg').style, { width: `${mark}px`, height: `${mark}px` })
+    </script>
+  </body>
+</html>

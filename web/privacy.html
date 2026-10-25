@@ -2,11 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#120b24" />
-    <meta name="description" content="What Offcut stores, what it never sees, and your rights. In plain language." />
     <title>Privacy · Offcut</title>
+    <meta name="description" content="What Offcut stores, what it never sees, and your rights. In plain language." />
+    <link rel="canonical" href="https://offcut.pages.dev/privacy" />
+    <meta name="theme-color" content="#120b24" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Link previews (Instagram, WhatsApp, X, LinkedIn...). og:image has to be an absolute URL. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Offcut" />
+    <meta property="og:locale" content="en_IN" />
+    <meta property="og:url" content="https://offcut.pages.dev/privacy" />
+    <meta property="og:title" content="Privacy policy · Offcut" />
+    <meta property="og:description" content="Long videos in. Reels out. Free, in your browser." />
+    <meta property="og:image" content="https://offcut.pages.dev/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Offcut. Long videos in. Reels out. Free, in your browser." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Privacy policy · Offcut" />
+    <meta name="twitter:description" content="Long videos in. Reels out. Free, in your browser." />
+    <meta name="twitter:image" content="https://offcut.pages.dev/og.png" />
+    <meta name="twitter:image:alt" content="Offcut. Long videos in. Reels out. Free, in your browser." />
     <script type="module" src="/src/legal/legal.ts"></script>
   </head>
   <body>
@@ -56,7 +77,7 @@
           <li><strong>Your videos never leave your device.</strong> All the AI runs inside your browser.</li>
           <li>We only keep your email if you join the waitlist and tick the consent box.</li>
           <li>Votes, the clips counter and error reports are anonymous.</li>
-          <li>We don’t store IP addresses, we don’t set cookies and we don’t run analytics or tracking.</li>
+          <li>We don’t store IP addresses, we don’t set cookies and we don’t track you. We only count visits, anonymously.</li>
           <li>Ads may come later. When they do, we’ll ask about ad cookies first where the law requires it.</li>
         </ul>
       </div>
@@ -134,8 +155,8 @@
         </tbody>
       </table>
       <p>
-        <strong>What we never store:</strong> IP addresses, browser “user agent” strings, cookies, or any kind of
-        analytics or fingerprint. Our server never sends email by itself and never sells or shares your data.
+        <strong>What we never store:</strong> IP addresses, browser “user agent” strings, cookies, or any
+        fingerprint. Our server never sends email by itself and never sells or shares your data.
       </p>
 
       <h2>On your device</h2>
@@ -143,6 +164,15 @@
         Offcut sets <strong>no cookies</strong>. To make voting work without an account, your browser keeps a few small
         items in its local storage: a random ID (sent only when you vote, so you can’t vote twice), plus the list of
         features you voted for and the time of your last vote (both never sent). Clearing your browser’s site data deletes both.
+      </p>
+
+      <!-- OWNER: this section is true once CF_ANALYTICS_TOKEN is set in web/vite.config.ts. Remove it if you never turn analytics on. -->
+      <h2>Counting visits</h2>
+      <p>
+        To know roughly how many people visit, we use <strong>Cloudflare Web Analytics</strong>. It sets no cookies,
+        doesn’t use local storage and doesn’t fingerprint your browser. We only see totals, such as page views, which
+        pages are popular, the country and the browser type, never anything that identifies you. See
+        <a href="https://www.cloudflare.com/web-analytics/">how Cloudflare Web Analytics works</a>.
       </p>
 
       <h2>Cloudflare and Turnstile</h2>
