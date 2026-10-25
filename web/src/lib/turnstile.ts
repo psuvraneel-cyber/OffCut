@@ -6,7 +6,7 @@ const TEST_SITE_KEY = '1x00000000000000000000AA'
 
 // ▼▼▼ REAL SITE KEY GOES HERE before going live (Cloudflare dashboard → Turnstile → your widget).
 // It is public, so committing it is fine. The matching secret goes in `wrangler pages secret put`.
-const PRODUCTION_SITE_KEY = ''
+const PRODUCTION_SITE_KEY = '0x4AAAAAAFlSUPGEQA5xITXn'
 // ▲▲▲
 
 const isLocalHost = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)
