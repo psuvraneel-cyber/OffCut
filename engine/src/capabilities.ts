@@ -25,7 +25,8 @@ export async function detectCapabilities(): Promise<CapabilityReport> {
   }
 
   const recommendedDevice: "webgpu" | "wasm" = webgpu ? "webgpu" : "wasm";
-  const recommendedModel: ModelSize = webgpu ? "base" : "tiny";
+  // base on WASM (q8, 77 MB) matched its WebGPU accuracy; tiny on WASM (q8) fell into repetition loops.
+  const recommendedModel: ModelSize = "base";
 
   return {
     webgpu,

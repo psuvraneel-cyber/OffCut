@@ -6,10 +6,17 @@ export const RETRY_CONSTANTS = {
   minWordsPerSpeechSecond: 0.8,
   edgeGapSeconds: 4,
   minRepeats: 4,
-  maxPhraseLength: 4,
+  // tiny on WASM (q8) looped a 7-word phrase, so loops are searched up to 12 words.
+  maxPhraseLength: 12,
   maxJunkWordRatio: 0.3,
   // The longest real word in the test-set references is 19 characters; runaway output reached 296.
   maxWordCharacters: 40,
+  // Skipped speech shows up as a few words stretched across it ("Why" lasting 3.4 s), not as a gap.
+  // Each word counts as covering at most this long, plus padding on both sides.
+  // In the measured case the skipped stretch added up to about 2.6 s with these settings.
+  maxWordSeconds: 1.0,
+  coverPaddingSeconds: 0.3,
+  maxUncoveredSpeechSeconds: 2,
 } as const;
 
 const graphemes = new Intl.Segmenter(undefined, { granularity: "grapheme" });
@@ -27,7 +34,8 @@ export type AssessmentReason =
   | "stopped_early"
   | "started_late"
   | "repetition_loop"
-  | "junk_output";
+  | "junk_output"
+  | "skipped_speech";
 
 export interface WindowAssessment {
   flagged: boolean;
@@ -87,6 +95,68 @@ export function removeRepetitionLoops<T extends { text: string }>(
   }
 
   return kept;
+}
+
+// Seconds of detected speech between the first and last word that no normal-length word covers.
+// A word counts as covering at most maxWordSeconds from its start, so words stretched over skipped
+// speech don't hide it. Speech before the first or after the last word is "started late"/"stopped early".
+export function uncoveredSpeech(
+  words: readonly { start: number; end: number }[],
+  speech: readonly SpeechSegment[],
+  constants: Partial<typeof RETRY_CONSTANTS> = {},
+): { seconds: number; start: number; end: number } {
+  const maxWord = constants.maxWordSeconds ?? RETRY_CONSTANTS.maxWordSeconds;
+  const padding = constants.coverPaddingSeconds ?? RETRY_CONSTANTS.coverPaddingSeconds;
+
+  const covered: SpeechSegment[] = [];
+  for (const word of [...words].sort((a, b) => a.start - b.start)) {
+    const start = word.start - padding;
+    const end = Math.min(word.end, word.start + maxWord) + padding;
+    const last = covered[covered.length - 1];
+    if (last && start <= last.end) {
+      last.end = Math.max(last.end, end);
+    } else {
+      covered.push({ start, end });
+    }
+  }
+
+  if (words.length === 0) {
+    return { seconds: 0, start: 0, end: 0 };
+  }
+  const from = Math.min(...words.map((word) => word.start));
+  const to = Math.max(...words.map((word) => word.end));
+
+  let seconds = 0;
+  let first = Infinity;
+  let lastEnd = -Infinity;
+  for (const unclipped of speech) {
+    const segment = { start: Math.max(unclipped.start, from), end: Math.min(unclipped.end, to) };
+    if (segment.end <= segment.start) {
+      continue;
+    }
+    let cursor = segment.start;
+    for (const cover of covered) {
+      if (cover.end <= cursor || cover.start >= segment.end) {
+        continue;
+      }
+      if (cover.start > cursor) {
+        seconds += cover.start - cursor;
+        first = Math.min(first, cursor);
+        lastEnd = Math.max(lastEnd, cover.start);
+      }
+      cursor = Math.max(cursor, cover.end);
+      if (cursor >= segment.end) {
+        break;
+      }
+    }
+    if (cursor < segment.end) {
+      seconds += segment.end - cursor;
+      first = Math.min(first, cursor);
+      lastEnd = Math.max(lastEnd, segment.end);
+    }
+  }
+
+  return seconds > 0 ? { seconds, start: first, end: lastEnd } : { seconds: 0, start: 0, end: 0 };
 }
 
 export function countJunkWords(words: readonly { text: string }[]): number {
@@ -221,6 +291,17 @@ export function assessWindow(
         reason: "stopped_early",
         speechSeconds,
         flaggedRegion: { start: lastWordEnd, end: lastSpeechEnd },
+      };
+    }
+
+    // 5. Skipped speech in the middle of the window
+    const uncovered = uncoveredSpeech(result.words, localSegments, constants);
+    if (uncovered.seconds >= (constants.maxUncoveredSpeechSeconds ?? RETRY_CONSTANTS.maxUncoveredSpeechSeconds)) {
+      return {
+        flagged: true,
+        reason: "skipped_speech",
+        speechSeconds,
+        flaggedRegion: { start: uncovered.start, end: uncovered.end },
       };
     }
   } else if (speechSeconds >= minSpeechForCheck) {

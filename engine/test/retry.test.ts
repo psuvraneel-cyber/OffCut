@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  RETRY_CONSTANTS,
   assessWindow,
   hasRepetitionLoop,
   isJunkWord,
   removeJunkWords,
   removeRepetitionLoops,
+  uncoveredSpeech,
 } from "../src/whisper/retry";
 import type { WindowTranscript } from "../src/types";
 
@@ -190,5 +192,57 @@ describe("Runaway long words", () => {
   it("drops runaway words before merging", () => {
     const kept = removeJunkWords([at("नमस्ते"), at("क".repeat(296)), at("दोस्तों")]);
     expect(kept.map((w) => w.text)).toEqual(["नमस्ते", "दोस्तों"]);
+  });
+});
+
+// Real word timings from base on WASM (q8), Tesla video window 2 (absolute seconds shifted to the window).
+const stretched = [
+  ["to", 28.05, 28.17], ["end", 28.17, 28.33], ["things", 28.33, 28.53], ["right", 28.53, 28.83], ["now.", 28.83, 29.07],
+  ["What", 29.13, 29.21], ["about", 29.21, 29.41], ["now?", 29.41, 30.15], ["Why", 30.31, 33.69], ["is", 33.69, 37.19],
+  ["it", 37.19, 38.81], ["so", 38.81, 38.95], ["fucking", 38.95, 39.37], ["loud?", 39.37, 39.85], ["Two", 39.91, 40.35],
+  ["inches", 40.35, 40.57], ["in", 40.57, 40.73], ["the", 40.73, 40.87], ["air", 40.87, 41.17],
+].map(([text, start, end]) => ({ text: text as string, start: (start as number) - 26, end: (end as number) - 26 }));
+// The VAD's speech segments for the same stretch (26.0–30.7, 30.7–34.7, 34.7–35.8, 36.9–49.4 s).
+const stretchedSpeech = [
+  { start: 0, end: 4.7 }, { start: 4.7, end: 8.7 }, { start: 8.7, end: 9.8 }, { start: 10.9, end: 23.4 },
+];
+
+describe("Skipped speech hidden by stretched words", () => {
+  it("measures speech not covered by normal-length words", () => {
+    const uncovered = uncoveredSpeech(stretched, stretchedSpeech);
+    expect(uncovered.seconds).toBeGreaterThanOrEqual(RETRY_CONSTANTS.maxUncoveredSpeechSeconds);
+    expect(uncovered.start).toBeGreaterThan(5);
+    expect(uncovered.end).toBeLessThan(13);
+  });
+
+  it("flags the window as skipped_speech and points at the stretched stretch", () => {
+    const result = makeWindowResult(stretched, 26, 41.5);
+    const assessment = assessWindow(result, stretchedSpeech);
+    expect(assessment.reason).toBe("skipped_speech");
+    expect(assessment.flaggedRegion!.start).toBeGreaterThan(5);
+  });
+
+  it("doesn't flag ordinary speech with pauses between phrases", () => {
+    const words = Array.from({ length: 30 }, (_, i) => at(`w${i}`, (i < 15 ? 1 : 10) + (i % 15) * 0.4));
+    const speech = [{ start: 0.8, end: 7.2 }, { start: 9.8, end: 16.2 }];
+    expect(assessWindow(makeWindowResult(words), speech).flagged).toBe(false);
+  });
+
+  it("doesn't count silence the VAD didn't mark as speech", () => {
+    const words = [at("hello", 1), at("again", 12)];
+    expect(uncoveredSpeech(words, [{ start: 0.9, end: 1.4 }, { start: 11.9, end: 12.4 }]).seconds).toBe(0);
+  });
+});
+
+describe("Long-phrase loops (tiny on WASM)", () => {
+  const phrase = "the only thing that's going to be".split(" ");
+  const looped = [at("It's"), at("not"), ...Array.from({ length: 70 }, (_, i) => at(phrase[i % 7]))];
+
+  it("detects a 7-word phrase repeated 10 times", () => {
+    expect(hasRepetitionLoop(looped.map((w) => w.text.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "")))).toBe(true);
+  });
+
+  it("keeps one copy of the looped phrase", () => {
+    expect(removeRepetitionLoops(looped).map((w) => w.text)).toEqual(["It's", "not", ...phrase]);
   });
 });
