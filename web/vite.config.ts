@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
-import { defineConfig, loadEnv, type Plugin } from 'vite'
+import { defineConfig, loadEnv, searchForWorkspaceRoot, type Plugin } from 'vite'
 
 // ▼▼▼ OWNER: Cloudflare Web Analytics token (free, cookie-less). Empty = no analytics script at all.
 // Get it from Cloudflare dashboard → Analytics & Logs → Web Analytics → Add a site. See docs/launch.md.
@@ -41,6 +41,17 @@ export default defineConfig(({ mode }) => ({
     react(),
     cloudflareWebAnalytics(loadEnv(mode, page('.')).VITE_CF_ANALYTICS_TOKEN || CF_ANALYTICS_TOKEN),
   ],
+  resolve: {
+    alias: {
+      '@offcut/engine': fileURLToPath(new URL('../engine/src/index.ts', import.meta.url)),
+    },
+  },
+  worker: {
+    format: 'es',
+  },
+  optimizeDeps: {
+    exclude: ['@huggingface/transformers'],
+  },
   build: {
     // The legal pages are their own static HTML entries rather than client-side routes: they read with
     // JavaScript off, need no router, and Cloudflare Pages serves privacy.html at /privacy by itself.
@@ -48,6 +59,7 @@ export default defineConfig(({ mode }) => ({
     rolldownOptions: {
       input: {
         main: page('./index.html'),
+        captions: page('./captions.html'),
         privacy: page('./privacy.html'),
         terms: page('./terms.html'),
         notFound: page('./404.html'),
@@ -60,6 +72,12 @@ export default defineConfig(({ mode }) => ({
     postcss: {},
   },
   server: {
+    fs: {
+      allow: [
+        searchForWorkspaceRoot(process.cwd()),
+        fileURLToPath(new URL('../engine', import.meta.url)),
+      ],
+    },
     // The API runs separately (`npm run dev:api`, port 8788). Proxying keeps calls same-origin;
     // the browser's Origin stays http://localhost:5173, which ALLOWED_ORIGINS already lists.
     proxy: { '/api': 'http://localhost:8788' },

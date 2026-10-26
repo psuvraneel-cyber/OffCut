@@ -5,6 +5,7 @@ const links = [
   { href: '#how-it-works', label: 'How it works' },
   { href: '#roadmap', label: 'Roadmap' },
   { href: '#faq', label: 'FAQ' },
+  { href: '/captions', label: 'Captions' },
 ]
 
 // Floating glass menu pinned to the bottom of the screen.
