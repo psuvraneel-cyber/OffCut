@@ -8,6 +8,7 @@ const sections = [
   { href: '#roadmap', label: 'Roadmap' },
   { href: '#faq', label: 'FAQ' },
   { href: '#early-access', label: 'Early access' },
+  { href: '/captions', label: 'Free captions file' },
 ]
 
 const social = [

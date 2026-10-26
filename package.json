@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev:web": "npm --prefix web run dev",
-    "build": "npm --prefix web ci && npm --prefix web run build",
+    "build": "npm --prefix engine ci && npm --prefix web ci && npm --prefix web run build",
     "build:web": "npm --prefix web run build",
     "preview:web": "npm --prefix web run preview",
     "lint:web": "npm --prefix web run lint",

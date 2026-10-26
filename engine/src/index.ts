@@ -31,6 +31,7 @@ export type {
   TranscriberOptions,
   TranscribeOptions,
 } from "./types";
+export type { CaptionCue, CaptionOptions } from "./captions";
 export {
   AbortError,
   GpuLostError,
@@ -40,6 +41,12 @@ export {
   UnsupportedFormatError,
 } from "./errors";
 export { detectCapabilities } from "./capabilities";
+export {
+  CAPTION_CONSTANTS,
+  buildCaptionCues,
+  toSrt,
+  toVtt,
+} from "./captions";
 
 interface PendingRequest {
   file?: Blob;
