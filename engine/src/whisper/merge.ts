@@ -42,6 +42,7 @@ export function mergeWindowTranscripts(
               text: word.text,
               start: word.start + current.window.start,
               end: word.end + current.window.start,
+              ...(word.kind ? { kind: word.kind } : {}),
             })),
           });
         }
@@ -72,6 +73,7 @@ export function mergeWindowTranscripts(
           text: word.text,
           start: absStart,
           end: absEnd,
+          ...(word.kind ? { kind: word.kind } : {}),
         });
       }
     }

@@ -23,6 +23,7 @@ export interface Word {
   text: string;
   start: number;
   end: number;
+  kind?: "speech" | "cue";
 }
 
 export interface Segment {
@@ -51,6 +52,7 @@ export interface Transcript {
     speechSeconds?: number;
     windows?: number;
     retriedWindows?: number;
+    // Holds the VAD speech regions in seconds; only present when stats.vad is "silero".
     speechSegments?: { start: number; end: number }[];
   };
 }
@@ -79,6 +81,7 @@ export interface WindowWord {
   text: string;
   start: number;
   end: number;
+  kind?: "speech" | "cue";
 }
 
 export interface WindowSegment {

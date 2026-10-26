@@ -240,3 +240,32 @@ describe("mergeWindowTranscripts", () => {
     expect(merged.words[3].end).toBe(29.0);   // 4.0 + 25.0
   });
 });
+
+describe("sound cues survive the merge", () => {
+  it("keeps kind: cue on merged words and on segment words", () => {
+    const window = (index: number, start: number, end: number, words: { text: string; start: number; end: number; kind?: "cue" }[]) => ({
+      window: { index, start, end },
+      granularity: "word" as const,
+      language: "en",
+      segments: [],
+      words,
+    });
+    const merged = mergeWindowTranscripts(
+      [
+        window(0, 0, 10, [
+          { text: "Hello", start: 1, end: 1.4 },
+          { text: "(laughing)", start: 2, end: 3, kind: "cue" },
+        ]),
+        window(1, 10, 20, [{ text: "(upbeat music)", start: 1, end: 3, kind: "cue" }, { text: "Bye.", start: 4, end: 4.5 }]),
+      ],
+      20,
+    );
+    expect(merged.words.map((w) => [w.text, w.kind])).toEqual([
+      ["Hello", undefined],
+      ["(laughing)", "cue"],
+      ["(upbeat music)", "cue"],
+      ["Bye.", undefined],
+    ]);
+    expect(merged.segments.flatMap((s) => s.words).filter((w) => w.kind === "cue")).toHaveLength(2);
+  });
+});

@@ -599,9 +599,9 @@ async function runTranscription(
                     text: s.text,
                     start: s.start,
                     end: s.end,
-                    words: s.words.map((w) => ({ text: w.text, start: w.start, end: w.end })),
+                    words: s.words.map((w) => ({ text: w.text, start: w.start, end: w.end, ...(w.kind ? { kind: w.kind } : {}) })),
                   })),
-                  words: retryMerged.words.map((w) => ({ text: w.text, start: w.start, end: w.end })),
+                  words: retryMerged.words.map((w) => ({ text: w.text, start: w.start, end: w.end, ...(w.kind ? { kind: w.kind } : {}) })),
                 };
               }
               retriedWindows++;

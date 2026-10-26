@@ -53,12 +53,12 @@ export function isJunkWord(text: string): boolean {
   return normalizeToken(text) === "" || characterCount(text) > RETRY_CONSTANTS.maxWordCharacters;
 }
 
-export function removeJunkWords<T extends { text: string }>(words: readonly T[]): T[] {
-  return words.filter((word) => !isJunkWord(word.text));
+export function removeJunkWords<T extends { text: string; kind?: string }>(words: readonly T[]): T[] {
+  return words.filter((word) => word.kind === "cue" || !isJunkWord(word.text));
 }
 
 // Keeps the first copy of any 1–maxPhraseLength word phrase repeated minRepeats or more times in a row.
-export function removeRepetitionLoops<T extends { text: string }>(
+export function removeRepetitionLoops<T extends { text: string; kind?: string }>(
   words: readonly T[],
   minRepeats = RETRY_CONSTANTS.minRepeats,
   maxPhraseLength = RETRY_CONSTANTS.maxPhraseLength,
@@ -68,12 +68,22 @@ export function removeRepetitionLoops<T extends { text: string }>(
   let i = 0;
 
   while (i < words.length) {
+    if (words[i].kind === "cue") {
+      kept.push(words[i]);
+      i++;
+      continue;
+    }
+
     let bestSpan = 0;
     let bestLength = 0;
     for (let length = 1; length <= maxPhraseLength && i + length <= words.length; length++) {
+      if (words.slice(i, i + length).some((w) => w.kind === "cue")) {
+        continue;
+      }
       let repeats = 1;
       while (
         i + (repeats + 1) * length <= words.length &&
+        !words.slice(i + repeats * length, i + (repeats + 1) * length).some((w) => w.kind === "cue") &&
         tokens.slice(i + repeats * length, i + (repeats + 1) * length).join(" ") ===
           tokens.slice(i, i + length).join(" ")
       ) {
@@ -207,6 +217,8 @@ export function assessWindow(
   const maxPhraseLen = constants.maxPhraseLength ?? RETRY_CONSTANTS.maxPhraseLength;
   const maxJunkRatio = constants.maxJunkWordRatio ?? RETRY_CONSTANTS.maxJunkWordRatio;
 
+  const words = result.words.filter((w) => w.kind !== "cue");
+
   const winStart = result.window.start;
   const winEnd = result.window.end;
   const winDuration = winEnd - winStart;
@@ -226,7 +238,7 @@ export function assessWindow(
   }
 
   // 1. Check repetition loop first
-  const tokens = result.words.map((w) => normalizeToken(w.text)).filter(Boolean);
+  const tokens = words.map((w) => normalizeToken(w.text)).filter(Boolean);
 
   if (hasRepetitionLoop(tokens, minRepeats, maxPhraseLen)) {
     return {
@@ -238,8 +250,8 @@ export function assessWindow(
   }
 
   // 1b. Junk output: too many words without letters or digits
-  const junkWords = countJunkWords(result.words);
-  if (junkWords > 0 && junkWords >= maxJunkRatio * result.words.length) {
+  const junkWords = countJunkWords(words);
+  if (junkWords > 0 && junkWords >= maxJunkRatio * words.length) {
     return {
       flagged: true,
       reason: "junk_output",
@@ -259,7 +271,7 @@ export function assessWindow(
   // 2. Too few words check
   if (speechSeconds >= minSpeechForCheck) {
     const minRequiredWords = minWordsPerSec * speechSeconds;
-    if (result.words.length < minRequiredWords) {
+    if (words.length < minRequiredWords) {
       return {
         flagged: true,
         reason: "too_few_words",
@@ -270,9 +282,9 @@ export function assessWindow(
   }
 
   // If words are present, check started late and stopped early
-  if (result.words.length > 0) {
-    const firstWordStart = result.words[0].start;
-    const lastWordEnd = result.words[result.words.length - 1].end;
+  if (words.length > 0) {
+    const firstWordStart = words[0].start;
+    const lastWordEnd = words[words.length - 1].end;
 
     // 3. Started late
     if (firstWordStart - firstSpeechStart > edgeGap) {
@@ -295,7 +307,7 @@ export function assessWindow(
     }
 
     // 5. Skipped speech in the middle of the window
-    const uncovered = uncoveredSpeech(result.words, localSegments, constants);
+    const uncovered = uncoveredSpeech(words, localSegments, constants);
     if (uncovered.seconds >= (constants.maxUncoveredSpeechSeconds ?? RETRY_CONSTANTS.maxUncoveredSpeechSeconds)) {
       return {
         flagged: true,

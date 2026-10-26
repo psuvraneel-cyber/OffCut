@@ -136,6 +136,7 @@ Overlapping inference windows are merged using a deterministic cut-point strateg
 - `speechSeconds`: total seconds of detected speech in the recording.
 - `windows`: total planned inference windows processed.
 - `retriedWindows`: number of windows retried by the safety net.
+- `speechSegments`: VAD speech regions in seconds, only present when `stats.vad` is `"silero"`.
 
 ## Benchmarks & Evaluation
 

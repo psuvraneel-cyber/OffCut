@@ -112,3 +112,80 @@ describe("speaker-change dashes", () => {
     expect(words.map((w) => w.text)).toEqual(["Oh!", "The"]);
   });
 });
+
+describe("sound cues", () => {
+  it("joins split cues and tags them", () => {
+    const words = cleanWords(
+      [
+        { text: " (upbeat", start: 1.0, end: 1.2 },
+        { text: " music)", start: 1.2, end: 1.5 },
+        { text: " Hello", start: 1.6, end: 1.9 },
+      ],
+      10,
+    );
+
+    expect(words).toEqual([
+      { text: "(upbeat music)", start: 1.0, end: 1.5, kind: "cue" },
+      { text: "Hello", start: 1.6, end: 1.9 },
+    ]);
+  });
+
+  it("tags (laughing) and [screaming] as cues, and (gasps). with a trailing full stop as a cue", () => {
+    const words = cleanWords(
+      [
+        { text: " (laughing)", start: 1.0, end: 1.5 },
+        { text: " [screaming]", start: 2.0, end: 2.5 },
+        { text: " (gasps).", start: 3.0, end: 3.5 },
+      ],
+      10,
+    );
+
+    expect(words).toEqual([
+      { text: "(laughing)", start: 1.0, end: 1.5, kind: "cue" },
+      { text: "[screaming]", start: 2.0, end: 2.5, kind: "cue" },
+      { text: "(gasps).", start: 3.0, end: 3.5, kind: "cue" },
+    ]);
+  });
+
+  it("leaves words unchanged when an unclosed bracket is followed by 7 normal words", () => {
+    const words = cleanWords(
+      [
+        { text: " (unclosed", start: 1.0, end: 1.2 },
+        { text: " one", start: 1.2, end: 1.4 },
+        { text: " two", start: 1.4, end: 1.6 },
+        { text: " three", start: 1.6, end: 1.8 },
+        { text: " four", start: 1.8, end: 2.0 },
+        { text: " five", start: 2.0, end: 2.2 },
+        { text: " six", start: 2.2, end: 2.4 },
+        { text: " seven", start: 2.4, end: 2.6 },
+      ],
+      10,
+    );
+
+    expect(words).toEqual([
+      { text: "(unclosed", start: 1.0, end: 1.2 },
+      { text: "one", start: 1.2, end: 1.4 },
+      { text: "two", start: 1.4, end: 1.6 },
+      { text: "three", start: 1.6, end: 1.8 },
+      { text: "four", start: 1.8, end: 2.0 },
+      { text: "five", start: 2.0, end: 2.2 },
+      { text: "six", start: 2.2, end: 2.4 },
+      { text: "seven", start: 2.4, end: 2.6 },
+    ]);
+    expect(words.every((w) => w.kind === undefined)).toBe(true);
+  });
+
+  it("still removes [BLANK_AUDIO]", () => {
+    const words = cleanWords(
+      [
+        { text: " [BLANK_AUDIO]", start: 0.5, end: 1.0 },
+        { text: " Hello", start: 1.0, end: 1.5 },
+      ],
+      10,
+    );
+
+    expect(words).toEqual([
+      { text: "Hello", start: 1.0, end: 1.5 },
+    ]);
+  });
+});

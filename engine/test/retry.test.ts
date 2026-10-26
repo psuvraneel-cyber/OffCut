@@ -246,3 +246,35 @@ describe("Long-phrase loops (tiny on WASM)", () => {
     expect(removeRepetitionLoops(looped).map((w) => w.text)).toEqual(["It's", "not", ...phrase]);
   });
 });
+
+describe("Cue handling in retry and assessment", () => {
+  it("does not flag a window with 12 normal words plus 20 cue words as junk or loop", () => {
+    const speech = [{ start: 1, end: 11 }];
+    const normalWords = Array.from({ length: 12 }, (_, i) => ({
+      text: `word${i}`,
+      start: 1.2 + i * 0.7,
+      end: 1.8 + i * 0.7,
+    }));
+    const cueWords = Array.from({ length: 20 }, (_, i) => ({
+      text: "(laughing)",
+      start: 1.3 + i * 0.4,
+      end: 1.6 + i * 0.4,
+      kind: "cue" as const,
+    }));
+    const result = makeWindowResult([...normalWords, ...cueWords]);
+    const assessment = assessWindow(result, speech);
+    expect(assessment.flagged).toBe(false);
+  });
+
+  it("removeRepetitionLoops keeps 5 identical (laughing) cues", () => {
+    const cues = Array.from({ length: 5 }, (_, i) => ({
+      text: "(laughing)",
+      start: 1 + i * 0.5,
+      end: 1.4 + i * 0.5,
+      kind: "cue" as const,
+    }));
+    const kept = removeRepetitionLoops(cues);
+    expect(kept).toHaveLength(5);
+    expect(kept).toEqual(cues);
+  });
+});

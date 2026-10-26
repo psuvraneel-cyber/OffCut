@@ -1,6 +1,7 @@
 import type { RawTimedText, Word, WindowSegment, WindowWord } from "../types";
 
 const ARTEFACT = /^(?:\[(?:blank[_ ]audio|music|applause|laughter|silence|noise|inaudible)\]|\((?:applause|music|laughter|silence|noise)\))$/i;
+const CUE_REGEX = /^[\[(][^\])]*[\])][.,!?]?$/;
 
 export const MIN_WORD_SECONDS = 0.08;
 
@@ -13,7 +14,7 @@ export function stripSpeakerDash(text: string): string {
 
 export function cleanWords(raw: readonly RawTimedText[], duration: number): Word[] {
   const merged = mergeLeadingSpaceTokens(raw);
-  const words: Word[] = [];
+  const initial: Word[] = [];
 
   for (const item of merged) {
     const text = stripSpeakerDash(item.text.trim()).trim();
@@ -23,11 +24,57 @@ export function cleanWords(raw: readonly RawTimedText[], duration: number): Word
 
     const start = clampTimestamp(item.start ?? 0, duration);
     const end = clampTimestamp(item.end ?? start, duration);
-    words.push({
+    initial.push({
       text,
       start: Math.min(start, end),
       end: Math.max(start, end),
     });
+  }
+
+  const words: Word[] = [];
+  let i = 0;
+  while (i < initial.length) {
+    const current = initial[i];
+    const text = current.text;
+    const startsWithParen = text.startsWith("(");
+    const startsWithBracket = text.startsWith("[");
+    const closeBracket = startsWithParen ? ")" : startsWithBracket ? "]" : null;
+
+    if (closeBracket && !text.includes(closeBracket)) {
+      let closeIndex = -1;
+      for (let j = i + 1; j < initial.length && j <= i + 6; j++) {
+        if (initial[j].text.includes(closeBracket)) {
+          closeIndex = j;
+          break;
+        }
+      }
+
+      if (closeIndex !== -1) {
+        const joinedSlice = initial.slice(i, closeIndex + 1);
+        const joinedText = joinedSlice.map((w) => w.text).join(" ");
+        const joinedStart = current.start;
+        const joinedEnd = initial[closeIndex].end;
+
+        if (!ARTEFACT.test(joinedText)) {
+          const isCue = CUE_REGEX.test(joinedText);
+          words.push({
+            text: joinedText,
+            start: joinedStart,
+            end: joinedEnd,
+            ...(isCue ? { kind: "cue" as const } : {}),
+          });
+        }
+        i = closeIndex + 1;
+        continue;
+      }
+    }
+
+    const isCue = CUE_REGEX.test(text);
+    words.push({
+      ...current,
+      ...(isCue ? { kind: "cue" as const } : {}),
+    });
+    i += 1;
   }
 
   return normalizeWords(words, duration);
@@ -70,6 +117,7 @@ export function normalizeWords(words: readonly WindowWord[], duration: number): 
       const start = clampTimestamp(word.start, duration);
       const end = clampTimestamp(word.end, duration);
       return {
+        ...(word.kind ? { kind: word.kind } : {}),
         text: word.text.trim(),
         start: Math.min(start, end),
         end: Math.max(start, end),
