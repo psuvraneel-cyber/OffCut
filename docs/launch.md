@@ -83,7 +83,7 @@ npx wrangler pages project create offcut-ai --production-branch main
 
 If Cloudflare says `offcut-ai` is taken, it gives you a different `*.pages.dev` address. Then update `ALLOWED_ORIGINS` under `[env.production.vars]` in `wrangler.toml`, the canonical and `og:` URLs in `web/index.html`, `web/privacy.html` and `web/terms.html`, the Turnstile hostname, and the Web Analytics site.
 
-Build and deploy (never the root `npm run build`; it wipes `web/node_modules`):
+Build and deploy (never the root `npm run build`; it wipes `web/node_modules`). The engine's packages must be installed once with `npm --prefix engine ci`, because the website imports the engine's source:
 
 ```powershell
 npm --prefix web run build

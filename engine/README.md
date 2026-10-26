@@ -121,6 +121,20 @@ Overlapping inference windows are merged using a deterministic cut-point strateg
 - A minimum word duration of $0.08\text{ s}$ is enforced whenever adjacent neighbors leave room, ensuring zero-length Whisper artifacts expand to highlightable words during playback.
 - Segments are rebuilt cleanly from the merged word stream using `groupWordsIntoSegments`.
 
+## Captions
+
+The engine exports pure helper functions to group word timestamps into readable subtitle cues and format them as standard SRT or WebVTT files:
+
+- `buildCaptionCues(words, options?)`: groups an array of `Word` objects into `CaptionCue` items. Default options from `CAPTION_CONSTANTS`:
+  - `maxCharsPerLine`: 32 characters per line (short lines for vertical mobile video).
+  - `maxLines`: 2 lines per cue.
+  - `maxCueSeconds`: 5 seconds maximum per cue.
+  - `maxGapSeconds`: 1.0 second pause threshold before starting a new cue.
+  - `minCueSeconds`: 0.7 seconds minimum display duration.
+  - `includeSoundCues`: defaults to `false` (drops words with `kind: "cue"` like `(laughing)` unless set to `true`).
+- `toSrt(cues)`: formats caption cues as an SubRip (`.srt`) string with `\r\n` line endings. Returns `""` when cues is empty.
+- `toVtt(cues)`: formats caption cues as a WebVTT (`.vtt`) string with `\n` line endings and escaped characters (`&`, `<`, `>`, and `-->` converted to `→`). Returns `"WEBVTT\n"` when cues is empty.
+
 ## Stats definitions
 
 `transcript.stats` reports:
