@@ -1,6 +1,6 @@
 # Offcut handoff
 
-_Last updated: 2026-10-26 (Engine Round 1 committed as `5eab197`; after the move to C:\OffCut and the live launch)_
+_Last updated: 2026-10-26 (engine CPU fixes committed as `1bdeb32`; runtime foundation M0 done; ONNX WASM self-hosted; after the move to C:\OffCut and the live launch)_
 
 Read this first if you're picking up the project in a new session.
 
@@ -25,7 +25,7 @@ The project lives at **`C:\OffCut`** (moved out of OneDrive, which kept locking 
 - **Legal & License:** Owner blanks filled in `web/privacy.html` and `web/terms.html`, draft notices removed, and Apache License 2.0 with `NOTICE` added.
 - **GitHub:** Pushed to `https://github.com/psuvraneel-cyber/OffCut` on branch `main`.
 - **Smoke test verified:** Health check (`/api/health`) answers `ok:true`, roadmap features load from D1, owner verified waitlist signup lands in D1 (1 verified row), branded 404 works.
-- **Engine:** Transcription engine (Whisper in browser) committed by Omnirush (`c3d6892`). Round 1 (Silero VAD windows, retry safety net, benchmark) committed as `5eab197` on `main`, not pushed (see Work in progress).
+- **Engine:** Transcription engine (Whisper in browser) is on `main` at `1bdeb32`, 5 commits ahead of GitHub (not pushed). It has Silero VAD, a safety net for junk, loops and skipped speech, `base` as the default on every device, and a self-hosted ONNX WASM file. See Work in progress.
 - **What's left for later:** Formal legal review, and before ads: custom domain, Google AdSense application, and certified consent tool.
 
 ## Repo map
@@ -50,12 +50,19 @@ The page order is Hero, How it works, Roadmap, FAQ, Early access, then the foote
 
 ## Work in progress
 
-- **Transcription engine, Round 1: committed (`5eab197`), not pushed.** Built by Omnirush from `docs/engine-round1-prompt.md` and verified by Claude. On `tiny`/WebGPU, the full 28-min NPR episode's deletion rate fell from 19.7% to 1.6% and the 10-min loop's from 21.4% to 0.7%, with no long gaps. Short-clip error rates didn't get worse. Silence test: 0 words in silent parts. 56/56 tests pass.
-  - **Known gaps (carry into Round 2):**
+- **Engine status (`main`, `1bdeb32`):**
+  - Round 1 (VAD windows, retry safety net, benchmark) is committed. Full benchmark results are in `engine/bench/RESULTS.md`.
+  - Fixed since: `base` on WebGPU (fp16 encoder produced garbage; now fp32 encoder, fp16 decoder). Speaker dashes stripped; runaway output capped. Self-hosted ONNX WASM. CPU quality: `tiny` on q8 looped, so `base` is now the default everywhere; a skipped-speech check triggers retries.
+  - Benchmark, `base` on WebGPU: NPR clip 4.7% words wrong, full 28-min episode 5.4%, 10-min loop 0.2%, noisy vlog clips 0–6%. `tiny` is worse everywhere (full episode 6.2%). Hindi and Hinglish are unusable with both (about 90–100% wrong).
+  - Runtime foundation M0 is done (`0f593bd`): the model and VAD session are fully released, and a lost GPU is recovered by restarting the worker and using the CPU. M1 is not started.
+- **Engine to-do before the captioner (in progress):**
+  1. Tag sound cues like "(laughing)" and "(upbeat music)" instead of treating them as words. Brief prepared for Antigravity; not yet run.
+  2. Keep `stats.speechSegments` and document it (decided: keep, optional, only with VAD).
+  3. Word-timing check for word-by-word captions: later, at the start of the caption step.
+  4. Re-run the full benchmark with the skipped-speech check (it may add retries or time on long files).
+- **Known gaps (carry forward):**
     - Full-episode wall time is +43% over baseline (262 s → 374 s); the brief's target was +10%. Retries and the VAD pass are the cost.
-    - ~~The `base` model's output is broken~~ Fixed: the fp16 Whisper encoder produced garbage on WebGPU, so "fp16" now runs the encoder in fp32 and only the decoder in fp16. `base` scores 4.7% WER on `EN_PODCAST_001` (was ~100%); `tiny` 15.7% (was 15.3%). The full benchmark hasn't been re-run with `base` yet.
-    - The safety net now drops junk words (no letters or digits) and collapses repetition loops that survive a retry.
-    - `stats.speechSegments` was added to the public API without approval and shipped in `5eab197`. Decide whether to keep it.
+    - `stats.speechSegments` was added without approval in `5eab197`; now being kept and documented (item 2 above).
     - With `vad: false`, the retry also runs (the brief said exact old behaviour). `retry: false` is an internal flag that restores it.
     - Hindi and Hinglish stay poor with `tiny`. That's a model limit.
     - On a repetition loop, retry acceptance takes a loop-free retry even with fewer words (a deliberate deviation).
@@ -99,7 +106,8 @@ Before ads: buy a domain, apply for AdSense, add a certified cookie-consent tool
 ## What's next
 
 1. Go live (above).
-2. Engine Round 2: re-run the full benchmark with `base`, run a head-to-head against OpusClip on clips the owner owns, bring the full-episode time within +10% of baseline, then decide whether to push `main` (Round 1 is local only).
+2. Finish the engine to-do (see Work in progress), then the captioner. Realistic cut for the first release: a **captions file download (SRT/VTT)** on the website, which Instagram, YouTube and CapCut accept. Burned-in captions (video decode, render and encode, on the runtime foundation from `docs/runtime-foundation-plan.md`) come after.
+3. Head-to-head against OpusClip on clips the owner owns, then decide whether to push `main` (5 commits are local only).
 3. Build the tool, one station at a time, starting with the free auto-captioner:
    1. split the audio out
    2. transcribe (from `engine/`)
