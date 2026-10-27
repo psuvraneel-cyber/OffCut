@@ -1,5 +1,6 @@
-import type { WindowTranscript } from "../types";
+import type { CaptionLanguage, WindowTranscript } from "../types";
 import type { SpeechSegment } from "./vad";
+import { countForeignScriptWords, isWordAllowedInLanguage } from "./script";
 
 export const RETRY_CONSTANTS = {
   minSpeechForCheckSeconds: 5,
@@ -35,6 +36,7 @@ export type AssessmentReason =
   | "started_late"
   | "repetition_loop"
   | "junk_output"
+  | "foreign_script"
   | "skipped_speech";
 
 export interface WindowAssessment {
@@ -49,12 +51,17 @@ export function normalizeToken(text: string): string {
 }
 
 // A word with no letters or digits ("-", "- - - -", "...") or an impossibly long one is never speech.
-export function isJunkWord(text: string): boolean {
-  return normalizeToken(text) === "" || characterCount(text) > RETRY_CONSTANTS.maxWordCharacters;
+export function isJunkWord(text: string, language: CaptionLanguage = "auto"): boolean {
+  return normalizeToken(text) === "" ||
+    characterCount(text) > RETRY_CONSTANTS.maxWordCharacters ||
+    !isWordAllowedInLanguage(text, language);
 }
 
-export function removeJunkWords<T extends { text: string; kind?: string }>(words: readonly T[]): T[] {
-  return words.filter((word) => word.kind === "cue" || !isJunkWord(word.text));
+export function removeJunkWords<T extends { text: string; kind?: string }>(
+  words: readonly T[],
+  language: CaptionLanguage = "auto",
+): T[] {
+  return words.filter((word) => word.kind === "cue" || !isJunkWord(word.text, language));
 }
 
 // Keeps the first copy of any 1–maxPhraseLength word phrase repeated minRepeats or more times in a row.
@@ -249,7 +256,19 @@ export function assessWindow(
     };
   }
 
-  // 1b. Junk output: too many words without letters or digits
+  // 1b. Foreign script hallucination check (e.g. Urdu or Tamil script in Hindi/English/Hinglish mode)
+  const lang = (result.language ?? "auto") as CaptionLanguage;
+  const foreignScriptWords = countForeignScriptWords(words, lang);
+  if (foreignScriptWords > 0) {
+    return {
+      flagged: true,
+      reason: "foreign_script",
+      speechSeconds,
+      flaggedRegion: { start: 0, end: winDuration },
+    };
+  }
+
+  // 1c. Junk output: too many words without letters or digits
   const junkWords = countJunkWords(words);
   if (junkWords > 0 && junkWords >= maxJunkRatio * words.length) {
     return {

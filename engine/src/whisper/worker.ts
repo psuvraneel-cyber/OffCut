@@ -8,6 +8,7 @@ import {
 import { AbortError, GpuLostError, ModelLoadError, toEngineError } from "../errors";
 import type {
   AudioWindow,
+  CaptionLanguage,
   RawTimedText,
   TranscribeOptions,
   Transcript,
@@ -16,6 +17,8 @@ import type {
 import type { WorkerRequest, WorkerResponse, WorkerRuntimeOptions } from "../protocol";
 import { cleanSegments, cleanWords, groupWordsIntoSegments } from "./clean";
 import { calculateRms, detectLanguage } from "./language";
+import { countForeignScriptWords, filterForeignScriptWords } from "./script";
+import { transliterateDevanagariToHinglish } from "./transliterate";
 import { mergeWindowTranscripts } from "./merge";
 import { MODEL_CONFIG, maxNewTokensFor, pipelineDtype } from "./models";
 import { ortWasmPaths } from "./ort-assets";
@@ -257,11 +260,12 @@ async function createPipeline(
 }
 
 // Junk words and repetition loops never reach captions, even when a retry didn't fix them.
-function sanitizeWindowResult(result: WindowTranscript): WindowTranscript {
+function sanitizeWindowResult(result: WindowTranscript, targetLanguage: CaptionLanguage = "auto"): WindowTranscript {
   if (result.granularity !== "word") {
     return result;
   }
-  const words = removeRepetitionLoops(removeJunkWords(result.words));
+  const cleanScriptWords = filterForeignScriptWords(result.words, targetLanguage);
+  const words = removeRepetitionLoops(removeJunkWords(cleanScriptWords, targetLanguage));
   if (words.length === result.words.length) {
     return result;
   }
@@ -446,7 +450,7 @@ async function runTranscription(
       throwIfAborted(signal);
       const detectStartedAt = performance.now();
       try {
-        lockedLanguage = await detectLanguage(speechPipeline, detectionAudio);
+        lockedLanguage = await detectLanguage(speechPipeline, detectionAudio, { coerceHindustani: true });
       } catch (detectError) {
         console.warn("Language detection failed, defaulting to en:", detectError);
         lockedLanguage = "en";
@@ -482,13 +486,37 @@ async function runTranscription(
         decodeMs += performance.now() - windowDecodeStartedAt;
       }
 
+      // Dynamic language handling for Hinglish and Auto mode
+      let activeWindowLanguage = lockedLanguage;
+      if (isHinglish) {
+        if (calculateRms(audio) >= 0.01) {
+          try {
+            const detected = await detectLanguage(speechPipeline, audio, {
+              candidates: ["en", "hi", "ur"],
+              coerceHindustani: true,
+            });
+            activeWindowLanguage = detected === "en" ? "en" : "hi";
+          } catch {
+            activeWindowLanguage = "hi";
+          }
+        } else {
+          activeWindowLanguage = "hi";
+        }
+      } else if (targetLanguage === "auto" && window.index > 0 && calculateRms(audio) >= 0.01) {
+        try {
+          activeWindowLanguage = await detectLanguage(speechPipeline, audio, { coerceHindustani: true });
+        } catch {
+          activeWindowLanguage = lockedLanguage;
+        }
+      }
+
       throwIfAborted(signal);
       emitProgress({ stage: "transcribe", seconds: lastTranscribeSeconds, duration });
       const windowTranscribeStartedAt = performance.now();
 
       const pipelineOptions: Record<string, unknown> = {
         return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
-        language: lockedLanguage,
+        language: activeWindowLanguage,
         task: "transcribe",
         max_new_tokens: maxNewTokensFor(audio.length / 16000),
       };
@@ -501,7 +529,7 @@ async function runTranscription(
 
       throwIfAborted(signal);
       transcribeMs += performance.now() - windowTranscribeStartedAt;
-      let windowResult = parseWindowOutput(output, window, isHinglish ? "hinglish" : lockedLanguage);
+      let windowResult = parseWindowOutput(output, window, isHinglish ? "hinglish" : activeWindowLanguage);
 
       if (retryEnabled) {
         let segmentsInWindow: SpeechSegment[];
@@ -522,6 +550,15 @@ async function runTranscription(
         if (assess.flagged) {
           const retryStartedAt = performance.now();
           const winDur = window.end - window.start;
+
+          // If foreign script was detected or too few words in English mode on a bilingual video, re-anchor to Hindi
+          let retryLanguage = activeWindowLanguage;
+          if (
+            assess.reason === "foreign_script" ||
+            (isHinglish && assess.reason === "too_few_words" && activeWindowLanguage === "en")
+          ) {
+            retryLanguage = "hi";
+          }
 
           if (winDur >= 1.0) {
             const midSec = window.start + winDur / 2;
@@ -569,13 +606,13 @@ async function runTranscription(
             if (half1Audio.length > 0 && half2Audio.length > 0) {
               const retryOpts1: Record<string, unknown> = {
                 return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
-                language: lockedLanguage,
+                language: retryLanguage,
                 task: "transcribe",
                 max_new_tokens: maxNewTokensFor(half1Audio.length / 16000),
               };
               const retryOpts2: Record<string, unknown> = {
                 return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
-                language: lockedLanguage,
+                language: retryLanguage,
                 task: "transcribe",
                 max_new_tokens: maxNewTokensFor(half2Audio.length / 16000),
               };
@@ -589,8 +626,8 @@ async function runTranscription(
               const out1 = await speechPipeline(half1Audio, retryOpts1);
               const out2 = await speechPipeline(half2Audio, retryOpts2);
 
-              const half1Res = parseWindowOutput(out1, { index: 0, start: 0, end: half1EndRel }, isHinglish ? "hinglish" : lockedLanguage);
-              const half2Res = parseWindowOutput(out2, { index: 1, start: half2StartRel, end: winDur }, isHinglish ? "hinglish" : lockedLanguage);
+              const half1Res = parseWindowOutput(out1, { index: 0, start: 0, end: half1EndRel }, isHinglish ? "hinglish" : retryLanguage);
+              const half2Res = parseWindowOutput(out2, { index: 1, start: half2StartRel, end: winDur }, isHinglish ? "hinglish" : retryLanguage);
               const retryMerged = mergeWindowTranscripts([half1Res, half2Res], winDur);
 
               const retryTokens = retryMerged.words.map((w) => normalizeToken(w.text)).filter(Boolean);
@@ -600,6 +637,10 @@ async function runTranscription(
               if (!retryHasLoop) {
                 if (assess.reason === "repetition_loop") {
                   accepted = true;
+                } else if (assess.reason === "foreign_script") {
+                  accepted =
+                    countForeignScriptWords(retryMerged.words, (isHinglish ? "hinglish" : retryLanguage) as CaptionLanguage) <
+                    countForeignScriptWords(windowResult.words, (isHinglish ? "hinglish" : activeWindowLanguage) as CaptionLanguage);
                 } else if (assess.reason === "junk_output") {
                   accepted = countJunkWords(retryMerged.words) < countJunkWords(windowResult.words);
                 } else if (assess.flaggedRegion) {
@@ -615,7 +656,7 @@ async function runTranscription(
                 windowResult = {
                   window,
                   granularity: retryMerged.granularity,
-                  language: lockedLanguage,
+                  language: retryLanguage,
                   segments: retryMerged.segments.map((s) => ({
                     text: s.text,
                     start: s.start,
@@ -634,7 +675,7 @@ async function runTranscription(
 
       lastTranscribeSeconds = Math.max(lastTranscribeSeconds, window.end);
       emitProgress({ stage: "transcribe", seconds: lastTranscribeSeconds, duration });
-      windowResults.push(sanitizeWindowResult(windowResult));
+      windowResults.push(sanitizeWindowResult(windowResult, (isHinglish ? "hinglish" : activeWindowLanguage) as CaptionLanguage));
     }
   } finally {
     clearInterval(heartbeat);
@@ -690,7 +731,8 @@ function parseWindowOutput(
     (item) => typeof item.start === "number" && typeof item.end === "number",
   );
   if (!hasUsableTimestamps) {
-    const text = typeof result.text === "string" ? result.text : "";
+    const rawText = typeof result.text === "string" ? result.text : "";
+    const text = requestedLanguage === "hinglish" ? transliterateDevanagariToHinglish(rawText) : rawText;
     const fallback = cleanSegments([{ text, start: 0, end: window.end - window.start }], window.end - window.start);
     return {
       window,
@@ -702,7 +744,20 @@ function parseWindowOutput(
   }
 
   const words = cleanWords(raw, window.end - window.start);
+  if (requestedLanguage === "hinglish") {
+    for (const w of words) {
+      w.text = transliterateDevanagariToHinglish(w.text);
+    }
+  }
   const segments = groupWordsIntoSegments(words);
+  if (requestedLanguage === "hinglish") {
+    for (const s of segments) {
+      s.text = transliterateDevanagariToHinglish(s.text);
+      for (const w of s.words) {
+        w.text = transliterateDevanagariToHinglish(w.text);
+      }
+    }
+  }
   return { window, granularity: "word", language, segments, words };
 }
 

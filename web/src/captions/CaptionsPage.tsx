@@ -53,12 +53,13 @@ const LANGUAGE_OPTIONS: readonly LanguageOption[] = [
     id: 'hi',
     label: 'Hindi (हिंदी)',
     hint: 'Generates clean Devanagari captions with Purna Viram (।) punctuation.',
+    badge: 'Devanagari',
   },
   {
     id: 'hinglish',
     label: 'Hinglish',
-    hint: 'Primes Whisper for bilingual Indian speech mixing Hindi and English.',
-    badge: 'Popular',
+    hint: 'Bilingual Indian speech mixing Hindi and English, outputted in Roman script.',
+    badge: 'Romanized',
   },
 ] as const
 
@@ -626,6 +627,12 @@ export function CaptionsPage() {
                   </p>
                 </button>
               </div>
+
+              {language === 'hinglish' && model === 'base' && (
+                <p className="captions-model-recommendation-hint">
+                  💡 <strong>Tip for Hinglish:</strong> If your video has laughter, auditorium echo, or fast dialogue, select <strong>Small Model</strong> above for maximum accuracy.
+                </p>
+              )}
             </div>
 
             <input

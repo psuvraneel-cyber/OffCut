@@ -277,4 +277,20 @@ describe("Cue handling in retry and assessment", () => {
     expect(kept).toHaveLength(5);
     expect(kept).toEqual(cues);
   });
+
+  it("flags foreign script hallucinations (such as Urdu or Tamil in Hindi/English/Hinglish)", () => {
+    const speech = [{ start: 1, end: 11 }];
+    const words = [
+      { text: "யுஎல்சி", start: 1.0, end: 1.5 },
+      { text: "میں", start: 1.6, end: 2.0 },
+      { text: "ہم", start: 2.1, end: 2.5 },
+      { text: "aur", start: 2.6, end: 3.0 },
+      { text: "broker", start: 3.1, end: 3.5 },
+    ];
+    const result = makeWindowResult(words);
+    result.language = "hinglish";
+    const assessment = assessWindow(result, speech);
+    expect(assessment.flagged).toBe(true);
+    expect(assessment.reason).toBe("foreign_script");
+  });
 });

@@ -64,6 +64,17 @@ export {
   normalizePeak,
   conditionAudio,
 } from "./audio/dsp";
+export {
+  countForeignScriptWords,
+  detectWordScript,
+  filterForeignScriptWords,
+  hasForeignScript,
+  isWordAllowedInLanguage,
+} from "./whisper/script";
+export {
+  transliterateDevanagariToHinglish,
+  transliterateWord,
+} from "./whisper/transliterate";
 
 interface PendingRequest {
   file?: Blob;

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   calculateRms,
   cleanLanguageCode,
+  coerceHindustaniLanguage,
   detectLanguage,
   findBestLanguage,
   parseGeneratedLanguageToken,
@@ -58,6 +59,35 @@ describe("language detection pure helpers", () => {
     batchedLogits[50 + 30] = 3.0; // es
 
     expect(findBestLanguage(batchedLogits, langToId, 50)).toBe("en");
+  });
+
+  it("restricts language search to candidate list when provided", () => {
+    const langToId = {
+      "<|en|>": 10,
+      "<|hi|>": 20,
+      "<|es|>": 30,
+      "<|ur|>": 40,
+    };
+    const logits = new Float32Array(50);
+    logits[10] = 5.0; // en
+    logits[20] = 7.0; // hi
+    logits[40] = 9.0; // ur (highest)
+
+    // Without candidate list -> picks ur
+    expect(findBestLanguage(logits, langToId)).toBe("ur");
+
+    // With candidate list ['en', 'hi'] -> ignores ur, picks hi
+    expect(findBestLanguage(logits, langToId, 0, ["en", "hi"])).toBe("hi");
+  });
+
+  it("coerces Hindustani and regional acoustic matches to Hindi", () => {
+    expect(coerceHindustaniLanguage("ur")).toBe("hi");
+    expect(coerceHindustaniLanguage("mr")).toBe("hi");
+    expect(coerceHindustaniLanguage("ne")).toBe("hi");
+    expect(coerceHindustaniLanguage("pa")).toBe("hi");
+    expect(coerceHindustaniLanguage("gu")).toBe("hi");
+    expect(coerceHindustaniLanguage("en")).toBe("en");
+    expect(coerceHindustaniLanguage("es")).toBe("es");
   });
 
   it("parses generated token output in generate fallback", () => {

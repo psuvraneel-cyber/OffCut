@@ -61,23 +61,41 @@ export function findBestLanguage(
   logits: ArrayLike<number | bigint>,
   langToId: Record<string, number>,
   offset = 0,
+  candidates?: readonly string[],
 ): string | null {
   let bestLang: string | null = null;
   let maxScore = -Infinity;
 
   for (const [token, id] of Object.entries(langToId)) {
+    const lang = cleanLanguageCode(token);
+    if (candidates && candidates.length > 0 && !candidates.includes(lang)) {
+      continue;
+    }
+
     const index = offset + id;
     if (index >= 0 && index < logits.length) {
       const rawScore = logits[index];
       const score = typeof rawScore === "bigint" ? Number(rawScore) : rawScore;
       if (score > maxScore) {
         maxScore = score;
-        bestLang = cleanLanguageCode(token);
+        bestLang = lang;
       }
     }
   }
 
   return bestLang;
+}
+
+/**
+ * Coerces Indian subcontinent languages with high acoustic overlap with spoken Hindi
+ * (such as Urdu, Marathi, Nepali, Punjabi) into "hi" to prevent Perso-Arabic / Urdu script drift.
+ */
+export function coerceHindustaniLanguage(detected: string): string {
+  const normalized = detected.toLowerCase();
+  if (normalized === "ur" || normalized === "mr" || normalized === "ne" || normalized === "pa" || normalized === "gu") {
+    return "hi";
+  }
+  return normalized;
 }
 
 export function parseGeneratedLanguageToken(
@@ -130,6 +148,7 @@ export function parseGeneratedLanguageToken(
 export async function detectLanguage(
   pipeline: unknown,
   audio: Float32Array,
+  options: { candidates?: readonly string[]; coerceHindustani?: boolean } = {},
 ): Promise<string> {
   const pipe = pipeline as PipelineLike;
   const model = pipe?.model;
@@ -177,9 +196,9 @@ export async function detectLanguage(
         const seqLen = dims[1] ?? 1;
         const vocabSize = dims[2] ?? Math.floor(logits.data.length / seqLen);
         const lastTokenOffset = (seqLen - 1) * vocabSize;
-        const detected = findBestLanguage(logits.data, langToId, lastTokenOffset);
+        const detected = findBestLanguage(logits.data, langToId, lastTokenOffset, options.candidates);
         if (detected) {
-          return detected;
+          return options.coerceHindustani !== false ? coerceHindustaniLanguage(detected) : detected;
         }
       }
     } catch (forwardError) {
@@ -197,7 +216,7 @@ export async function detectLanguage(
       });
       const detected = parseGeneratedLanguageToken(output, langToId);
       if (detected) {
-        return detected;
+        return options.coerceHindustani !== false ? coerceHindustaniLanguage(detected) : detected;
       }
     } catch (generateError) {
       console.warn("Language detection generate fallback failed:", generateError);
