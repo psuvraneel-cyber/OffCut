@@ -9,6 +9,7 @@
 
 .captions-header {
   width: 100%;
+  padding-top: env(safe-area-inset-top, 0px);
   border-bottom: 1px solid rgba(122, 77, 255, 0.12);
   background: rgba(241, 236, 255, 0.85);
   backdrop-filter: blur(12px);
@@ -34,11 +35,15 @@
   color: var(--ink-soft);
   text-decoration: none;
   font-size: var(--text-sm);
-  transition: color var(--dur-fast) var(--ease-out);
+  transition: color var(--dur-fast) var(--ease-out), transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .captions-header__back:hover {
   color: var(--violet);
+}
+
+.captions-header__back:active {
+  transform: scale(0.96);
 }
 
 .captions-main {
@@ -128,13 +133,27 @@
   text-align: center;
   transition:
     background var(--dur-fast) var(--ease-out),
-    border-color var(--dur-fast) var(--ease-out);
+    border-color var(--dur-fast) var(--ease-out),
+    transform 180ms cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 180ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.captions-dropzone:hover,
+.captions-dropzone:hover {
+  border-color: var(--violet);
+  background: var(--mist-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -12px rgba(75, 35, 200, 0.25);
+}
+
+.captions-dropzone:active {
+  transform: scale(0.985);
+}
+
 .captions-dropzone--active {
   border-color: var(--violet);
   background: var(--mist-deep);
+  transform: scale(1.015);
+  box-shadow: 0 12px 32px -8px rgba(75, 35, 200, 0.35);
 }
 
 .captions-dropzone__icon {
@@ -365,8 +384,13 @@
 }
 
 .captions-item__textarea:focus-visible {
-  outline: 2px solid var(--violet);
+  outline: 2px solid var(--violet-deep);
   border-color: transparent;
+}
+
+.captions-buttons-group .button:active,
+.captions-toolbar .button:active {
+  transform: scale(0.97);
 }
 
 .captions-error-box {

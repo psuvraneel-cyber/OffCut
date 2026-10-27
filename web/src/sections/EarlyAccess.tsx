@@ -37,6 +37,13 @@ export function EarlyAccess() {
   const [emailError, setEmailError] = useState('')
   const [consentError, setConsentError] = useState('')
   const [check, setCheck] = useState<CheckState>('loading')
+  const [shake, setShake] = useState(false)
+
+  const triggerShake = () => {
+    setShake(false)
+    requestAnimationFrame(() => setShake(true))
+    setTimeout(() => setShake(false), 350)
+  }
 
   // Scroll reveal for the card.
   useEffect(() => {
@@ -136,6 +143,7 @@ export function EarlyAccess() {
     setEmailError(badEmail)
     setConsentError(badConsent)
     if (badEmail || badConsent) {
+      triggerShake()
       setStatus('idle')
       setMessage('')
       const firstBad = badEmail ? emailRef.current : consentRef.current
@@ -186,6 +194,7 @@ export function EarlyAccess() {
 
     const { code, fields } = result.error
     if (code === 'VALIDATION_ERROR' && (fields?.email || fields?.consent)) {
+      triggerShake()
       setEmailError(fields.email ? 'That email address wasn’t accepted. Check for typos.' : '')
       setConsentError(fields.consent ? 'Tick the box so we’re allowed to email you.' : '')
       setStatus('idle')
@@ -241,7 +250,7 @@ export function EarlyAccess() {
         <div className="early__panel early__reveal">
           {/* Keep the form mounted (just hidden) so the Turnstile widget inside it survives the success state. */}
           <form className="early__form" onSubmit={onSubmit} noValidate hidden={done}>
-            <div className="early__field">
+            <div className={`early__field${shake && emailError ? ' early__field--shake' : ''}`}>
               <label htmlFor={`${ids}-email`}>Email address</label>
               <input
                 ref={emailRef}
@@ -271,7 +280,7 @@ export function EarlyAccess() {
               )}
             </div>
 
-            <div className="early__field">
+            <div className={`early__field${shake && consentError ? ' early__field--shake' : ''}`}>
               <label className="early__consent">
                 <input
                   ref={consentRef}

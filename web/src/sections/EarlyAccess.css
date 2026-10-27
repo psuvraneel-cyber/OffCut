@@ -114,6 +114,30 @@
   border-color: var(--orchid);
 }
 
+@keyframes early-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-6px);
+  }
+  40%, 80% {
+    transform: translateX(6px);
+  }
+}
+
+.early__field--shake input[type='email'],
+.early__field--shake .early__consent {
+  animation: early-shake 320ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .early__field--shake input[type='email'],
+  .early__field--shake .early__consent {
+    animation: none;
+  }
+}
+
 .early__consent {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -206,6 +230,11 @@
   text-decoration: underline;
   text-underline-offset: 0.25em;
   cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out), transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.early__again:active {
+  transform: scale(0.96);
 }
 
 .early__again:focus-visible {
