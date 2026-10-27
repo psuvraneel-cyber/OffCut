@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offcut · Instagram Reel Motion Graphic Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #090514;
+      --surface: #120b24;
+      --surface-border: rgba(122, 77, 255, 0.25);
+      --violet: #7a4dff;
+      --violet-deep: #4b23c8;
+      --orchid: #d77bff;
+      --lilac: #c9b8ff;
+      --mist: #f1ecff;
+      --signal: #6fe3ff;
+      --danger: #ff4d6d;
+      --success: #00e599;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--mist);
+      font-family: 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    .studio-header {
+      text-align: center;
+      max-width: 680px;
+      margin-bottom: 24px;
+    }
+
+    .studio-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(122, 77, 255, 0.15);
+      border: 1px solid rgba(122, 77, 255, 0.35);
+      color: var(--lilac);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 12px;
+    }
+
+    .studio-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--signal);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--signal);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ffffff 30%, var(--lilac) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      font-size: 15px;
+      color: rgba(241, 236, 255, 0.65);
+      line-height: 1.5;
+    }
+
+    .studio-layout {
+      display: flex;
+      gap: 36px;
+      align-items: flex-start;
+      justify-content: center;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .phone-container {
+      position: relative;
+      background: #000;
+      border-radius: 36px;
+      padding: 10px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 40px rgba(122, 77, 255, 0.25);
+      flex-shrink: 0;
+    }
+
+    .phone-bezel {
+      width: 360px;
+      height: 640px;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      background: #000;
+    }
+
+    canvas#reelCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #090514;
+    }
+
+    .controls-panel {
+      flex: 1;
+      max-width: 460px;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 24px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--lilac);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 4px;
+    }
+
+    .timeline-bar-container {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      height: 8px;
+      border-radius: 4px;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .timeline-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--violet), var(--signal));
+      border-radius: 4px;
+      transition: width 0.05s linear;
+    }
+
+    .time-readout {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: rgba(241, 236, 255, 0.6);
+      margin-top: 6px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--violet), var(--orchid));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(122, 77, 255, 0.4);
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 26px rgba(122, 77, 255, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--mist);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .btn-record {
+      background: linear-gradient(135deg, #ff2a5f, #ff715b);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(255, 42, 95, 0.4);
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+    }
+
+    .btn-record.recording {
+      animation: recordGlow 1s infinite alternate;
+    }
+
+    @keyframes recordGlow {
+      from { box-shadow: 0 0 10px rgba(255, 42, 95, 0.4); }
+      to { box-shadow: 0 0 30px rgba(255, 42, 95, 0.8); }
+    }
+
+    .scene-selector {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .scene-pill {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(241, 236, 255, 0.7);
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.15s ease;
+    }
+
+    .scene-pill.active {
+      background: rgba(122, 77, 255, 0.35);
+      border-color: var(--violet);
+      color: #fff;
+    }
+
+    .kit-box {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .kit-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .copy-btn {
+      background: none;
+      border: none;
+      color: var(--signal);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .caption-preview {
+      font-size: 13px;
+      color: rgba(241, 236, 255, 0.8);
+      line-height: 1.5;
+      white-space: pre-line;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 860px) {
+      .studio-layout {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="studio-header">
+    <div class="studio-badge">Autonomous Motion Studio</div>
+    <h1>Offcut · Viral Launch Reel</h1>
+    <p class="subtitle">
+      30-second high-energy product video designed for Instagram Reels &amp; YouTube Shorts.
+      Record directly in 60fps 1080×1920 MP4/WebM with zero external tools.
+    </p>
+  </header>
+
+  <div class="studio-layout">
+    <!-- 9:16 Phone Canvas Preview -->
+    <div class="phone-container">
+      <div class="phone-bezel">
+        <canvas id="reelCanvas" width="1080" height="1920"></canvas>
+      </div>
+    </div>
+
+    <!-- Controls & Marketing Kit -->
+    <div class="controls-panel">
+      <div>
+        <div class="panel-section-title">Timeline &amp; Playback</div>
+        <div class="timeline-bar-container" id="timelineBar">
+          <div class="timeline-fill" id="timelineFill"></div>
+        </div>
+        <div class="time-readout">
+          <span id="currentTime">00:00</span>
+          <span id="duration">00:28</span>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn btn-primary" id="playBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <span id="playBtnText">Play Preview</span>
+        </button>
+        <button class="btn btn-secondary" id="restartBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Restart
+        </button>
+      </div>
+
+      <div>
+        <div class="panel-section-title">Jump to Scene</div>
+        <div class="scene-selector">
+          <button class="scene-pill active" onclick="seekTo(0)">01 Hook</button>
+          <button class="scene-pill" onclick="seekTo(5)">02 Problem</button>
+          <button class="scene-pill" onclick="seekTo(10)">03 Reveal</button>
+          <button class="scene-pill" onclick="seekTo(17)">04 How it works</button>
+          <button class="scene-pill" onclick="seekTo(23)">05 CTA</button>
+        </div>
+      </div>
+
+      <div>
+        <button class="btn btn-record" id="recordBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+          <span id="recordBtnText">Record Reel (1080×1920 60FPS)</span>
+        </button>
+      </div>
+
+      <div class="kit-box">
+        <div class="kit-box-header">
+          <div class="panel-section-title" style="margin: 0;">Instagram Post Kit</div>
+          <button class="copy-btn" id="copyCaptionBtn">Copy Caption</button>
+        </div>
+        <div class="caption-preview" id="captionText">Stop uploading your 2GB video files to OpusClip. 🛑
+
+Most AI clippers force you to upload your raw footage to their servers, wait 20 minutes in a queue, and pay $29/month just to remove a watermark.
+
+I got tired of it, so I built Offcut:
+✂️ 100% In-Browser AI Video Clipper
+🔒 0 bytes leave your laptop (runs locally on your GPU)
+⚡ Whisper AI speech-to-text with word-by-word captions
+🎯 Auto 9:16 vertical reframe
+💸 Free forever. No watermark. No account.
+
+Try it out right now in your browser: offcut-ai.pages.dev (link in bio)
+
+Open source on GitHub ⭐ Built in public!
+
+#buildinpublic #aivideo #contentcreator #opusclip #videoeditor #reelsmaker #webgpu #whisperai #opensource</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('reelCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = 1080;
+    const H = 1920;
+
+    // Timeline state (duration: 28 seconds)
+    const DURATION = 28;
+    let currentTime = 0;
+    let isPlaying = false;
+    let lastTimestamp = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
+
+    // Audio context for synthesized punchy sound effects
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playSound(type) {
+      if (!audioCtx) return;
+      try {
+        const t = audioCtx.currentTime;
+        if (type === 'bass') {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(140, t);
+          osc.frequency.exponentialRampToValueAtTime(32, t + 0.4);
+          gain.gain.setValueAtTime(0.7, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(t);
+          osc.stop(t + 0.4);
+        } else if (type === 'whoosh') {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(300, t);
+          osc.frequency.exponentialRampToValueAtTime(80, t + 0.25);
+          gain.gain.setValueAtTime(0.3, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(t);
+          osc.stop(t + 0.25);
+        } else if (type === 'blip') {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, t);
+          osc.frequency.setValueAtTime(1200, t + 0.05);
+          gain.gain.setValueAtTime(0.2, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(t);
+          osc.stop(t + 0.1);
+        }
+      } catch (e) {}
+    }
+
+    // Sound cue tracking so sounds fire only once per second change
+    const firedSounds = new Set();
+    function triggerCueSound(timeSec, cueName) {
+      const key = `${Math.floor(timeSec * 2)}_${cueName}`;
+      if (!firedSounds.has(key)) {
+        firedSounds.add(key);
+        playSound(cueName);
+      }
+    }
+
+    // Particle background
+    const particles = [];
+    for (let i = 0; i < 70; i++) {
+      particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        radius: Math.random() * 3 + 1,
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: (Math.random() - 0.5) * 0.8,
+        alpha: Math.random() * 0.5 + 0.2,
+        color: Math.random() > 0.4 ? '#7a4dff' : '#6fe3ff'
+      });
+    }
+
+    function drawBackground(t) {
+      // Deep gradient
+      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+      bgGrad.addColorStop(0, '#090514');
+      bgGrad.addColorStop(0.5, '#120b24');
+      bgGrad.addColorStop(1, '#070310');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Glowing radial flares
+      const flare1 = ctx.createRadialGradient(W * 0.3, H * 0.25, 50, W * 0.3, H * 0.25, 600);
+      flare1.addColorStop(0, 'rgba(122, 77, 255, 0.22)');
+      flare1.addColorStop(1, 'rgba(122, 77, 255, 0)');
+      ctx.fillStyle = flare1;
+      ctx.fillRect(0, 0, W, H);
+
+      const flare2 = ctx.createRadialGradient(W * 0.7, H * 0.75, 50, W * 0.7, H * 0.75, 500);
+      flare2.addColorStop(0, 'rgba(111, 227, 255, 0.14)');
+      flare2.addColorStop(1, 'rgba(111, 227, 255, 0)');
+      ctx.fillStyle = flare2;
+      ctx.fillRect(0, 0, W, H);
+
+      // Floating particles
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = W;
+        if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H;
+        if (p.y > H) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      });
+    }
+
+    // SCENE 1 (0.0s - 4.5s): The Scroll-Stopping Agitation Hook
+    function drawScene1(t) {
+      if (t < 0.2) triggerCueSound(t, 'bass');
+
+      ctx.save();
+      // Warning Pill
+      const pillY = 480;
+      ctx.fillStyle = 'rgba(255, 77, 109, 0.15)';
+      ctx.strokeStyle = '#ff4d6d';
+      ctx.lineWidth = 3;
+      roundRect(ctx, W/2 - 260, pillY, 520, 72, 36);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.font = '700 30px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#ff4d6d';
+      ctx.textAlign = 'center';
+      ctx.fillText('⚠️ STOP PAYING $29 / MONTH', W/2, pillY + 48);
+
+      // Main Hook Typography
+      ctx.font = '900 88px "Inter", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText('Stop Uploading', W/2, 680);
+      ctx.fillText('Your Videos To', W/2, 780);
+
+      // OpusClip strike-through
+      ctx.fillStyle = '#d77bff';
+      ctx.fillText('OpusClip.', W/2, 880);
+
+      const strikeW = 420;
+      ctx.strokeStyle = '#ff4d6d';
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.moveTo(W/2 - strikeW/2, 850);
+      ctx.lineTo(W/2 + strikeW/2, 850);
+      ctx.stroke();
+
+      // Frustration visual card
+      const cardY = 1040;
+      ctx.fillStyle = 'rgba(18, 11, 36, 0.85)';
+      ctx.strokeStyle = 'rgba(255, 77, 109, 0.4)';
+      ctx.lineWidth = 3;
+      roundRect(ctx, 140, cardY, 800, 420, 32);
+      ctx.fill();
+      ctx.stroke();
+
+      // Cloud upload icon
+      ctx.font = '54px "Inter"';
+      ctx.fillText('☁️ ➔ 📁', W/2, cardY + 110);
+
+      ctx.font = '700 38px "Inter", sans-serif';
+      ctx.fillStyle = '#f1ecff';
+      ctx.fillText('Uploading 2.4 GB file...', W/2, cardY + 190);
+
+      // Fake progress bar
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      roundRect(ctx, 220, cardY + 230, 640, 20, 10);
+      ctx.fill();
+
+      const progress = Math.min(0.65, t * 0.18);
+      ctx.fillStyle = '#ff4d6d';
+      roundRect(ctx, 220, cardY + 230, 640 * progress, 20, 10);
+      ctx.fill();
+
+      ctx.font = '600 28px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#ff8fa3';
+      ctx.fillText('Estimated wait: 18 mins remaining', W/2, cardY + 300);
+
+      ctx.font = '600 30px "Inter", sans-serif';
+      ctx.fillStyle = '#c9b8ff';
+      ctx.fillText('❌ Watermark added on free tier', W/2, cardY + 360);
+
+      ctx.restore();
+    }
+
+    // SCENE 2 (4.5s - 9.5s): The Problem vs Reveal
+    function drawScene2(t) {
+      const relT = t - 4.5;
+      if (relT < 0.2) triggerCueSound(t, 'whoosh');
+
+      ctx.save();
+
+      // Brand Logo Slice
+      const logoY = 460;
+      ctx.fillStyle = '#7a4dff';
+      roundRect(ctx, W/2 - 50, logoY, 100, 150, 16);
+      ctx.fill();
+
+      // Cut triangle mark
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(W/2 - 18, logoY + 45);
+      ctx.lineTo(W/2 - 18, logoY + 105);
+      ctx.lineTo(W/2 + 28, logoY + 75);
+      ctx.closePath();
+      ctx.fill();
+
+      // Brand Title
+      ctx.font = '900 110px "Inter", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText('Offcut.', W/2, logoY + 280);
+
+      ctx.font = 'italic 52px "Instrument Serif", serif';
+      ctx.fillStyle = 'var(--signal)';
+      ctx.fillStyle = '#6fe3ff';
+      ctx.fillText('Long videos in. Captioned Reels out.', W/2, logoY + 360);
+
+      // Hero Tagline Pill
+      const pillY = logoY + 440;
+      ctx.fillStyle = 'rgba(122, 77, 255, 0.25)';
+      ctx.strokeStyle = '#7a4dff';
+      ctx.lineWidth = 3;
+      roundRect(ctx, W/2 - 380, pillY, 760, 90, 45);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.font = '800 38px "Inter", sans-serif';
+      ctx.fillStyle = '#f1ecff';
+      ctx.fillText('🔒 Nothing Leaves Your Device', W/2, pillY + 58);
+
+      // Features list cards
+      const featY = 1220;
+      drawBadge(160, featY, '0 Bytes Uploaded', '#00e599');
+      drawBadge(560, featY, 'No Watermark', '#00e599');
+      drawBadge(160, featY + 110, 'No Account Needed', '#00e599');
+      drawBadge(560, featY + 110, 'Free Forever ($0)', '#00e599');
+
+      ctx.font = '600 30px "JetBrains Mono", monospace';
+      ctx.fillStyle = 'rgba(201, 184, 255, 0.7)';
+      ctx.fillText('Runs directly in your browser tab', W/2, 1540);
+
+      ctx.restore();
+    }
+
+    function drawBadge(x, y, text, color) {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 2;
+      roundRect(ctx, x, y, 360, 80, 20);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.font = '700 26px "Inter", sans-serif';
+      ctx.fillStyle = color;
+      ctx.textAlign = 'left';
+      ctx.fillText('✓', x + 24, y + 50);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(text, x + 60, y + 50);
+    }
+
+    // SCENE 3 (9.5s - 19.0s): How It Works (Step-by-step)
+    function drawScene3(t) {
+      const relT = t - 9.5;
+      ctx.save();
+
+      // Top step tracker
+      ctx.font = '700 32px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#7a4dff';
+      ctx.textAlign = 'center';
+
+      let stepNum = '01';
+      let stepTitle = 'Drop in your long video';
+      let stepDesc = 'Reads instantly from your disk. Zero network bandwidth.';
+
+      if (relT > 3.2 && relT <= 6.4) {
+        stepNum = '02';
+        stepTitle = 'Whisper AI Transcribes';
+        stepDesc = 'WebGPU runs speech recognition on your own graphics card.';
+        if (relT < 3.4) triggerCueSound(t, 'blip');
+      } else if (relT > 6.4) {
+        stepNum = '03';
+        stepTitle = 'Auto 9:16 + Animated Captions';
+        stepDesc = 'Face tracking centers speaker. Words pop in real-time.';
+        if (relT < 6.6) triggerCueSound(t, 'blip');
+      }
+
+      ctx.fillText(`STEP ${stepNum} OF 03`, W/2, 380);
+
+      ctx.font = '900 68px "Inter", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(stepTitle, W/2, 470);
+
+      ctx.font = '500 32px "Inter", sans-serif';
+      ctx.fillStyle = '#c9b8ff';
+      ctx.fillText(stepDesc, W/2, 540);
+
+      // Visual Demo Card
+      const boxY = 660;
+      ctx.fillStyle = 'rgba(18, 11, 36, 0.95)';
+      ctx.strokeStyle = 'rgba(122, 77, 255, 0.5)';
+      ctx.lineWidth = 4;
+      roundRect(ctx, 120, boxY, 840, 880, 40);
+      ctx.fill();
+      ctx.stroke();
+
+      if (stepNum === '01') {
+        // Drop zone illustration
+        ctx.strokeStyle = 'rgba(111, 227, 255, 0.5)';
+        ctx.setLineDash([16, 12]);
+        ctx.lineWidth = 4;
+        roundRect(ctx, 180, boxY + 80, 720, 480, 24);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.font = '80px "Inter"';
+        ctx.textAlign = 'center';
+        ctx.fillText('📥', W/2, boxY + 280);
+
+        ctx.font = '700 38px "Inter", sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('Drop podcast or lecture here', W/2, boxY + 380);
+
+        ctx.font = '500 28px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#6fe3ff';
+        ctx.fillText('MP4 · MOV · WebM (Any Length)', W/2, boxY + 440);
+
+        // Security checkmark
+        ctx.fillStyle = 'rgba(0, 229, 153, 0.15)';
+        ctx.strokeStyle = '#00e599';
+        ctx.lineWidth = 2;
+        roundRect(ctx, 220, boxY + 620, 640, 90, 24);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.font = '700 30px "Inter", sans-serif';
+        ctx.fillStyle = '#00e599';
+        ctx.fillText('🔒 Local File API (Zero Bytes Sent)', W/2, boxY + 678);
+
+      } else if (stepNum === '02') {
+        // Waveform & Whisper Engine
+        ctx.font = '700 36px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#6fe3ff';
+        ctx.textAlign = 'center';
+        ctx.fillText('⚡ Whisper.WebGPU Active', W/2, boxY + 120);
+
+        // Live Animated Waveform
+        const waveY = boxY + 320;
+        ctx.lineWidth = 6;
+        for (let i = 0; i < 38; i++) {
+          const barH = 30 + Math.sin(t * 12 + i * 0.4) * 90 * Math.sin(i * 0.1);
+          const x = 200 + i * 18;
+          ctx.strokeStyle = i % 2 === 0 ? '#7a4dff' : '#6fe3ff';
+          ctx.beginPath();
+          ctx.moveTo(x, waveY - barH);
+          ctx.lineTo(x, waveY + barH);
+          ctx.stroke();
+        }
+
+        // Real-time transcript box
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+        roundRect(ctx, 180, boxY + 480, 720, 260, 20);
+        ctx.fill();
+
+        ctx.font = '600 32px "Inter", sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'left';
+        ctx.fillText('"The secret to viral videos is', 220, boxY + 560);
+        ctx.fillText('having high retention right in the', 220, boxY + 620);
+        
+        ctx.fillStyle = '#d77bff';
+        ctx.fillText('first three seconds..."', 220, boxY + 680);
+
+      } else {
+        // Step 03: Simulated Reel Preview with Hormozi-style Word Captions
+        const phoneInnerX = W/2 - 200;
+        const phoneInnerY = boxY + 70;
+        ctx.fillStyle = '#000000';
+        roundRect(ctx, phoneInnerX, phoneInnerY, 400, 720, 24);
+        ctx.fill();
+        ctx.strokeStyle = '#7a4dff';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // Face tracking box
+        const faceY = phoneInnerY + 160;
+        ctx.strokeStyle = '#6fe3ff';
+        ctx.lineWidth = 3;
+        roundRect(ctx, phoneInnerX + 110, faceY, 180, 220, 16);
+        ctx.stroke();
+
+        ctx.font = '600 18px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#6fe3ff';
+        ctx.fillText('👤 Face Lock 9:16', phoneInnerX + 120, faceY - 12);
+
+        // Animated highlighted caption
+        const words = ['WORD', 'BY', 'WORD', 'CAPTIONS'];
+        const activeWordIdx = Math.floor((t * 3.5) % words.length);
+
+        ctx.font = '900 36px "Inter", sans-serif';
+        ctx.textAlign = 'center';
+        
+        const capY = phoneInnerY + 540;
+        words.forEach((w, idx) => {
+          const wx = phoneInnerX + 70 + idx * 85;
+          if (idx === activeWordIdx) {
+            ctx.fillStyle = '#ffe600';
+            ctx.fillText(w, phoneInnerX + 200, capY);
+          }
+        });
+      }
+
+      ctx.restore();
+    }
+
+    // SCENE 4 (19.0s - 23.5s): Head-to-Head Comparison
+    function drawScene4(t) {
+      if (t - 19.0 < 0.2) triggerCueSound(t, 'bass');
+      ctx.save();
+
+      ctx.font = '900 82px "Inter", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText('Why Choose Offcut?', W/2, 430);
+
+      ctx.font = 'italic 44px "Instrument Serif", serif';
+      ctx.fillStyle = '#6fe3ff';
+      ctx.fillText('Traditional Cloud Clippers vs On-Device', W/2, 510);
+
+      const tableY = 620;
+      // Left Column: Other Tools (Bad)
+      ctx.fillStyle = 'rgba(255, 77, 109, 0.08)';
+      ctx.strokeStyle = 'rgba(255, 77, 109, 0.3)';
+      ctx.lineWidth = 3;
+      roundRect(ctx, 100, tableY, 420, 780, 28);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.font = '800 36px "Inter", sans-serif';
+      ctx.fillStyle = '#ff4d6d';
+      ctx.textAlign = 'center';
+      ctx.fillText('Cloud Tools', 310, tableY + 70);
+
+      const itemsBad = [
+        '❌ Uploads raw videos',
+        '❌ Wait in queue',
+        '❌ $29/mo subscription',
+        '❌ Watermarks exports',
+        '❌ Servers store data'
+      ];
+      ctx.font = '600 28px "Inter", sans-serif';
+      ctx.fillStyle = 'rgba(241, 236, 255, 0.8)';
+      ctx.textAlign = 'left';
+      itemsBad.forEach((it, i) => {
+        ctx.fillText(it, 130, tableY + 180 + i * 110);
+      });
+
+      // Right Column: Offcut (Good)
+      ctx.fillStyle = 'rgba(122, 77, 255, 0.2)';
+      ctx.strokeStyle = '#7a4dff';
+      ctx.lineWidth = 4;
+      roundRect(ctx, 560, tableY, 420, 780, 28);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.font = '800 36px "Inter", sans-serif';
+      ctx.fillStyle = '#6fe3ff';
+      ctx.textAlign = 'center';
+      ctx.fillText('Offcut (You)', 770, tableY + 70);
+
+      const itemsGood = [
+        '✅ 0 Bytes uploaded',
+        '✅ Instant local speed',
+        '✅ 100% Free ($0)',
+        '✅ Zero watermarks',
+        '✅ Runs offline on GPU'
+      ];
+      ctx.font = '700 28px "Inter", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'left';
+      itemsGood.forEach((it, i) => {
+        ctx.fillText(it, 590, tableY + 180 + i * 110);
+      });
+
+      ctx.restore();
+    }
+
+    // SCENE 5 (23.5s - 28.0s): Call to Action & Outro
+    function drawScene5(t) {
+      if (t - 23.5 < 0.2) triggerCueSound(t, 'whoosh');
+      ctx.save();
+
+      // Pulsing Logo
+      const pulse = 1 + Math.sin(t * 5) * 0.05;
+      ctx.save();
+      ctx.translate(W/2, 540);
+      ctx.scale(pulse, pulse);
+
+      ctx.fillStyle = '#7a4dff';
+      roundRect(ctx, -70, -100, 140, 200, 24);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(-25, -40);
+      ctx.lineTo(-25, 40);
+      ctx.lineTo(35, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      ctx.font = '900 96px "Inter", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText('Try It Free Today', W/2, 820);
+
+      ctx.font = 'italic 48px "Instrument Serif", serif';
+      ctx.fillStyle = '#c9b8ff';
+      ctx.fillText('No account needed. Just open your browser.', W/2, 900);
+
+      // Main Website Pill CTA
+      const ctaY = 1040;
+      const ctaGrad = ctx.createLinearGradient(W/2 - 400, ctaY, W/2 + 400, ctaY);
+      ctaGrad.addColorStop(0, '#7a4dff');
+      ctaGrad.addColorStop(1, '#d77bff');
+      ctx.fillStyle = ctaGrad;
+      roundRect(ctx, W/2 - 400, ctaY, 800, 130, 65);
+      ctx.fill();
+
+      ctx.font = '800 48px "Inter", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('offcut-ai.pages.dev', W/2, ctaY + 82);
+
+      // GitHub and Instagram tags
+      ctx.font = '700 32px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#6fe3ff';
+      ctx.fillText('🔗 Link in Bio', W/2, 1300);
+
+      ctx.font = '600 30px "Inter", sans-serif';
+      ctx.fillStyle = 'rgba(241, 236, 255, 0.7)';
+      ctx.fillText('⭐ Open Source on GitHub', W/2, 1370);
+      ctx.fillText('Building in Public · @paulsuvraeel', W/2, 1430);
+
+      ctx.restore();
+    }
+
+    // Helper: draw rounded rectangles
+    function roundRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    // Render frame based on time
+    function render(t) {
+      ctx.clearRect(0, 0, W, H);
+      drawBackground(t);
+
+      if (t < 4.5) {
+        drawScene1(t);
+      } else if (t < 9.5) {
+        drawScene2(t);
+      } else if (t < 19.0) {
+        drawScene3(t);
+      } else if (t < 23.5) {
+        drawScene4(t);
+      } else {
+        drawScene5(t);
+      }
+
+      // Update UI timeline
+      const percent = Math.min(100, (t / DURATION) * 100);
+      document.getElementById('timelineFill').style.width = percent + '%';
+      
+      const m = Math.floor(t / 60);
+      const s = Math.floor(t % 60);
+      document.getElementById('currentTime').innerText = 
+        `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+      // Update scene buttons
+      const pills = document.querySelectorAll('.scene-pill');
+      pills.forEach((p, idx) => {
+        const times = [0, 4.5, 9.5, 19.0, 23.5];
+        if (t >= times[idx] && (idx === times.length - 1 || t < times[idx + 1])) {
+          p.classList.add('active');
+        } else {
+          p.classList.remove('active');
+        }
+      });
+    }
+
+    // Animation Loop
+    function loop(timestamp) {
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const delta = (timestamp - lastTimestamp) / 1000;
+      lastTimestamp = timestamp;
+
+      if (isPlaying) {
+        currentTime += delta;
+        if (currentTime >= DURATION) {
+          currentTime = 0;
+          firedSounds.clear();
+          if (isRecording) {
+            stopRecording();
+          }
+        }
+        render(currentTime);
+      }
+
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    // Controls
+    const playBtn = document.getElementById('playBtn');
+    const playBtnText = document.getElementById('playBtnText');
+
+    function togglePlay() {
+      initAudio();
+      isPlaying = !isPlaying;
+      playBtnText.innerText = isPlaying ? 'Pause Preview' : 'Play Preview';
+    }
+
+    playBtn.addEventListener('click', togglePlay);
+
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      currentTime = 0;
+      firedSounds.clear();
+      render(0);
+      if (!isPlaying) togglePlay();
+    });
+
+    function seekTo(sec) {
+      currentTime = sec;
+      firedSounds.clear();
+      render(sec);
+    }
+
+    // Timeline bar click
+    document.getElementById('timelineBar').addEventListener('click', (e) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      seekTo(pos * DURATION);
+    });
+
+    // Recording system
+    const recordBtn = document.getElementById('recordBtn');
+    const recordBtnText = document.getElementById('recordBtnText');
+
+    recordBtn.addEventListener('click', () => {
+      initAudio();
+      if (!isRecording) {
+        startRecording();
+      } else {
+        stopRecording();
+      }
+    });
+
+    function startRecording() {
+      isRecording = true;
+      recordedChunks = [];
+      currentTime = 0;
+      firedSounds.clear();
+      isPlaying = true;
+
+      recordBtn.classList.add('recording');
+      recordBtnText.innerText = 'Recording in progress... (Wait 28s)';
+
+      const stream = canvas.captureStream(60);
+
+      // Pipe audio if supported
+      try {
+        if (audioCtx) {
+          const dest = audioCtx.createMediaStreamDestination();
+          // Mix stream
+          const combinedStream = new MediaStream([
+            ...stream.getVideoTracks(),
+            ...dest.stream.getAudioTracks()
+          ]);
+          mediaRecorder = new MediaRecorder(combinedStream, {
+            mimeType: 'video/webm;codecs=vp9',
+            videoBitsPerSecond: 8000000 // 8 Mbps crisp quality
+          });
+        } else {
+          mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+        }
+      } catch (err) {
+        mediaRecorder = new MediaRecorder(stream);
+      }
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'offcut-viral-launch-reel.webm';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        recordBtn.classList.remove('recording');
+        recordBtnText.innerText = 'Record Reel (1080×1920 60FPS)';
+        alert('🎉 Reel recorded successfully! The video file has been saved to your downloads.');
+      };
+
+      mediaRecorder.start();
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        isRecording = false;
+        isPlaying = false;
+        playBtnText.innerText = 'Play Preview';
+      }
+    }
+
+    // Copy caption button
+    document.getElementById('copyCaptionBtn').addEventListener('click', () => {
+      const text = document.getElementById('captionText').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyCaptionBtn');
+        btn.innerText = 'Copied! ✓';
+        setTimeout(() => btn.innerText = 'Copy Caption', 2000);
+      });
+    });
+
+    // Initial render
+    render(0);
+  </script>
+</body>
+</html>
