@@ -19,6 +19,7 @@ import {
 } from '@offcut/engine'
 import { createRuntime, RuntimeAbortError, type JobProgress } from '@offcut/runtime'
 import { Logo } from '../components/Logo'
+import { PointerEffects } from '../components/PointerEffects'
 import { CaptionPlayerOverlay } from './CaptionPlayerOverlay'
 import {
   DEFAULT_STYLE_CONFIG,
@@ -1363,6 +1364,7 @@ export function CaptionsPage() {
           onClose={() => setExportModalOpen(false)}
         />
       </main>
+      <PointerEffects />
     </div>
   )
 }

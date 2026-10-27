@@ -1,19 +1,73 @@
 .captions-page {
   min-height: 100vh;
-  background: var(--mist);
+  position: relative;
+  background-color: var(--mist);
+  background-image:
+    radial-gradient(85% 55% at 85% 6%, rgba(122, 77, 255, 0.22), transparent 60%),
+    radial-gradient(70% 60% at 10% 40%, rgba(215, 123, 255, 0.16), transparent 60%),
+    radial-gradient(60% 50% at 50% 95%, rgba(111, 227, 255, 0.12), transparent 65%),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.5) 0%, transparent 70%);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--font-body);
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Subtle tech dot matrix grid dissolving radially */
+.captions-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(122, 77, 255, 0.1) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 25%, black 20%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 25%, black 20%, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Floating ambient glowing light orb for subtle living atmosphere */
+.captions-page::after {
+  content: '';
+  position: fixed;
+  top: -120px;
+  right: -80px;
+  width: 550px;
+  height: 550px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(122, 77, 255, 0.16) 0%, rgba(215, 123, 255, 0.08) 40%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: floatAmbientOrb 20s ease-in-out infinite alternate;
+}
+
+@keyframes floatAmbientOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-50px, 70px) scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(30px, 120px) scale(0.95);
+    opacity: 0.75;
+  }
 }
 
 .captions-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   width: 100%;
   padding-top: env(safe-area-inset-top, 0px);
-  border-bottom: 1px solid rgba(122, 77, 255, 0.12);
-  background: rgba(241, 236, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(122, 77, 255, 0.14);
+  background: rgba(241, 236, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .captions-header__inner {
@@ -78,6 +132,8 @@
 }
 
 .captions-main {
+  position: relative;
+  z-index: 1;
   flex: 1;
   width: 100%;
   max-width: 48rem;
@@ -142,11 +198,28 @@
 }
 
 .captions-card {
-  background: var(--white);
-  border: 1px solid var(--glass-border);
+  position: relative;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(122, 77, 255, 0.18);
   border-radius: var(--radius-card);
   padding: var(--space-4);
-  box-shadow: 0 4px 20px rgba(29, 21, 48, 0.04);
+  box-shadow:
+    0 16px 40px -12px rgba(75, 35, 200, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.captions-card:hover {
+  border-color: rgba(122, 77, 255, 0.24);
+  box-shadow:
+    0 20px 48px -12px rgba(75, 35, 200, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 /* Model Selector Section */
