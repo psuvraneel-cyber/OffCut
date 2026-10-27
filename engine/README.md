@@ -66,9 +66,10 @@ Whisper's attention mechanism easily skips speech or hallucinates repetitively w
    - If VAD fails to load or run, the engine logs a single warning, sets `stats.vad: "failed"`, and transparently falls back to fixed windows. A VAD issue never fails transcription.
 
 2. **Window Planning (`planWindows`):**
-   - Pure function `probabilitiesToSegments` converts probabilities into padded speech segments (`threshold: 0.5`, `negThreshold: 0.35`, `minSpeechMs: 250`, `minSilenceMs: 300`, `speechPadMs: 200`).
+   - Pure function `probabilitiesToSegments` converts probabilities into padded speech segments (`threshold: 0.35`, `negThreshold: 0.25`, `minSpeechMs: 200`, `minSilenceMs: 300`, `speechPadMs: 200`).
    - `planWindows` greedily aggregates speech segments into windows bounded strictly to $\le 28\text{ s}$ ($\le 448,000$ samples), completely eliminating Whisper's $>30\text{ s}$ audio warning.
-   - Silence between windows is never fed to Whisper, eliminating silence hallucinations.
+   - Pauses and music gaps $< 5.0\text{ s}$ between speech segments are bridged with forced 2-second window overlap to guarantee no speech is lost on fast-paced Shorts or music-heavy videos.
+   - Long dead silence ($\ge 5.0\text{ s}$) between windows is omitted, eliminating silence hallucinations and saving compute.
    - Continuous speech runs $>28\text{ s}$ with no pause are split at the lowest-probability frame between 20 s and 28 s, or hard-split at 28 s with a 2-second forced overlap.
    - Short files (<5 s) or files with <1 s total speech fall back to a single window or fixed windows so quiet speech is never missed.
 
@@ -102,6 +103,7 @@ When a window is flagged, it is retried **once** by splitting into two halves:
    - Web Audio automatically resamples to 16 kHz during decode; the channels are downmixed to mono via `downmixToMono`.
    - The resulting `Float32Array` PCM buffer is transferred (zero-copy) back to the worker via a `transcribe-pcm` message and processed through a PCM window provider.
    - Files exceeding 200 MB that require fallback decoding throw `OutOfMemoryError` with a friendly conversion suggestion.
+4. **Pre-Whisper DSP Conditioning (`engine/src/audio/dsp.ts`):** Before Whisper receives 16 kHz mono PCM, the audio passes through a 2nd-order Butterworth Direct Form II Transposed biquad high-pass filter ($f_c = 80\text{ Hz}$) and peak amplitude normalization (targeting 0.95 peak). This removes inaudible sub-bass rumble, 808s from background music, and HVAC noise while boosting faint dialogue.
 
 ## Language detection
 

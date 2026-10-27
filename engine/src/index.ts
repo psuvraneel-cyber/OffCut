@@ -47,6 +47,12 @@ export {
   toSrt,
   toVtt,
 } from "./captions";
+export {
+  DSP_CONSTANTS,
+  applyHighPassFilter,
+  normalizePeak,
+  conditionAudio,
+} from "./audio/dsp";
 
 interface PendingRequest {
   file?: Blob;

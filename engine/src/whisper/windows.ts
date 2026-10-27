@@ -13,6 +13,7 @@ export const PLANNER_CONSTANTS = {
   frameSize: 512,
   sampleRate: 16000,
   maxSamples: 480000,
+  minSilenceGapToOmitSeconds: 5.0,
 } as const;
 
 export function createWindows(
@@ -120,6 +121,7 @@ export function planWindows(
   const windows: AudioWindow[] = [];
   let curWinStart = Math.max(0, splitSegments[0].start);
   let prevSegEnd = splitSegments[0].end;
+  const minGapToOmit = constants.minSilenceGapToOmitSeconds ?? PLANNER_CONSTANTS.minSilenceGapToOmitSeconds;
 
   for (let i = 1; i < splitSegments.length; i++) {
     const nextSeg = splitSegments[i];
@@ -129,18 +131,36 @@ export function planWindows(
       prevSegEnd = nextSeg.end;
     } else {
       const gap = Math.max(0, nextSeg.start - prevSegEnd);
-      const closeCut = prevSegEnd + Math.min(padSec, gap / 2);
-      const winEnd = Math.min(duration, Math.min(curWinStart + maxWindow, closeCut));
 
-      windows.push({
-        index: windows.length,
-        start: curWinStart,
-        end: Math.max(curWinStart + 0.1, winEnd),
-      });
+      if (gap >= minGapToOmit) {
+        // Long silence: omit dead air between segments
+        const closeCut = prevSegEnd + Math.min(padSec, gap / 2);
+        const winEnd = Math.min(duration, Math.min(curWinStart + maxWindow, closeCut));
 
-      const openCut = nextSeg.start - Math.min(padSec, gap / 2);
-      curWinStart = Math.max(0, openCut);
-      prevSegEnd = nextSeg.end;
+        windows.push({
+          index: windows.length,
+          start: curWinStart,
+          end: Math.max(curWinStart + 0.1, winEnd),
+        });
+
+        const openCut = nextSeg.start - Math.min(padSec, gap / 2);
+        curWinStart = Math.max(0, openCut);
+        prevSegEnd = nextSeg.end;
+      } else {
+        // Small gap or continuous speech over music: do not drop audio!
+        // Enforce forced overlap between consecutive windows so seam words are never lost
+        const closeCut = prevSegEnd + Math.min(padSec, gap / 2);
+        const winEnd = Math.min(duration, Math.min(curWinStart + maxWindow, Math.max(curWinStart + 0.1, closeCut)));
+
+        windows.push({
+          index: windows.length,
+          start: curWinStart,
+          end: winEnd,
+        });
+
+        curWinStart = Math.max(0, Math.min(nextSeg.start, winEnd - forcedOverlap));
+        prevSegEnd = nextSeg.end;
+      }
     }
   }
 

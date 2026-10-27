@@ -98,4 +98,21 @@ describe("planWindows (VAD-directed window planner)", () => {
     // Next window starts at 28 - 2 = 26
     expect(windows[1].start).toBeCloseTo(26.0, 1);
   });
+
+  it("bridges small gaps with forced overlap to prevent dropped words on short-form videos", () => {
+    const duration = 50.0;
+    const segments = [
+      { start: 0.0, end: 22.0 },
+      // 2.5s gap (e.g. background music / brief breath)
+      { start: 24.5, end: 48.0 },
+    ];
+    const probs = new Float32Array(Math.ceil(duration / (PLANNER_CONSTANTS.frameSize / PLANNER_CONSTANTS.sampleRate)));
+
+    const windows = planWindows(segments, probs, duration);
+
+    expect(windows.length).toBe(2);
+    // Window 0 and Window 1 must overlap so that the gap and boundary words are covered
+    expect(windows[1].start).toBeLessThan(windows[0].end);
+    expect(windows[0].end - windows[1].start).toBeGreaterThanOrEqual(PLANNER_CONSTANTS.forcedOverlapSeconds);
+  });
 });

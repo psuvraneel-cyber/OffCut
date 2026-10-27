@@ -7,6 +7,7 @@ import {
 } from "mediabunny";
 import { NoAudioTrackError } from "../errors";
 import type { AudioWindow } from "../types";
+import { conditionAudio } from "./dsp";
 import { downmixToMono, resampleMono } from "./resample";
 
 export class NeedsFallbackDecodeError extends Error {
@@ -133,7 +134,7 @@ class MediabunnyAudioProvider implements AudioWindowProvider {
     }
 
     onProgress?.(window.end);
-    return resampleMono(source, this.#sampleRate);
+    return conditionAudio(resampleMono(source, this.#sampleRate));
   }
 
   dispose(): void {
@@ -159,7 +160,9 @@ export class PcmAudioWindowProvider implements AudioWindowProvider {
     if (endSample <= startSample) {
       return new Float32Array();
     }
-    return this.#pcm.subarray(startSample, endSample).slice();
+    const slice = this.#pcm.subarray(startSample, endSample).slice();
+    const resampled = this.#sampleRate === 16_000 ? slice : resampleMono(slice, this.#sampleRate);
+    return conditionAudio(resampled);
   }
 
   dispose(): void {
