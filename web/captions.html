@@ -15,6 +15,7 @@
     <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Link previews (Instagram, WhatsApp, X, LinkedIn...). og:image has to be an absolute URL. -->
+    <meta name="author" content="Sauvraneel Paul" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Offcut" />
     <meta property="og:locale" content="en_IN" />
@@ -22,10 +23,14 @@
     <meta property="og:title" content="Free AI Captions &amp; Subtitle Generator (SRT &amp; VTT) · Offcut" />
     <meta property="og:description" content="Create SRT or VTT subtitles directly in your browser. 100% private, powered by local Whisper AI, zero server uploads." />
     <meta property="og:image" content="https://offcut-ai.pages.dev/og.png" />
+    <meta property="og:image:secure_url" content="https://offcut-ai.pages.dev/og.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Offcut Free Captions Generator. Make an SRT or VTT captions file in your browser." />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@paulsuvraeel" />
+    <meta name="twitter:creator" content="@paulsuvraeel" />
     <meta name="twitter:title" content="Free AI Captions &amp; Subtitle Generator (SRT &amp; VTT) · Offcut" />
     <meta name="twitter:description" content="Create SRT or VTT subtitles directly in your browser. 100% private, powered by local Whisper AI, zero server uploads." />
     <meta name="twitter:image" content="https://offcut-ai.pages.dev/og.png" />
@@ -35,24 +40,53 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Offcut Free Captions Generator",
-        "url": "https://offcut-ai.pages.dev/captions",
-        "applicationCategory": "MultimediaApplication",
-        "operatingSystem": "All modern web browsers",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "description": "Free, browser-based AI subtitle and caption generator. Generates timestamped SRT and VTT files from video or audio with on-device Whisper AI.",
-        "featureList": [
-          "In-browser AI transcription",
-          "Exports SRT and VTT caption files",
-          "Zero video or audio uploads",
-          "Word-level timestamp accuracy",
-          "Optional sound cue transcription",
-          "100% free with no watermarks"
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://offcut-ai.pages.dev/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Free Captions Studio",
+                "item": "https://offcut-ai.pages.dev/captions"
+              }
+            ]
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://offcut-ai.pages.dev/captions#webapp",
+            "name": "Offcut Free Captions Generator",
+            "url": "https://offcut-ai.pages.dev/captions",
+            "applicationCategory": "MultimediaApplication",
+            "operatingSystem": "All modern web browsers (Chrome, Edge, Brave, Safari, Firefox)",
+            "browserRequirements": "Requires WebGPU or modern WebCodecs support for hardware-accelerated processing",
+            "screenshot": "https://offcut-ai.pages.dev/og.png",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "creator": {
+              "@type": "Person",
+              "name": "Sauvraneel Paul",
+              "url": "https://github.com/psuvraneel-cyber"
+            },
+            "description": "Free, browser-based AI subtitle and caption generator. Generates timestamped SRT and VTT files from video or audio with on-device Whisper AI.",
+            "featureList": [
+              "In-browser AI transcription",
+              "Exports SRT and VTT caption files",
+              "Zero video or audio uploads",
+              "Word-level timestamp accuracy",
+              "Optional sound cue transcription",
+              "100% free with no watermarks"
+            ]
+          }
         ]
       }
     </script>

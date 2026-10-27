@@ -18,6 +18,7 @@
     <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Link previews (Instagram, WhatsApp, X, LinkedIn...). og:image has to be an absolute URL. -->
+    <meta name="author" content="Sauvraneel Paul" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Offcut" />
     <meta property="og:locale" content="en_IN" />
@@ -25,10 +26,14 @@
     <meta property="og:title" content="Offcut · Free AI Video Clipper &amp; Shorts Generator" />
     <meta property="og:description" content="Turn long videos into captioned 9:16 Reels, Shorts, and TikToks for free. 100% in-browser, private, and watermark-free." />
     <meta property="og:image" content="https://offcut-ai.pages.dev/og.png" />
+    <meta property="og:image:secure_url" content="https://offcut-ai.pages.dev/og.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Offcut. Free in-browser AI video clipper. Long videos in, captioned Reels out." />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@paulsuvraeel" />
+    <meta name="twitter:creator" content="@paulsuvraeel" />
     <meta name="twitter:title" content="Offcut · Free AI Video Clipper &amp; Shorts Generator" />
     <meta name="twitter:description" content="Turn long videos into captioned 9:16 Reels, Shorts, and TikToks for free. 100% in-browser, private, and watermark-free." />
     <meta name="twitter:image" content="https://offcut-ai.pages.dev/og.png" />
@@ -52,11 +57,18 @@
             "url": "https://offcut-ai.pages.dev/",
             "name": "Offcut",
             "applicationCategory": "MultimediaApplication",
-            "operatingSystem": "All modern web browsers",
+            "operatingSystem": "All modern web browsers (Chrome, Edge, Brave, Safari, Firefox)",
+            "browserRequirements": "Requires WebGPU or modern WebCodecs support for hardware-accelerated processing",
+            "screenshot": "https://offcut-ai.pages.dev/og.png",
             "offers": {
               "@type": "Offer",
               "price": "0",
               "priceCurrency": "USD"
+            },
+            "creator": {
+              "@type": "Person",
+              "name": "Sauvraneel Paul",
+              "url": "https://github.com/psuvraneel-cyber"
             },
             "description": "Free AI video clipper that runs entirely in your browser. Turns long videos into captioned vertical Reels, Shorts, and TikToks with zero uploads and no watermarks.",
             "featureList": [
@@ -67,6 +79,60 @@
               "Word-by-word animated captions",
               "Free SRT and VTT subtitle exports",
               "No watermarks"
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://offcut-ai.pages.dev/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is it really free?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. No subscription, no credit card, no account and no watermark. It can stay free because your own device does the heavy lifting, so there are no servers crunching video for us to pay for."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does my video get uploaded anywhere?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Offcut opens the file straight from your disk, and the transcription, clip picking, reframing, captions and export all run inside your browser tab. Not a single byte of your video is sent to us."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Which browsers and devices work?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "A recent version of Chrome or Edge on a laptop or desktop works best, because they support WebGPU, which makes the AI much faster. Firefox and Safari will work too, just more slowly. Phones and tablets can handle short videos."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is there a watermark?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Never. Your clips are yours, exported clean, with no logo and no “made with” sticker."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is it open source?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. The code is public on GitHub under the Apache-2.0 licence, so anyone can check that videos stay on the device, suggest fixes or run their own copy."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "So how do you make money?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Currently zero monetization. Later on, there will be an optional non-intrusive display ad on the processing screen. Ads will never be forced, never block a download, and never access your video."
+                }
+              }
             ]
           }
         ]
