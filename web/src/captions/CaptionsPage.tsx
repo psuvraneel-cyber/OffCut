@@ -19,6 +19,16 @@ import {
 } from '@offcut/engine'
 import { createRuntime, RuntimeAbortError, type JobProgress } from '@offcut/runtime'
 import { Logo } from '../components/Logo'
+import { CaptionPlayerOverlay } from './CaptionPlayerOverlay'
+import {
+  DEFAULT_STYLE_CONFIG,
+  HIGHLIGHT_COLORS,
+  STYLE_PRESETS,
+  type CaptionStyleConfig,
+  type CaptionStylePreset,
+} from './captionStyles'
+import { ExportProgressModal } from './ExportProgressModal'
+import { burnVideoWithCaptions } from './VideoBurner'
 import './CaptionsPage.css'
 
 interface LanguageOption {
@@ -139,6 +149,12 @@ export function CaptionsPage() {
   const [copied, setCopied] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [activeCueIndex, setActiveCueIndex] = useState<number | null>(null)
+  const [styleConfig, setStyleConfig] = useState<CaptionStyleConfig>(DEFAULT_STYLE_CONFIG)
+  const [exportModalOpen, setExportModalOpen] = useState(false)
+  const [exportProgress, setExportProgress] = useState({ currentSeconds: 0, totalSeconds: 1, fraction: 0 })
+  const [exportStatus, setExportStatus] = useState<'rendering' | 'finishing' | 'done' | 'error'>('rendering')
+  const [exportError, setExportError] = useState('')
+  const exportAbortRef = useRef<AbortController | null>(null)
 
   const mediaUrl = useMemo(() => {
     if (!file) return null
@@ -415,7 +431,72 @@ export function CaptionsPage() {
     }
   }
 
+  const handlePresetChange = (presetId: CaptionStylePreset) => {
+    const found = STYLE_PRESETS.find((p) => p.id === presetId)
+    if (!found) return
+    setStyleConfig((prev) => ({
+      ...prev,
+      preset: presetId,
+      highlightColor: found.defaultHighlight,
+      uppercase: found.uppercase,
+    }))
+  }
+
+  const handleBurnAndDownload = async () => {
+    if (!file) return
+    const abortController = new AbortController()
+    exportAbortRef.current = abortController
+    setExportModalOpen(true)
+    setExportStatus('rendering')
+    setExportProgress({ currentSeconds: 0, totalSeconds: 1, fraction: 0 })
+    setExportError('')
+
+    try {
+      const result = await burnVideoWithCaptions({
+        videoFile: file,
+        cues,
+        transcriptWords: transcript?.words,
+        styleConfig,
+        signal: abortController.signal,
+        onProgress: (p) => {
+          setExportProgress(p)
+          if (p.fraction >= 0.99) {
+            setExportStatus('finishing')
+          }
+        },
+      })
+
+      setExportStatus('done')
+      const baseName = file.name.replace(/\.[^/.]+$/, '')
+      const downloadUrl = URL.createObjectURL(result.blob)
+      const a = document.createElement('a')
+      a.href = downloadUrl
+      a.download = `${baseName}_captioned.${result.extension}`
+      a.click()
+      setTimeout(() => URL.revokeObjectURL(downloadUrl), 10000)
+    } catch (err) {
+      if (exportAbortRef.current?.signal.aborted) {
+        setExportModalOpen(false)
+        return
+      }
+      setExportStatus('error')
+      setExportError((err as Error)?.message || 'Export failed')
+    } finally {
+      exportAbortRef.current = null
+    }
+  }
+
+  const handleCancelExport = () => {
+    exportAbortRef.current?.abort()
+    setExportModalOpen(false)
+  }
+
   const handleStartOver = () => {
+    if (exportAbortRef.current) {
+      exportAbortRef.current.abort()
+      exportAbortRef.current = null
+    }
+    setExportModalOpen(false)
     if (mediaRef.current) {
       mediaRef.current.pause()
     }
@@ -695,10 +776,132 @@ export function CaptionsPage() {
                       className="captions-preview-video"
                     />
                   )}
+                  <CaptionPlayerOverlay
+                    mediaRef={mediaRef}
+                    cues={cues}
+                    transcriptWords={transcript?.words}
+                    styleConfig={styleConfig}
+                  />
                 </div>
                 <div className="captions-preview-hint">
                   Tip: Click the time button (e.g. ▶ 0:02.4) on any caption to jump to that moment in the video.
                 </div>
+                {cues.length > 0 && !file?.type.startsWith('audio/') && (
+                  <div className="captions-style-card">
+                    <div className="captions-style-row">
+                      <span className="captions-style-label">Style:</span>
+                      <div className="captions-style-pills">
+                        {STYLE_PRESETS.map((preset) => (
+                          <button
+                            key={preset.id}
+                            type="button"
+                            className={`captions-style-pill ${
+                              styleConfig.preset === preset.id
+                                ? 'captions-style-pill--active'
+                                : ''
+                            }`}
+                            onClick={() => handlePresetChange(preset.id)}
+                          >
+                            {preset.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="captions-style-row">
+                      <span className="captions-style-label">Position:</span>
+                      <div className="captions-style-pills">
+                        {(['bottom', 'center', 'top'] as const).map((pos) => (
+                          <button
+                            key={pos}
+                            type="button"
+                            className={`captions-style-pill ${
+                              styleConfig.position === pos
+                                ? 'captions-style-pill--active'
+                                : ''
+                            }`}
+                            onClick={() =>
+                              setStyleConfig((prev) => ({
+                                ...prev,
+                                position: pos,
+                              }))
+                            }
+                          >
+                            {pos.charAt(0).toUpperCase() + pos.slice(1)}
+                          </button>
+                        ))}
+                      </div>
+
+                      <span
+                        className="captions-style-label"
+                        style={{ minWidth: 'auto', marginLeft: 'auto' }}
+                      >
+                        Size:
+                      </span>
+                      <div className="captions-style-pills">
+                        {(['sm', 'md', 'lg'] as const).map((s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            className={`captions-style-pill ${
+                              styleConfig.size === s
+                                ? 'captions-style-pill--active'
+                                : ''
+                            }`}
+                            onClick={() =>
+                              setStyleConfig((prev) => ({ ...prev, size: s }))
+                            }
+                          >
+                            {s.toUpperCase()}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="captions-style-row">
+                      <span className="captions-style-label">Highlight:</span>
+                      <div className="captions-color-swatches">
+                        {HIGHLIGHT_COLORS.map((c) => (
+                          <button
+                            key={c.hex}
+                            type="button"
+                            className={`captions-color-swatch ${
+                              styleConfig.highlightColor === c.hex
+                                ? 'captions-color-swatch--active'
+                                : ''
+                            }`}
+                            style={{ backgroundColor: c.hex }}
+                            title={c.name}
+                            onClick={() =>
+                              setStyleConfig((prev) => ({
+                                ...prev,
+                                highlightColor: c.hex,
+                              }))
+                            }
+                          />
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        className={`captions-style-pill ${
+                          styleConfig.uppercase
+                            ? 'captions-style-pill--active'
+                            : ''
+                        }`}
+                        style={{ marginLeft: 'auto' }}
+                        onClick={() =>
+                          setStyleConfig((prev) => ({
+                            ...prev,
+                            uppercase: !prev.uppercase,
+                          }))
+                        }
+                      >
+                        {styleConfig.uppercase ? 'ALL CAPS' : 'Original Case'}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -722,9 +925,18 @@ export function CaptionsPage() {
               <div className="captions-results-view">
                 <div className="captions-toolbar">
                   <div className="captions-buttons-group">
+                    {!file?.type.startsWith('audio/') && (
+                      <button
+                        type="button"
+                        className="button button--primary captions-burn-btn"
+                        onClick={handleBurnAndDownload}
+                      >
+                        🎬 Burn & Download Video
+                      </button>
+                    )}
                     <button
                       type="button"
-                      className="button button--primary"
+                      className="button button--secondary"
                       onClick={handleDownloadSrt}
                     >
                       Download SRT
@@ -906,6 +1118,17 @@ export function CaptionsPage() {
             </div>
           </section>
         )}
+
+        <ExportProgressModal
+          isOpen={exportModalOpen}
+          currentSeconds={exportProgress.currentSeconds}
+          totalSeconds={exportProgress.totalSeconds}
+          fraction={exportProgress.fraction}
+          status={exportStatus}
+          errorMessage={exportError}
+          onCancel={handleCancelExport}
+          onClose={() => setExportModalOpen(false)}
+        />
       </main>
     </div>
   )

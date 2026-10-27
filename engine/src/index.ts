@@ -32,6 +32,7 @@ export type {
   Transcriber,
   TranscriberOptions,
   TranscribeOptions,
+  Word,
 } from "./types";
 export type { CaptionCue, CaptionOptions } from "./captions";
 export type {
