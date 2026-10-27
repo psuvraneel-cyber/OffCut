@@ -130,6 +130,7 @@ describe("Transcription Stage", () => {
         device: "webgpu",
       });
       expect(transcribeCallCount).toBe(1);
+      expect(forwardedOptions?.initialPrompt).toBe("Test prompt");
       expect(transcript.words[0]?.text).toBe("Hello");
       expect(reportedProgress).toHaveLength(2);
       expect(reportedProgress[0].fraction).toBeCloseTo(0.175);
