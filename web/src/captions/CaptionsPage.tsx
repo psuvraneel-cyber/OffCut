@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   createTranscriber,
   detectCapabilities,
@@ -31,11 +31,12 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
 }
 
-function formatMss(seconds: number): string {
-  const totalSec = Math.floor(Math.max(0, seconds))
+function formatTime(seconds: number): string {
+  const totalSec = Math.max(0, seconds)
   const m = Math.floor(totalSec / 60)
-  const s = totalSec % 60
-  return `${m}:${String(s).padStart(2, '0')}`
+  const s = Math.floor(totalSec % 60)
+  const tenths = Math.floor((totalSec % 1) * 10)
+  return `${m}:${String(s).padStart(2, '0')}.${tenths}`
 }
 
 function getBaseFilename(file: File | null): string {
@@ -96,10 +97,26 @@ export function CaptionsPage() {
   const [errorMessage, setErrorMessage] = useState('')
   const [copied, setCopied] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
+  const [activeCueIndex, setActiveCueIndex] = useState<number | null>(null)
+
+  const mediaUrl = useMemo(() => {
+    if (!file) return null
+    return URL.createObjectURL(file)
+  }, [file])
+
+  useEffect(() => {
+    return () => {
+      if (mediaUrl) {
+        URL.revokeObjectURL(mediaUrl)
+      }
+    }
+  }, [mediaUrl])
 
   const transcriberRef = useRef<Transcriber | null>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const mediaRef = useRef<HTMLVideoElement | HTMLAudioElement | null>(null)
+  const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([])
   const downloadMapRef = useRef<Map<string, { loaded: number; total: number }>>(new Map())
   const isFirstUseRef = useRef(true)
 
@@ -259,6 +276,136 @@ export function CaptionsPage() {
     })
   }
 
+  const handleTimeUpdate = () => {
+    if (!mediaRef.current) return
+    const time = mediaRef.current.currentTime
+    const idx = cues.findIndex((c) => time >= c.start && time <= c.end)
+    setActiveCueIndex(idx !== -1 ? idx : null)
+  }
+
+  const handleSeekTo = (time: number) => {
+    if (mediaRef.current) {
+      mediaRef.current.currentTime = Math.max(0, time)
+      mediaRef.current.play().catch(() => {})
+    }
+  }
+
+  const handleTimeChange = (index: number, field: 'start' | 'end', val: number) => {
+    if (isNaN(val) || val < 0) return
+    setCues((prev) => {
+      const next = [...prev]
+      const cur = next[index]
+      if (!cur) return prev
+      if (field === 'start') {
+        const newStart = Number(val.toFixed(2))
+        const newEnd = Math.max(newStart + 0.1, cur.end)
+        next[index] = { ...cur, start: newStart, end: Number(newEnd.toFixed(2)) }
+      } else {
+        const newEnd = Number(val.toFixed(2))
+        const newStart = Math.min(cur.start, Math.max(0, newEnd - 0.1))
+        next[index] = { ...cur, start: Number(newStart.toFixed(2)), end: newEnd }
+      }
+      return next
+    })
+  }
+
+  const handleInsertCue = (afterIndex: number) => {
+    setCues((prev) => {
+      const next = [...prev]
+      if (afterIndex === -1) {
+        const firstStart = next[0] ? next[0].start : 2.0
+        const newEnd = Number(Math.max(0.5, firstStart).toFixed(2))
+        const newStart = Number(Math.max(0, newEnd - 1.5).toFixed(2))
+        next.unshift({ start: newStart, end: newEnd, text: '' })
+        return next
+      }
+
+      const cur = next[afterIndex]
+      const following = next[afterIndex + 1]
+      const start = Number(cur.end.toFixed(2))
+      let end: number
+      if (following && following.start > start + 0.2) {
+        end = Number(following.start.toFixed(2))
+      } else {
+        end = Number((start + 2.0).toFixed(2))
+      }
+
+      next.splice(afterIndex + 1, 0, {
+        start,
+        end,
+        text: '',
+      })
+      return next
+    })
+  }
+
+  const handleDeleteCue = (index: number) => {
+    setCues((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleMergeWithNext = (index: number) => {
+    setCues((prev) => {
+      if (index >= prev.length - 1) return prev
+      const next = [...prev]
+      const cur = next[index]
+      const following = next[index + 1]
+      const mergedText = `${cur.text.trim()} ${following.text.trim()}`.trim()
+      const mergedCue: CaptionCue = {
+        start: cur.start,
+        end: following.end,
+        text: mergedText,
+      }
+      next.splice(index, 2, mergedCue)
+      return next
+    })
+  }
+
+  const handleSplitCue = (index: number) => {
+    setCues((prev) => {
+      const cur = prev[index]
+      if (!cur) return prev
+      const text = cur.text.trim()
+      if (!text) return prev
+
+      const textareaEl = textareaRefs.current[index]
+      let left = ''
+      let right = ''
+
+      if (textareaEl && typeof textareaEl.selectionStart === 'number') {
+        const pos = textareaEl.selectionStart
+        if (pos > 0 && pos < text.length) {
+          left = text.slice(0, pos).trim()
+          right = text.slice(pos).trim()
+        }
+      }
+
+      if (!left || !right) {
+        const words = text.split(/\s+/)
+        if (words.length <= 1) {
+          const mid = Math.ceil(text.length / 2)
+          left = text.slice(0, mid).trim()
+          right = text.slice(mid).trim()
+        } else {
+          const mid = Math.ceil(words.length / 2)
+          left = words.slice(0, mid).join(' ')
+          right = words.slice(mid).join(' ')
+        }
+      }
+
+      const duration = Math.max(0.4, cur.end - cur.start)
+      const ratio = left.length + right.length > 0 ? left.length / (left.length + right.length) : 0.5
+      const clampedRatio = Math.max(0.2, Math.min(0.8, ratio))
+      const splitTime = Number((cur.start + duration * clampedRatio).toFixed(2))
+
+      const cue1: CaptionCue = { start: cur.start, end: splitTime, text: left }
+      const cue2: CaptionCue = { start: splitTime, end: cur.end, text: right }
+
+      const next = [...prev]
+      next.splice(index, 1, cue1, cue2)
+      return next
+    })
+  }
+
   const handleDownloadSrt = () => {
     const srtContent = toSrt(cues)
     const filename = `${getBaseFilename(file)}.srt`
@@ -283,10 +430,14 @@ export function CaptionsPage() {
   }
 
   const handleStartOver = () => {
+    if (mediaRef.current) {
+      mediaRef.current.pause()
+    }
     setFile(null)
     setTranscript(null)
     setCues([])
     setErrorMessage('')
+    setActiveCueIndex(null)
     setStep('pick')
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
@@ -488,10 +639,45 @@ export function CaptionsPage() {
               </div>
             )}
 
+            {mediaUrl && (
+              <div className="captions-preview-card">
+                <div className="captions-preview-player-wrap">
+                  {file?.type.startsWith('audio/') ? (
+                    <audio
+                      ref={mediaRef as React.RefObject<HTMLAudioElement>}
+                      src={mediaUrl}
+                      controls
+                      onTimeUpdate={handleTimeUpdate}
+                      className="captions-preview-audio"
+                    />
+                  ) : (
+                    <video
+                      ref={mediaRef as React.RefObject<HTMLVideoElement>}
+                      src={mediaUrl}
+                      controls
+                      playsInline
+                      onTimeUpdate={handleTimeUpdate}
+                      className="captions-preview-video"
+                    />
+                  )}
+                </div>
+                <div className="captions-preview-hint">
+                  Tip: Click the time button (e.g. ▶ 0:02.4) on any caption to jump to that moment in the video.
+                </div>
+              </div>
+            )}
+
             {cues.length === 0 ? (
               <div className="captions-empty">
                 <p>No speech found in this file.</p>
                 <div className="captions-actions">
+                  <button
+                    type="button"
+                    className="button button--secondary"
+                    onClick={() => handleInsertCue(-1)}
+                  >
+                    + Add a caption manually
+                  </button>
                   <button type="button" className="button button--secondary" onClick={handleStartOver}>
                     Start over
                   </button>
@@ -533,23 +719,136 @@ export function CaptionsPage() {
                   </button>
                 </div>
 
+                <div className="captions-list-header">
+                  <span className="captions-list-count">
+                    {cues.length} {cues.length === 1 ? 'caption' : 'captions'}
+                  </span>
+                  <button
+                    type="button"
+                    className="captions-action-btn captions-action-btn--header"
+                    onClick={() => handleInsertCue(-1)}
+                  >
+                    + Add caption at start
+                  </button>
+                </div>
+
                 <div className="captions-list">
                   {cues.map((cue, index) => {
-                    const timeLabel = formatMss(cue.start)
-                    const accessibleLabel = `Caption ${index + 1}, ${timeLabel}`
+                    const accessibleLabel = `Caption ${index + 1}, ${formatTime(cue.start)} to ${formatTime(cue.end)}`
+                    const isActive = activeCueIndex === index
                     return (
-                      <div key={index} className="captions-item">
-                        <div className="captions-item__time mono">{timeLabel}</div>
+                      <div
+                        key={index}
+                        className={`captions-item ${isActive ? 'captions-item--active' : ''}`}
+                      >
+                        <div className="captions-item__header">
+                          <div className="captions-item__timing">
+                            <button
+                              type="button"
+                              className="captions-item__play-btn"
+                              onClick={() => handleSeekTo(cue.start)}
+                              title="Play video from this caption"
+                            >
+                              <span className="captions-item__play-icon" aria-hidden="true">▶</span>
+                              <span>{formatTime(cue.start)} → {formatTime(cue.end)}</span>
+                            </button>
+
+                            <div className="captions-item__time-adjusters">
+                              <label className="captions-time-field" title="Start time in seconds">
+                                <span className="captions-time-field__label">Start</span>
+                                <input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={cue.start}
+                                  onChange={(e) => {
+                                    const val = parseFloat(e.target.value)
+                                    if (!isNaN(val)) handleTimeChange(index, 'start', val)
+                                  }}
+                                  className="captions-time-field__input mono"
+                                />
+                                <span className="captions-time-field__unit">s</span>
+                              </label>
+                              <label className="captions-time-field" title="End time in seconds">
+                                <span className="captions-time-field__label">End</span>
+                                <input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={cue.end}
+                                  onChange={(e) => {
+                                    const val = parseFloat(e.target.value)
+                                    if (!isNaN(val)) handleTimeChange(index, 'end', val)
+                                  }}
+                                  className="captions-time-field__input mono"
+                                />
+                                <span className="captions-time-field__unit">s</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          <div className="captions-item__actions">
+                            <button
+                              type="button"
+                              className="captions-action-btn"
+                              title="Split into two captions at cursor or midpoint"
+                              onClick={() => handleSplitCue(index)}
+                            >
+                              ✂ Split
+                            </button>
+                            <button
+                              type="button"
+                              className="captions-action-btn"
+                              title="Insert a new caption right after this one"
+                              onClick={() => handleInsertCue(index)}
+                            >
+                              + Insert
+                            </button>
+                            <button
+                              type="button"
+                              className="captions-action-btn"
+                              title="Merge with next caption"
+                              disabled={index >= cues.length - 1}
+                              onClick={() => handleMergeWithNext(index)}
+                            >
+                              ↓ Merge
+                            </button>
+                            <button
+                              type="button"
+                              className="captions-action-btn captions-action-btn--delete"
+                              title="Delete this caption"
+                              onClick={() => handleDeleteCue(index)}
+                              aria-label={`Delete caption ${index + 1}`}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+
                         <textarea
+                          ref={(el) => {
+                            textareaRefs.current[index] = el
+                          }}
                           className="captions-item__textarea"
                           rows={2}
                           value={cue.text}
                           aria-label={accessibleLabel}
+                          placeholder="Enter caption text..."
                           onChange={(e) => handleCueTextChange(index, e.target.value)}
                         />
                       </div>
                     )
                   })}
+                </div>
+
+                <div className="captions-list-footer">
+                  <button
+                    type="button"
+                    className="button button--secondary"
+                    onClick={() => handleInsertCue(cues.length - 1)}
+                  >
+                    + Add caption at end
+                  </button>
                 </div>
               </div>
             )}
