@@ -34,7 +34,8 @@ export type {
   TranscribeOptions,
   Word,
 } from "./types";
-export type { CaptionCue, CaptionOptions } from "./captions";
+export type { CaptionCue, CaptionOptions, CaptionPacing } from "./captions";
+export { PACING_PRESETS } from "./captions";
 export type {
   NormalizedProgress,
   TranscriptionStageOptions,
