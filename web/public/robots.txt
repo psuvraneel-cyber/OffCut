@@ -1,0 +1,9 @@
+# Offcut robots.txt
+User-agent: *
+Allow: /
+
+# Exclude 404 error page from search index
+Disallow: /404.html
+
+# Sitemap location
+Sitemap: https://offcut-ai.pages.dev/sitemap.xml

@@ -29,6 +29,7 @@ desktop.ini
 # Python virtual environment & scratch
 .venv-asr/
 scratch/
+.taste-skill/
 
 # ASR evaluation assets stay local: they hold copyrighted (NPR), research-only
 # (SpokenCorpus) and non-commercial (CoSHE-500) audio and transcripts, and the
