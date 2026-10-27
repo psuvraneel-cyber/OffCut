@@ -678,9 +678,18 @@ export function CaptionsPage() {
               </div>
 
               {language === 'hinglish' && model === 'base' && (
-                <p className="captions-model-recommendation-hint">
-                  💡 <strong>Tip for Hinglish:</strong> If your video has laughter, auditorium echo, or fast dialogue, select <strong>Small Model</strong> above for maximum accuracy.
-                </p>
+                <div className="captions-model-recommendation-box">
+                  <div className="captions-model-recommendation-text">
+                    <strong>💡 Stand-up Comedy & Fast Speech Tip:</strong> Stand-up comedy videos with rapid jokes and audience laughter get <strong>3× higher accuracy</strong> on <strong>Small Model</strong> (~460 MB, runs fast on GPU).
+                  </div>
+                  <button
+                    type="button"
+                    className="button button--secondary button--sm captions-model-recommendation-btn"
+                    onClick={() => handleModelChange('small')}
+                  >
+                    ⚡ Switch to Small Model (Recommended)
+                  </button>
+                </div>
               )}
             </div>
 

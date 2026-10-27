@@ -31,4 +31,10 @@ describe("Devanagari to Hinglish transliterator", () => {
     expect(transliterateDevanagariToHinglish("नमस्ते!")).toBe("namaste!");
     expect(transliterateDevanagariToHinglish("क्या हाल है?")).toBe("kya haal hai?");
   });
+
+  it("transliterates stand-up comedy conversational dialogue accurately", () => {
+    const input = "अरे यार मतलब मैं वहां स्टेज पर गया और ऑडियंस हंसने लगी";
+    const expected = "arey yaar matlab main wahan stage par gaya aur audience hansne lagi";
+    expect(transliterateDevanagariToHinglish(input)).toBe(expected);
+  });
 });

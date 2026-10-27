@@ -66,7 +66,7 @@ let gpuLost = false;
 
 const GPU_LOSS_CHECK_MS = 250;
 export const DEFAULT_HINGLISH_PROMPT =
-  "Namaste dosto, this video is about tech, coding, tutorials and daily life. Please like, share and subscribe.";
+  "नमस्ते दोस्तों, यह बातचीत और स्टैंड-अप कॉमेडी का वीडियो है। इसमें Hindi and English mixed dialogue है।";
 
 transformersEnv.useBrowserCache = true;
 transformersEnv.allowRemoteModels = true;
@@ -489,19 +489,11 @@ async function runTranscription(
       // Dynamic language handling for Hinglish and Auto mode
       let activeWindowLanguage = lockedLanguage;
       if (isHinglish) {
-        if (calculateRms(audio) >= 0.01) {
-          try {
-            const detected = await detectLanguage(speechPipeline, audio, {
-              candidates: ["en", "hi", "ur"],
-              coerceHindustani: true,
-            });
-            activeWindowLanguage = detected === "en" ? "en" : "hi";
-          } catch {
-            activeWindowLanguage = "hi";
-          }
-        } else {
-          activeWindowLanguage = "hi";
-        }
+        // Hinglish is code-mixed Hindi & English.
+        // Whisper's Hindi decoder natively handles both Hindi speech AND English loanwords,
+        // which our Devanagari transliterator then converts into clean Roman Hinglish.
+        // Forcing Whisper to 'en' when Hindi is spoken causes severe 15-20s dropouts.
+        activeWindowLanguage = "hi";
       } else if (targetLanguage === "auto" && window.index > 0 && calculateRms(audio) >= 0.01) {
         try {
           activeWindowLanguage = await detectLanguage(speechPipeline, audio, { coerceHindustani: true });
@@ -551,11 +543,18 @@ async function runTranscription(
           const retryStartedAt = performance.now();
           const winDur = window.end - window.start;
 
-          // If foreign script was detected or too few words in English mode on a bilingual video, re-anchor to Hindi
+          // If foreign script was detected or speech was dropped (too few words, stopped early, started late,
+          // skipped speech, junk) in English mode on a bilingual/auto video, re-anchor to Hindi
           let retryLanguage = activeWindowLanguage;
           if (
             assess.reason === "foreign_script" ||
-            (isHinglish && assess.reason === "too_few_words" && activeWindowLanguage === "en")
+            ((isHinglish || targetLanguage === "auto") &&
+              activeWindowLanguage === "en" &&
+              (assess.reason === "too_few_words" ||
+                assess.reason === "stopped_early" ||
+                assess.reason === "started_late" ||
+                assess.reason === "skipped_speech" ||
+                assess.reason === "junk_output"))
           ) {
             retryLanguage = "hi";
           }
@@ -604,15 +603,18 @@ async function runTranscription(
             const half2Audio = audio.subarray(half2StartSample).slice();
 
             if (half1Audio.length > 0 && half2Audio.length > 0) {
+              const half1Lang = isHinglish ? "hi" : retryLanguage;
+              const half2Lang = isHinglish ? "hi" : retryLanguage;
+
               const retryOpts1: Record<string, unknown> = {
                 return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
-                language: retryLanguage,
+                language: half1Lang,
                 task: "transcribe",
                 max_new_tokens: maxNewTokensFor(half1Audio.length / 16000),
               };
               const retryOpts2: Record<string, unknown> = {
                 return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
-                language: retryLanguage,
+                language: half2Lang,
                 task: "transcribe",
                 max_new_tokens: maxNewTokensFor(half2Audio.length / 16000),
               };
@@ -626,8 +628,8 @@ async function runTranscription(
               const out1 = await speechPipeline(half1Audio, retryOpts1);
               const out2 = await speechPipeline(half2Audio, retryOpts2);
 
-              const half1Res = parseWindowOutput(out1, { index: 0, start: 0, end: half1EndRel }, isHinglish ? "hinglish" : retryLanguage);
-              const half2Res = parseWindowOutput(out2, { index: 1, start: half2StartRel, end: winDur }, isHinglish ? "hinglish" : retryLanguage);
+              const half1Res = parseWindowOutput(out1, { index: 0, start: 0, end: half1EndRel }, isHinglish ? "hinglish" : half1Lang);
+              const half2Res = parseWindowOutput(out2, { index: 1, start: half2StartRel, end: winDur }, isHinglish ? "hinglish" : half2Lang);
               const retryMerged = mergeWindowTranscripts([half1Res, half2Res], winDur);
 
               const retryTokens = retryMerged.words.map((w) => normalizeToken(w.text)).filter(Boolean);
