@@ -16,6 +16,7 @@ import {
   type Progress,
   type Transcriber,
   type Transcript,
+  type ModelSize,
 } from '@offcut/engine'
 import { Logo } from '../components/Logo'
 import './CaptionsPage.css'
@@ -79,6 +80,13 @@ function getErrorMessage(error: unknown): string {
 export function CaptionsPage() {
   const [capabilities, setCapabilities] = useState<CapabilityReport | null>(null)
   const [file, setFile] = useState<File | null>(null)
+  const [model, setModel] = useState<ModelSize>(() => {
+    try {
+      const saved = localStorage.getItem('offcut_preferred_model')
+      if (saved === 'base' || saved === 'small') return saved
+    } catch {}
+    return 'base'
+  })
   const [includeSoundCues, setIncludeSoundCues] = useState(false)
   const [step, setStep] = useState<'pick' | 'working' | 'result' | 'error'>('pick')
   const [statusText, setStatusText] = useState('')
@@ -101,7 +109,7 @@ export function CaptionsPage() {
 
   useEffect(() => {
     if (!transcriberRef.current) {
-      transcriberRef.current = createTranscriber({ model: 'base' })
+      transcriberRef.current = createTranscriber({ model })
     }
 
     const onUnload = () => {
@@ -115,7 +123,20 @@ export function CaptionsPage() {
       transcriberRef.current?.dispose()
       transcriberRef.current = null
     }
-  }, [])
+  }, [model])
+
+  const handleModelChange = (newModel: ModelSize) => {
+    if (newModel === model) return
+    setModel(newModel)
+    try {
+      localStorage.setItem('offcut_preferred_model', newModel)
+    } catch {}
+    if (transcriberRef.current) {
+      transcriberRef.current.dispose()
+      transcriberRef.current = createTranscriber({ model: newModel })
+      isFirstUseRef.current = true
+    }
+  }
 
   const handleFileSelected = (selectedFile: File) => {
     setFile(selectedFile)
@@ -134,7 +155,7 @@ export function CaptionsPage() {
     if (!file) return
 
     if (!transcriberRef.current) {
-      transcriberRef.current = createTranscriber({ model: 'base' })
+      transcriberRef.current = createTranscriber({ model })
     }
 
     const abortController = new AbortController()
@@ -311,6 +332,50 @@ export function CaptionsPage() {
 
         {step === 'pick' && (
           <section className="captions-card" aria-label="Upload video or audio">
+            <div className="captions-model-selector" role="radiogroup" aria-label="Speech recognition model">
+              <div className="captions-model-header">
+                <span className="captions-model-label">Accuracy & Model:</span>
+                <span className="captions-model-sublabel">Runs 100% on your device</span>
+              </div>
+              <div className="captions-model-options">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={model === 'base'}
+                  className={`captions-model-card ${model === 'base' ? 'captions-model-card--active' : ''}`}
+                  onClick={() => handleModelChange('base')}
+                >
+                  <div className="captions-model-card__title">
+                    <span className="captions-model-card__radio" />
+                    <span className="captions-model-card__name">Base Model</span>
+                    <span className="captions-model-card__pill">Fast</span>
+                  </div>
+                  <p className="captions-model-card__desc">
+                    ~181 MB download. Fastest processing; ideal for clean podcasts and quick clips.
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={model === 'small'}
+                  className={`captions-model-card ${model === 'small' ? 'captions-model-card--active' : ''}`}
+                  onClick={() => handleModelChange('small')}
+                >
+                  <div className="captions-model-card__title">
+                    <span className="captions-model-card__radio" />
+                    <span className="captions-model-card__name">Small Model</span>
+                    <span className="captions-model-card__pill captions-model-card__pill--highlight">
+                      {capabilities?.webgpu ? 'Recommended for Shorts' : 'High Accuracy'}
+                    </span>
+                  </div>
+                  <p className="captions-model-card__desc">
+                    ~460 MB download. 3× model capacity; vastly superior on background music, fast speech, and slang.
+                  </p>
+                </button>
+              </div>
+            </div>
+
             <input
               ref={fileInputRef}
               type="file"
