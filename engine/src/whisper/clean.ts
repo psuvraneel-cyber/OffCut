@@ -17,7 +17,7 @@ export function cleanWords(raw: readonly RawTimedText[], duration: number): Word
   const initial: Word[] = [];
 
   for (const item of merged) {
-    const text = stripSpeakerDash(item.text.trim()).trim();
+    const text = stripSpeakerDash(item.text.replace(/\uFFFD/g, "").trim()).trim();
     if (!text || ARTEFACT.test(text)) {
       continue;
     }
@@ -84,7 +84,7 @@ export function cleanSegments(raw: readonly RawTimedText[], duration: number): W
   const segments: WindowSegment[] = [];
 
   for (const item of raw) {
-    const text = item.text.trim();
+    const text = item.text.replace(/\uFFFD/g, "").trim();
     if (!text || ARTEFACT.test(text)) {
       continue;
     }
@@ -112,13 +112,17 @@ export function normalizeWords(words: readonly WindowWord[], duration: number): 
   }
 
   const sorted: WindowWord[] = words
-    .filter((word) => word.text.trim().length > 0)
+    .map((word) => ({
+      ...word,
+      text: word.text.replace(/\uFFFD/g, "").trim(),
+    }))
+    .filter((word) => word.text.length > 0)
     .map((word) => {
       const start = clampTimestamp(word.start, duration);
       const end = clampTimestamp(word.end, duration);
       return {
         ...(word.kind ? { kind: word.kind } : {}),
-        text: word.text.trim(),
+        text: word.text,
         start: Math.min(start, end),
         end: Math.max(start, end),
       };
@@ -192,7 +196,10 @@ function mergeLeadingSpaceTokens(raw: readonly RawTimedText[]): RawTimedText[] {
   const merged: RawTimedText[] = [];
 
   for (const item of raw) {
-    const text = item.text;
+    const text = (item.text ?? "").replace(/\uFFFD/g, "");
+    if (!text) {
+      continue;
+    }
     const startsWithWhitespace = /^\s/.test(text);
     const previous = merged.at(-1);
     const isArtefact = text.trim().length === 0 || ARTEFACT.test(text.trim());
@@ -200,8 +207,8 @@ function mergeLeadingSpaceTokens(raw: readonly RawTimedText[]): RawTimedText[] {
     if (previous && !startsWithWhitespace && !isArtefact && previous.text.trim().length > 0) {
       previous.text += text;
       previous.end = item.end ?? previous.end;
-    } else {
-      merged.push({ ...item });
+    } else if (text.trim().length > 0) {
+      merged.push({ ...item, text });
     }
   }
 

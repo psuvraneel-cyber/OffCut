@@ -65,8 +65,7 @@ let gpuDevice: WatchedGpuDevice | null = null;
 let gpuLost = false;
 
 const GPU_LOSS_CHECK_MS = 250;
-export const DEFAULT_HINGLISH_PROMPT =
-  "नमस्ते दोस्तों, यह बातचीत और स्टैंड-अप कॉमेडी का वीडियो है। इसमें Hindi and English mixed dialogue है।";
+export const DEFAULT_HINGLISH_PROMPT = "";
 
 transformersEnv.useBrowserCache = true;
 transformersEnv.allowRemoteModels = true;
@@ -261,15 +260,15 @@ async function createPipeline(
 
 // Junk words and repetition loops never reach captions, even when a retry didn't fix them.
 function sanitizeWindowResult(result: WindowTranscript, targetLanguage: CaptionLanguage = "auto"): WindowTranscript {
-  if (result.granularity !== "word") {
-    return result;
-  }
   const cleanScriptWords = filterForeignScriptWords(result.words, targetLanguage);
   const words = removeRepetitionLoops(removeJunkWords(cleanScriptWords, targetLanguage));
-  if (words.length === result.words.length) {
+  if (words.length === 0) {
+    return { ...result, words: [], segments: [] };
+  }
+  if (words.length === result.words.length && result.granularity === "word") {
     return result;
   }
-  return { ...result, words, segments: groupWordsIntoSegments(words) };
+  return { ...result, granularity: "word", words, segments: groupWordsIntoSegments(words) };
 }
 
 function countWordsInRegion(
@@ -418,7 +417,7 @@ async function runTranscription(
   // --- LANGUAGE DETECTION & PROMPT BIASING ---
   const isHinglish = language === "hinglish";
   const targetLanguage = isHinglish ? "hi" : language;
-  const initialPrompt = options.initialPrompt ?? (isHinglish ? DEFAULT_HINGLISH_PROMPT : undefined);
+  const initialPrompt = options.initialPrompt ?? undefined;
 
   let lockedLanguage = targetLanguage;
   if (targetLanguage === "auto") {
@@ -489,11 +488,19 @@ async function runTranscription(
       // Dynamic language handling for Hinglish and Auto mode
       let activeWindowLanguage = lockedLanguage;
       if (isHinglish) {
-        // Hinglish is code-mixed Hindi & English.
-        // Whisper's Hindi decoder natively handles both Hindi speech AND English loanwords,
-        // which our Devanagari transliterator then converts into clean Roman Hinglish.
-        // Forcing Whisper to 'en' when Hindi is spoken causes severe 15-20s dropouts.
-        activeWindowLanguage = "hi";
+        if (calculateRms(audio) >= 0.01) {
+          try {
+            const detected = await detectLanguage(speechPipeline, audio, {
+              candidates: ["en", "hi", "ur"],
+              coerceHindustani: true,
+            });
+            activeWindowLanguage = detected === "en" ? "en" : "hi";
+          } catch {
+            activeWindowLanguage = "hi";
+          }
+        } else {
+          activeWindowLanguage = "hi";
+        }
       } else if (targetLanguage === "auto" && window.index > 0 && calculateRms(audio) >= 0.01) {
         try {
           activeWindowLanguage = await detectLanguage(speechPipeline, audio, { coerceHindustani: true });
@@ -514,7 +521,6 @@ async function runTranscription(
       };
       if (initialPrompt) {
         pipelineOptions.initial_prompt = initialPrompt;
-        pipelineOptions.prompt = initialPrompt;
       }
 
       const output = await speechPipeline(audio, pipelineOptions);
@@ -557,6 +563,12 @@ async function runTranscription(
                 assess.reason === "junk_output"))
           ) {
             retryLanguage = "hi";
+          } else if (
+            (isHinglish || targetLanguage === "auto") &&
+            activeWindowLanguage === "hi" &&
+            (assess.reason === "repetition_loop" || assess.reason === "junk_output")
+          ) {
+            retryLanguage = "en";
           }
 
           if (winDur >= 1.0) {
@@ -603,8 +615,32 @@ async function runTranscription(
             const half2Audio = audio.subarray(half2StartSample).slice();
 
             if (half1Audio.length > 0 && half2Audio.length > 0) {
-              const half1Lang = isHinglish ? "hi" : retryLanguage;
-              const half2Lang = isHinglish ? "hi" : retryLanguage;
+              let half1Lang = retryLanguage;
+              let half2Lang = retryLanguage;
+              if (isHinglish) {
+                if (calculateRms(half1Audio) >= 0.01) {
+                  try {
+                    const d1 = await detectLanguage(speechPipeline, half1Audio, {
+                      candidates: ["en", "hi", "ur"],
+                      coerceHindustani: true,
+                    });
+                    half1Lang = d1 === "en" ? "en" : "hi";
+                  } catch {
+                    half1Lang = retryLanguage;
+                  }
+                }
+                if (calculateRms(half2Audio) >= 0.01) {
+                  try {
+                    const d2 = await detectLanguage(speechPipeline, half2Audio, {
+                      candidates: ["en", "hi", "ur"],
+                      coerceHindustani: true,
+                    });
+                    half2Lang = d2 === "en" ? "en" : "hi";
+                  } catch {
+                    half2Lang = retryLanguage;
+                  }
+                }
+              }
 
               const retryOpts1: Record<string, unknown> = {
                 return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
@@ -618,12 +654,6 @@ async function runTranscription(
                 task: "transcribe",
                 max_new_tokens: maxNewTokensFor(half2Audio.length / 16000),
               };
-              if (initialPrompt) {
-                retryOpts1.initial_prompt = initialPrompt;
-                retryOpts1.prompt = initialPrompt;
-                retryOpts2.initial_prompt = initialPrompt;
-                retryOpts2.prompt = initialPrompt;
-              }
 
               const out1 = await speechPipeline(half1Audio, retryOpts1);
               const out2 = await speechPipeline(half2Audio, retryOpts2);
@@ -723,17 +753,28 @@ function parseWindowOutput(
   const result = (normalized ?? {}) as SpeechPipelineOutput;
   const chunks = Array.isArray(result.chunks) ? result.chunks : [];
   const language = typeof result.language === "string" ? result.language : requestedLanguage;
-  const raw = chunks.map((chunk): RawTimedText => ({
-    text: chunk.text ?? "",
-    start: chunk.timestamp?.[0] ?? null,
-    end: chunk.timestamp?.[1] ?? null,
-  }));
+  const raw = chunks
+    .map((chunk): RawTimedText => ({
+      text: (chunk.text ?? "").replace(/\uFFFD/g, ""),
+      start: chunk.timestamp?.[0] ?? null,
+      end: chunk.timestamp?.[1] ?? null,
+    }))
+    .filter((item) => item.text.trim().length > 0);
 
   const hasUsableTimestamps = raw.some(
     (item) => typeof item.start === "number" && typeof item.end === "number",
   );
   if (!hasUsableTimestamps) {
-    const rawText = typeof result.text === "string" ? result.text : "";
+    const rawText = (typeof result.text === "string" ? result.text : "").replace(/\uFFFD/g, "").trim();
+    if (!rawText) {
+      return {
+        window,
+        granularity: "word",
+        language,
+        segments: [],
+        words: [],
+      };
+    }
     const text = requestedLanguage === "hinglish" ? transliterateDevanagariToHinglish(rawText) : rawText;
     const fallback = cleanSegments([{ text, start: 0, end: window.end - window.start }], window.end - window.start);
     return {

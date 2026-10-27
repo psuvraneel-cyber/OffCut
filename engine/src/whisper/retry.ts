@@ -47,11 +47,14 @@ export interface WindowAssessment {
 }
 
 export function normalizeToken(text: string): string {
-  return text.toLowerCase().replace(/[^\p{L}\p{M}\p{N}]/gu, "");
+  return text.replace(/\uFFFD/g, "").toLowerCase().replace(/[^\p{L}\p{M}\p{N}]/gu, "");
 }
 
 // A word with no letters or digits ("-", "- - - -", "...") or an impossibly long one is never speech.
 export function isJunkWord(text: string, language: CaptionLanguage = "auto"): boolean {
+  if (text.includes("\uFFFD")) {
+    return true;
+  }
   return normalizeToken(text) === "" ||
     characterCount(text) > RETRY_CONSTANTS.maxWordCharacters ||
     !isWordAllowedInLanguage(text, language);
@@ -61,7 +64,12 @@ export function removeJunkWords<T extends { text: string; kind?: string }>(
   words: readonly T[],
   language: CaptionLanguage = "auto",
 ): T[] {
-  return words.filter((word) => word.kind === "cue" || !isJunkWord(word.text, language));
+  return words.filter((word) => {
+    if (word.text.includes("\uFFFD")) {
+      return false;
+    }
+    return word.kind === "cue" || !isJunkWord(word.text, language);
+  });
 }
 
 // Keeps the first copy of any 1–maxPhraseLength word phrase repeated minRepeats or more times in a row.
@@ -70,7 +78,7 @@ export function removeRepetitionLoops<T extends { text: string; kind?: string }>
   minRepeats = RETRY_CONSTANTS.minRepeats,
   maxPhraseLength = RETRY_CONSTANTS.maxPhraseLength,
 ): T[] {
-  const tokens = words.map((word) => normalizeToken(word.text));
+  const tokens = words.map((word) => normalizeToken(word.text) || word.text.trim().toLowerCase());
   const kept: T[] = [];
   let i = 0;
 
@@ -245,7 +253,7 @@ export function assessWindow(
   }
 
   // 1. Check repetition loop first
-  const tokens = words.map((w) => normalizeToken(w.text)).filter(Boolean);
+  const tokens = words.map((w) => normalizeToken(w.text) || w.text.trim().toLowerCase()).filter(Boolean);
 
   if (hasRepetitionLoop(tokens, minRepeats, maxPhraseLen)) {
     return {
@@ -268,9 +276,10 @@ export function assessWindow(
     };
   }
 
-  // 1c. Junk output: too many words without letters or digits
+  // 1c. Junk output: words containing replacement characters, or too many words without letters or digits
+  const hasCorruptedChar = words.some((w) => w.text.includes("\uFFFD"));
   const junkWords = countJunkWords(words);
-  if (junkWords > 0 && junkWords >= maxJunkRatio * words.length) {
+  if (hasCorruptedChar || (junkWords > 0 && junkWords >= maxJunkRatio * words.length)) {
     return {
       flagged: true,
       reason: "junk_output",

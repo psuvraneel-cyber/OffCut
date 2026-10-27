@@ -130,7 +130,7 @@ export function buildCaptionCues(
     if (!includeSoundCues && w.kind === "cue") {
       continue;
     }
-    const trimmed = w.text.trim();
+    const trimmed = (w.text ?? "").replace(/\uFFFD/g, "").trim();
     if (trimmed.length === 0) {
       continue;
     }

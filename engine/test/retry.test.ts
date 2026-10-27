@@ -293,4 +293,29 @@ describe("Cue handling in retry and assessment", () => {
     expect(assessment.flagged).toBe(true);
     expect(assessment.reason).toBe("foreign_script");
   });
+
+  it("identifies \\uFFFD replacement characters as junk words and purges them", () => {
+    expect(isJunkWord("\uFFFD")).toBe(true);
+    expect(isJunkWord("Hello\uFFFD")).toBe(true);
+    expect(isJunkWord("\uFFFD\uFFFD\uFFFD\uFFFD")).toBe(true);
+
+    const cleaned = removeJunkWords([
+      { text: "Hello", start: 0, end: 1 },
+      { text: "\uFFFD\uFFFD\uFFFD", start: 1, end: 2 },
+      { text: "world", start: 2, end: 3 },
+    ]);
+    expect(cleaned.map((w) => w.text)).toEqual(["Hello", "world"]);
+  });
+
+  it("flags output with \\uFFFD corrupted characters as junk_output", () => {
+    const speech = [{ start: 0, end: 10 }];
+    const words = [
+      { text: "\uFFFD\uFFFD\uFFFD", start: 1.0, end: 5.0 },
+      { text: "\uFFFD\uFFFD\uFFFD", start: 5.0, end: 9.0 },
+    ];
+    const result = makeWindowResult(words);
+    const assessment = assessWindow(result, speech);
+    expect(assessment.flagged).toBe(true);
+    expect(assessment.reason).toBe("junk_output");
+  });
 });

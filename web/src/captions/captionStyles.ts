@@ -119,7 +119,7 @@ export interface TimedWord {
  * If Whisper word timings match, uses exact timestamps; otherwise smoothly interpolates across cue duration.
  */
 export function getCueWords(cue: CaptionCue, transcriptWords?: readonly Word[]): TimedWord[] {
-  const rawWords = cue.text.trim().split(/\s+/).filter(Boolean)
+  const rawWords = cue.text.replace(/\uFFFD/g, '').trim().split(/\s+/).filter(Boolean)
   if (rawWords.length === 0) return []
 
   if (transcriptWords && transcriptWords.length > 0) {

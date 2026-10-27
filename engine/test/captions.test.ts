@@ -247,4 +247,17 @@ describe("Caption building and export", () => {
     expect(toSrt(cues)).toBe("");
     expect(toVtt(cues)).toBe("WEBVTT\n");
   });
+
+  it("filters out \\uFFFD unicode replacement characters from caption cues", () => {
+    const words: Word[] = [
+      { text: "\uFFFD\uFFFD\uFFFD", start: 0.0, end: 0.5 },
+      { text: "Valid\uFFFD", start: 0.5, end: 1.0 },
+      { text: "caption", start: 1.0, end: 1.5 },
+    ];
+
+    const cues = buildCaptionCues(words);
+    expect(cues.length).toBe(1);
+    expect(cues[0].text).toBe("Valid caption");
+    expect(cues[0].text.includes("\uFFFD")).toBe(false);
+  });
 });

@@ -204,4 +204,34 @@ describe("sound cues", () => {
     expect(segments[1].text).toBe("यह ऑफ़कट है॥");
     expect(segments[2].text).toBe("धन्यवाद");
   });
+
+  it("strips \\uFFFD unicode replacement characters from words and drops isolated replacement tokens", () => {
+    const words = cleanWords(
+      [
+        { text: " Hello\uFFFD", start: 1.0, end: 1.5 },
+        { text: " \uFFFD\uFFFD\uFFFD", start: 1.5, end: 2.0 },
+        { text: " world", start: 2.0, end: 2.5 },
+      ],
+      5,
+    );
+
+    expect(words).toEqual([
+      { text: "Hello", start: 1.0, end: 1.5 },
+      { text: "world", start: 2.0, end: 2.5 },
+    ]);
+  });
+
+  it("strips \\uFFFD unicode replacement characters from cleanSegments", () => {
+    const segments = cleanSegments(
+      [
+        { text: " \uFFFD\uFFFD\uFFFD ", start: 0, end: 1 },
+        { text: " Namaste\uFFFD dosto ", start: 1, end: 3 },
+      ],
+      5,
+    );
+
+    expect(segments.length).toBe(1);
+    expect(segments[0].text).toBe("Namaste dosto");
+    expect(segments[0].words.map((w) => w.text)).toEqual(["Namaste", "dosto"]);
+  });
 });
