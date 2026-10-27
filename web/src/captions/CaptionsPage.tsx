@@ -97,6 +97,14 @@ function getBaseFilename(file: File | null): string {
   return lastDot > 0 ? name.slice(0, lastDot) : name
 }
 
+function getFileFormat(file: File): string {
+  const ext = file.name.split('.').pop()
+  if (ext && ext.length <= 5) return ext.toUpperCase()
+  if (file.type.startsWith('video/')) return 'VIDEO'
+  if (file.type.startsWith('audio/')) return 'AUDIO'
+  return 'MEDIA'
+}
+
 function triggerDownload(content: string, filename: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType })
   const url = URL.createObjectURL(blob)
@@ -146,6 +154,7 @@ export function CaptionsPage() {
   const [progressPercent, setProgressPercent] = useState<number | null>(null)
   const [transcript, setTranscript] = useState<Transcript | null>(null)
   const [cues, setCues] = useState<CaptionCue[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [copied, setCopied] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
@@ -421,6 +430,22 @@ export function CaptionsPage() {
     triggerDownload(vttContent, filename, 'text/vtt')
   }
 
+  const handleDownloadTxt = () => {
+    const txtContent = cues.map((c) => c.text).join('\n\n')
+    const filename = `${getBaseFilename(file)}_transcript.txt`
+    triggerDownload(txtContent, filename, 'text/plain;charset=utf-8')
+  }
+
+  const filteredCuesWithIndex = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase()
+    if (!query) {
+      return cues.map((cue, index) => ({ cue, index }))
+    }
+    return cues
+      .map((cue, index) => ({ cue, index }))
+      .filter(({ cue }) => cue.text.toLowerCase().includes(query))
+  }, [cues, searchQuery])
+
   const handleCopyText = async () => {
     const allText = cues.map((c) => c.text).join('\n')
     try {
@@ -504,6 +529,7 @@ export function CaptionsPage() {
     setFile(null)
     setTranscript(null)
     setCues([])
+    setSearchQuery('')
     setErrorMessage('')
     setActiveCueIndex(null)
     setStep('pick')
@@ -519,20 +545,27 @@ export function CaptionsPage() {
           <a className="captions-header__logo" href="/" aria-label="Offcut home">
             <Logo />
           </a>
-          <a className="captions-header__back" href="/">
-            ← Back to Offcut
-          </a>
+          <div className="captions-header__actions">
+            <div className="captions-header__privacy-badge" title="All processing happens on your device using WebGPU">
+              <span className="captions-dot" aria-hidden="true" />
+              <span>100% On-Device</span>
+            </div>
+            <a className="captions-header__back" href="/">
+              ← Back to Offcut
+            </a>
+          </div>
         </div>
       </header>
 
       <main className="captions-main">
         <section className="captions-intro">
-          <h1 className="captions-title">Free captions file</h1>
+          <h1 className="captions-title">Free in-browser captions</h1>
           <p className="captions-subtitle">
-            Your video never leaves your device. The speech model runs in your browser.
+            Your video never leaves your computer. The speech model runs client-side with WebGPU.
           </p>
           <div className="captions-note-row">
-            <span className="captions-badge mono">Now supporting English, Hindi & Hinglish</span>
+            <span className="captions-badge mono">English • Hindi • Hinglish</span>
+            <span className="captions-badge-subtle">Zero uploads • 100% private</span>
           </div>
         </section>
 
@@ -649,46 +682,105 @@ export function CaptionsPage() {
               }}
             />
 
-            <button
-              type="button"
-              className={`captions-dropzone ${isDragging ? 'captions-dropzone--active' : ''}`}
-              onClick={() => fileInputRef.current?.click()}
-              onDragOver={(e) => {
-                e.preventDefault()
-                setIsDragging(true)
-              }}
-              onDragLeave={() => setIsDragging(false)}
-              onDrop={handleDrop}
-              aria-label={file ? `Selected file: ${file.name}. Click to choose another file.` : 'Choose or drop a video or audio file'}
-            >
-              <div className="captions-dropzone__icon" aria-hidden="true">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="17 8 12 3 7 8" />
-                  <line x1="12" y1="3" x2="12" y2="15" />
-                </svg>
+            {file ? (
+              <div className="captions-selected-card">
+                <div className="captions-selected-card__icon" aria-hidden="true">
+                  {file.type.startsWith('audio/') ? (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                      <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                    </svg>
+                  ) : (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
+                      <line x1="7" y1="2" x2="7" y2="22" />
+                      <line x1="17" y1="2" x2="17" y2="22" />
+                      <line x1="2" y1="12" x2="22" y2="12" />
+                      <line x1="2" y1="7" x2="7" y2="7" />
+                      <line x1="2" y1="17" x2="7" y2="17" />
+                      <line x1="17" y1="17" x2="22" y2="17" />
+                      <line x1="17" y1="7" x2="22" y2="7" />
+                    </svg>
+                  )}
+                </div>
+                <div className="captions-selected-card__body">
+                  <span className="captions-selected-card__name" title={file.name}>{file.name}</span>
+                  <div className="captions-selected-card__meta">
+                    <span className="captions-chip mono">{getFileFormat(file)}</span>
+                    <span className="captions-chip mono">{formatFileSize(file.size)}</span>
+                    <span className="captions-chip captions-chip--ready">Ready</span>
+                  </div>
+                </div>
+                <div className="captions-selected-card__actions">
+                  <button
+                    type="button"
+                    className="button button--secondary button--sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    title="Choose a different file"
+                  >
+                    Change
+                  </button>
+                  <button
+                    type="button"
+                    className="captions-remove-btn"
+                    onClick={() => {
+                      setFile(null)
+                      if (fileInputRef.current) fileInputRef.current.value = ''
+                    }}
+                    title="Remove file"
+                    aria-label="Remove selected file"
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
-              <p className="captions-dropzone__prompt">
-                {file ? 'Click or drop to replace file' : 'Click to choose a video or audio file, or drag and drop here'}
-              </p>
-              <p className="captions-dropzone__sub">MP4, WebM, MP3, WAV, OGG, or FLAC</p>
-            </button>
-
-            {file && (
-              <div className="captions-file-info">
-                <span className="captions-file-name">{file.name}</span>
-                <span className="captions-file-size mono">{formatFileSize(file.size)}</span>
-              </div>
+            ) : (
+              <button
+                type="button"
+                className={`captions-dropzone ${isDragging ? 'captions-dropzone--active' : ''}`}
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  setIsDragging(true)
+                }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={handleDrop}
+                aria-label="Choose or drop a video or audio file"
+              >
+                <div className="captions-dropzone__icon" aria-hidden="true">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                </div>
+                <p className="captions-dropzone__prompt">
+                  Click to choose a video or audio file, or drag and drop here
+                </p>
+                <p className="captions-dropzone__sub">MP4, WebM, MP3, WAV, OGG, or FLAC</p>
+              </button>
             )}
 
             <div className="captions-options">
-              <label className="captions-checkbox-label">
+              <label className="captions-switch-wrap" htmlFor="captions-sound-cues-toggle">
                 <input
+                  id="captions-sound-cues-toggle"
                   type="checkbox"
+                  role="switch"
+                  aria-checked={includeSoundCues}
+                  className="captions-switch-input"
                   checked={includeSoundCues}
                   onChange={(e) => setIncludeSoundCues(e.target.checked)}
                 />
-                <span>Include sound cues like (laughing)</span>
+                <span className="captions-switch-track" aria-hidden="true">
+                  <span className="captions-switch-thumb" />
+                </span>
+                <div className="captions-switch-text">
+                  <span className="captions-switch-title">Include sound cues</span>
+                  <span className="captions-switch-desc">
+                    Transcribes non-speech audio events like (laughing), (applause), or (music)
+                  </span>
+                </div>
               </label>
             </div>
 
@@ -699,15 +791,26 @@ export function CaptionsPage() {
                 disabled={!file}
                 onClick={handleStartTranscribing}
               >
-                Make captions
+                <span>Make captions</span>
+                <span className="captions-submit-btn__arrow" aria-hidden="true">→</span>
               </button>
             </div>
           </section>
         )}
 
         {step === 'working' && (
-          <section className="captions-card" aria-label="Transcription in progress">
+          <section className="captions-card captions-card--working" aria-label="Transcription in progress">
             <div className="captions-working">
+              <div className="captions-working__header">
+                <div className="captions-working__pulse-pill">
+                  <span className="captions-working__pulse-dot" aria-hidden="true" />
+                  <span>WebGPU Neural Engine Active</span>
+                </div>
+                {progressPercent !== null && (
+                  <span className="captions-working__percent mono">{Math.round(progressPercent)}%</span>
+                )}
+              </div>
+
               <div
                 className="captions-progress-bar"
                 role="progressbar"
@@ -724,6 +827,18 @@ export function CaptionsPage() {
 
               <div className="captions-status" aria-live="polite">
                 <p className="captions-status-text">{statusText}</p>
+              </div>
+
+              <div className="captions-working__stages" aria-hidden="true">
+                <span className={`captions-stage-chip ${(progressPercent ?? 0) >= 10 ? 'captions-stage-chip--done' : 'captions-stage-chip--active'}`}>
+                  ✓ Model Ready
+                </span>
+                <span className={`captions-stage-chip ${(progressPercent ?? 0) >= 30 ? ((progressPercent ?? 0) >= 80 ? 'captions-stage-chip--done' : 'captions-stage-chip--active') : ''}`}>
+                  🎧 Decoding Audio
+                </span>
+                <span className={`captions-stage-chip ${(progressPercent ?? 0) >= 80 ? 'captions-stage-chip--active' : ''}`}>
+                  ✍️ Aligning Words
+                </span>
               </div>
 
               <div className="captions-actions">
@@ -958,10 +1073,18 @@ export function CaptionsPage() {
                     <button
                       type="button"
                       className="button button--secondary"
+                      onClick={handleDownloadTxt}
+                      title="Download clean plain text transcript"
+                    >
+                      Download TXT
+                    </button>
+                    <button
+                      type="button"
+                      className={`button button--secondary ${copied ? 'button--copied' : ''}`}
                       onClick={handleCopyText}
                       aria-live="polite"
                     >
-                      {copied ? 'Copied' : 'Copy text'}
+                      {copied ? '✓ Copied!' : 'Copy text'}
                     </button>
                   </div>
                   <button
@@ -974,20 +1097,64 @@ export function CaptionsPage() {
                 </div>
 
                 <div className="captions-list-header">
-                  <span className="captions-list-count">
-                    {cues.length} {cues.length === 1 ? 'caption' : 'captions'}
-                  </span>
-                  <button
-                    type="button"
-                    className="captions-action-btn captions-action-btn--header"
-                    onClick={() => handleInsertCue(-1)}
-                  >
-                    + Add caption at start
-                  </button>
+                  <div className="captions-list-header__left">
+                    <span className="captions-list-count">
+                      {searchQuery
+                        ? `Showing ${filteredCuesWithIndex.length} of ${cues.length} captions`
+                        : `${cues.length} ${cues.length === 1 ? 'caption' : 'captions'}`}
+                    </span>
+                    <button
+                      type="button"
+                      className="captions-action-btn captions-action-btn--header"
+                      onClick={() => handleInsertCue(-1)}
+                    >
+                      + Add caption at start
+                    </button>
+                  </div>
+
+                  <div className="captions-search-box">
+                    <span className="captions-search-icon" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                      </svg>
+                    </span>
+                    <input
+                      type="search"
+                      className="captions-search-input"
+                      placeholder="Search transcript..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      aria-label="Filter captions"
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        className="captions-search-clear"
+                        onClick={() => setSearchQuery('')}
+                        aria-label="Clear search filter"
+                        title="Clear filter"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="captions-list">
-                  {cues.map((cue, index) => {
+                  {filteredCuesWithIndex.length === 0 ? (
+                    <div className="captions-search-empty">
+                      <p>No captions match &ldquo;<strong>{searchQuery}</strong>&rdquo;</p>
+                      <button
+                        type="button"
+                        className="button button--secondary button--sm"
+                        onClick={() => setSearchQuery('')}
+                      >
+                        Clear search filter
+                      </button>
+                    </div>
+                  ) : (
+                    filteredCuesWithIndex.map(({ cue, index }) => {
                     const accessibleLabel = `Caption ${index + 1}, ${formatTime(cue.start)} to ${formatTime(cue.end)}`
                     const isActive = activeCueIndex === index
                     return (
@@ -1092,7 +1259,8 @@ export function CaptionsPage() {
                         />
                       </div>
                     )
-                  })}
+                  })
+                )}
                 </div>
 
                 <div className="captions-list-footer">

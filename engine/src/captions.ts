@@ -8,14 +8,55 @@ export const CAPTION_CONSTANTS = {
   minCueSeconds: 0.7,
 } as const;
 
+export type CaptionPacing = "viral" | "balanced" | "subtitle";
+
+export interface CaptionOptions extends Partial<typeof CAPTION_CONSTANTS> {
+  includeSoundCues?: boolean; // default false
+  pacing?: CaptionPacing;
+  maxWordsPerCue?: number;
+}
+
+export const PACING_PRESETS: Record<
+  CaptionPacing,
+  {
+    maxCharsPerLine: number;
+    maxLines: number;
+    maxCueSeconds: number;
+    maxGapSeconds: number;
+    minCueSeconds: number;
+    maxWordsPerCue: number;
+  }
+> = {
+  viral: {
+    maxCharsPerLine: 18,
+    maxLines: 1,
+    maxCueSeconds: 1.8,
+    maxGapSeconds: 0.6,
+    minCueSeconds: 0.35,
+    maxWordsPerCue: 3,
+  },
+  balanced: {
+    maxCharsPerLine: 28,
+    maxLines: 2,
+    maxCueSeconds: 3.2,
+    maxGapSeconds: 0.8,
+    minCueSeconds: 0.5,
+    maxWordsPerCue: 6,
+  },
+  subtitle: {
+    maxCharsPerLine: 32,
+    maxLines: 2,
+    maxCueSeconds: 5.0,
+    maxGapSeconds: 1.0,
+    minCueSeconds: 0.7,
+    maxWordsPerCue: 14,
+  },
+};
+
 export interface CaptionCue {
   start: number;
   end: number;
   text: string;
-}
-
-export interface CaptionOptions extends Partial<typeof CAPTION_CONSTANTS> {
-  includeSoundCues?: boolean; // default false
 }
 
 // Sentence boundary marks: Latin (. ? !) and Devanagari Hindi Purna Viram (।) and Deergh Viram (॥)
@@ -68,11 +109,19 @@ export function buildCaptionCues(
   words: readonly Word[],
   options?: CaptionOptions,
 ): CaptionCue[] {
-  const maxCharsPerLine = options?.maxCharsPerLine ?? CAPTION_CONSTANTS.maxCharsPerLine;
-  const maxLines = options?.maxLines ?? CAPTION_CONSTANTS.maxLines;
-  const maxCueSeconds = options?.maxCueSeconds ?? CAPTION_CONSTANTS.maxCueSeconds;
-  const maxGapSeconds = options?.maxGapSeconds ?? CAPTION_CONSTANTS.maxGapSeconds;
-  const minCueSeconds = options?.minCueSeconds ?? CAPTION_CONSTANTS.minCueSeconds;
+  const pacingConfig = options?.pacing ? PACING_PRESETS[options.pacing] : undefined;
+
+  const maxCharsPerLine =
+    options?.maxCharsPerLine ?? pacingConfig?.maxCharsPerLine ?? CAPTION_CONSTANTS.maxCharsPerLine;
+  const maxLines = options?.maxLines ?? pacingConfig?.maxLines ?? CAPTION_CONSTANTS.maxLines;
+  const maxCueSeconds =
+    options?.maxCueSeconds ?? pacingConfig?.maxCueSeconds ?? CAPTION_CONSTANTS.maxCueSeconds;
+  const maxGapSeconds =
+    options?.maxGapSeconds ?? pacingConfig?.maxGapSeconds ?? CAPTION_CONSTANTS.maxGapSeconds;
+  const minCueSeconds =
+    options?.minCueSeconds ?? pacingConfig?.minCueSeconds ?? CAPTION_CONSTANTS.minCueSeconds;
+  const maxWordsPerCue =
+    options?.maxWordsPerCue ?? pacingConfig?.maxWordsPerCue ?? Infinity;
   const includeSoundCues = options?.includeSoundCues ?? false;
 
   // 1. Drop words with kind === "cue" unless includeSoundCues is true. Drop words whose trimmed text is empty.
@@ -114,8 +163,9 @@ export function buildCaptionCues(
     const durationTooLong = word.end - currentGroup[0].start > maxCueSeconds;
     const sentenceEnded = SENTENCE_END_REGEX.test(previous.text);
     const doesNotFit = !canFitInCaption(candidateGroup, maxLines, maxCharsPerLine);
+    const wordsCountTooHigh = candidateGroup.length > maxWordsPerCue;
 
-    if (pauseTooLong || durationTooLong || sentenceEnded || doesNotFit) {
+    if (pauseTooLong || durationTooLong || sentenceEnded || doesNotFit || wordsCountTooHigh) {
       groups.push(currentGroup);
       currentGroup = [word];
     } else {

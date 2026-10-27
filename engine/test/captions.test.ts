@@ -202,6 +202,44 @@ describe("Caption building and export", () => {
     ]);
   });
 
+  it("Pacing 'viral' chunks long speech into punchy 1-3 word reels cues", () => {
+    const words: Word[] = [
+      { text: "This", start: 0.0, end: 0.3 },
+      { text: "is", start: 0.3, end: 0.5 },
+      { text: "how", start: 0.5, end: 0.8 },
+      { text: "viral", start: 0.8, end: 1.1 },
+      { text: "captions", start: 1.1, end: 1.5 },
+      { text: "actually", start: 1.5, end: 1.8 },
+      { text: "work", start: 1.8, end: 2.1 },
+    ];
+
+    const cues = buildCaptionCues(words, { pacing: "viral" });
+    // Max 3 words / 18 chars per cue
+    expect(cues).toEqual([
+      { start: 0.0, end: 0.8, text: "This is how" },
+      { start: 0.8, end: 1.5, text: "viral captions" },
+      { start: 1.5, end: 2.1, text: "actually work" },
+    ]);
+  });
+
+  it("Pacing 'balanced' chunks speech into 4-6 word comfortable phrases", () => {
+    const words: Word[] = [
+      { text: "One", start: 0.0, end: 0.3 },
+      { text: "two", start: 0.3, end: 0.6 },
+      { text: "three", start: 0.6, end: 0.9 },
+      { text: "four", start: 0.9, end: 1.2 },
+      { text: "five", start: 1.2, end: 1.5 },
+      { text: "six", start: 1.5, end: 1.8 },
+      { text: "seven", start: 1.8, end: 2.1 },
+    ];
+
+    const cues = buildCaptionCues(words, { pacing: "balanced" });
+    expect(cues).toEqual([
+      { start: 0.0, end: 1.8, text: "One two three four five six" },
+      { start: 1.8, end: 2.3, text: "seven" },
+    ]);
+  });
+
   it('Empty input gives [], then "" (SRT) and "WEBVTT\\n" (VTT)', () => {
     const cues = buildCaptionCues([]);
     expect(cues).toEqual([]);

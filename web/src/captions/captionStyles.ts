@@ -1,8 +1,16 @@
-import type { CaptionCue, Word } from '@offcut/engine'
+import type { CaptionCue, CaptionPacing, Word } from '@offcut/engine'
 
-export type CaptionStylePreset = 'viral' | 'beast' | 'neon' | 'clean' | 'classic'
+export type CaptionStylePreset =
+  | 'viral'
+  | 'beast'
+  | 'fire'
+  | 'comic'
+  | 'neon'
+  | 'clean'
+  | 'classic'
 export type CaptionPosition = 'bottom' | 'center' | 'top'
-export type CaptionSize = 'sm' | 'md' | 'lg'
+export type CaptionSize = 'sm' | 'md' | 'lg' | 'xl'
+export type { CaptionPacing }
 
 export interface CaptionStyleConfig {
   preset: CaptionStylePreset
@@ -10,6 +18,7 @@ export interface CaptionStyleConfig {
   highlightColor: string
   size: CaptionSize
   uppercase: boolean
+  pacing: CaptionPacing
 }
 
 export interface PresetDetails {
@@ -24,40 +33,56 @@ export interface PresetDetails {
 export const STYLE_PRESETS: readonly PresetDetails[] = [
   {
     id: 'viral',
-    name: 'Viral Pop',
-    tagline: 'Bold punchy font, yellow highlight, heavy stroke',
+    name: 'Hormozi Pop',
+    tagline: 'High impact black outline with electric yellow punch',
     defaultHighlight: '#FFE600',
     uppercase: true,
     hasPill: false,
   },
   {
     id: 'beast',
-    name: 'Beast Green',
-    tagline: 'High energy, neon green active word, dark shadow',
+    name: 'Beast Neon',
+    tagline: 'High energy, neon lime active word with deep drop shadow',
     defaultHighlight: '#00FF66',
     uppercase: true,
     hasPill: false,
   },
   {
+    id: 'fire',
+    name: 'Heatwave Red',
+    tagline: 'Fiery coral active word, dramatic punch for high hooks',
+    defaultHighlight: '#FF3355',
+    uppercase: true,
+    hasPill: false,
+  },
+  {
+    id: 'comic',
+    name: 'Marker Box',
+    tagline: 'Bold highlighter badge behind active word (TikTok sticker style)',
+    defaultHighlight: '#FFE600',
+    uppercase: true,
+    hasPill: false,
+  },
+  {
     id: 'neon',
-    name: 'Neon Signal',
-    tagline: 'Cyber glow, cyan active word with soft dark pill',
-    defaultHighlight: '#6FE3FF',
+    name: 'Cyber Glow',
+    tagline: 'Cyan neon bloom with rounded dark cyber pill',
+    defaultHighlight: '#00F0FF',
     uppercase: true,
     hasPill: true,
   },
   {
     id: 'clean',
-    name: 'Clean Box',
-    tagline: 'Modern minimal, rounded translucent backdrop',
-    defaultHighlight: '#C9B8FF',
+    name: 'Frosted Glass',
+    tagline: 'Modern luxury, rounded translucent frosted glass backdrop',
+    defaultHighlight: '#C4B5FD',
     uppercase: false,
     hasPill: true,
   },
   {
     id: 'classic',
-    name: 'Classic Sub',
-    tagline: 'Traditional bottom subtitles with solid drop shadow',
+    name: 'Cinema Sub',
+    tagline: 'Traditional movie subtitle with soft legible shadow',
     defaultHighlight: '#FFE600',
     uppercase: false,
     hasPill: false,
@@ -65,11 +90,12 @@ export const STYLE_PRESETS: readonly PresetDetails[] = [
 ]
 
 export const HIGHLIGHT_COLORS = [
-  { hex: '#FFE600', name: 'Yellow' },
-  { hex: '#00FF66', name: 'Neon Green' },
-  { hex: '#6FE3FF', name: 'Signal Cyan' },
-  { hex: '#D77BFF', name: 'Orchid' },
-  { hex: '#FF5C8A', name: 'Coral Pink' },
+  { hex: '#FFE600', name: 'Viral Yellow' },
+  { hex: '#00FF66', name: 'Electric Green' },
+  { hex: '#00F0FF', name: 'Cyber Cyan' },
+  { hex: '#FF3355', name: 'Coral Red' },
+  { hex: '#A855F7', name: 'Vibrant Purple' },
+  { hex: '#FF9900', name: 'Neon Orange' },
   { hex: '#FFFFFF', name: 'Pure White' },
 ] as const
 
@@ -79,6 +105,7 @@ export const DEFAULT_STYLE_CONFIG: CaptionStyleConfig = {
   highlightColor: '#FFE600',
   size: 'md',
   uppercase: true,
+  pacing: 'viral',
 }
 
 export interface TimedWord {

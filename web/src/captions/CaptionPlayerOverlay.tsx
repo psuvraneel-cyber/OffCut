@@ -95,6 +95,11 @@ export function CaptionPlayerOverlay({
   return (
     <div
       className={`captions-overlay ${positionClass} ${sizeClass} ${presetClass}`}
+      style={
+        {
+          '--caption-highlight': styleConfig.highlightColor,
+        } as React.CSSProperties
+      }
       aria-hidden="true"
     >
       <div className="captions-overlay__box">
@@ -111,7 +116,7 @@ export function CaptionPlayerOverlay({
                 isActive ? 'captions-overlay__word--active' : ''
               }`}
               style={
-                isActive
+                isActive && styleConfig.preset !== 'comic'
                   ? { color: styleConfig.highlightColor }
                   : undefined
               }
