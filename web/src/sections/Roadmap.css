@@ -135,6 +135,15 @@
   cursor: progress;
 }
 
+.roadmap__vote:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.roadmap__vote:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
 .roadmap__arrow {
   width: 0.9em;
   height: 0.9em;
@@ -158,6 +167,45 @@
   border: 1px dashed var(--glass-border);
   border-radius: var(--radius-card);
   color: var(--ink-soft);
+}
+
+.roadmap__banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid rgba(122, 77, 255, 0.25);
+  border-radius: var(--radius-card);
+  background: rgba(122, 77, 255, 0.06);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.roadmap__banner-retry {
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  color: var(--violet-deep);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.roadmap__banner-retry:hover {
+  border-color: var(--violet);
+  background: var(--mist);
+}
+
+.roadmap__banner-retry:active {
+  transform: scale(0.96);
 }
 
 .roadmap__problem .button {

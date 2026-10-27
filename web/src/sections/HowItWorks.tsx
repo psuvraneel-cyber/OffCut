@@ -143,9 +143,14 @@ export function HowItWorks() {
           </ol>
         </div>
 
-        <p className="mono how__footnote">
-          Bytes of video uploaded: <strong>0</strong>
-        </p>
+        <div className="how__footnote">
+          <p className="mono how__footnote-stat">
+            Bytes of video uploaded: <strong>0</strong>
+          </p>
+          <a className="how__footnote-link" href="/captions">
+            Try the caption studio in your browser &rarr;
+          </a>
+        </div>
       </div>
     </section>
   )

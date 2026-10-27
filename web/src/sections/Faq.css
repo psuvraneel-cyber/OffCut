@@ -63,6 +63,14 @@
   color: var(--violet-deep);
 }
 
+.faq__question:active .faq__icon {
+  transform: scale(0.92);
+}
+
+.faq__item[open] .faq__question:active .faq__icon {
+  transform: rotate(180deg) scale(0.92);
+}
+
 /* A plus that turns into a minus. */
 .faq__icon {
   position: relative;
@@ -73,8 +81,8 @@
   border-radius: 50%;
   background: var(--glass);
   transition:
-    background var(--dur-med) var(--ease-out),
-    transform var(--dur-med) var(--ease-out);
+    background 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .faq__icon::before,
@@ -88,7 +96,7 @@
   margin: -1px 0 0 -0.4rem;
   border-radius: 2px;
   background: var(--violet-deep);
-  transition: transform var(--dur-med) var(--ease-out);
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .faq__icon::after {
@@ -119,7 +127,7 @@
 
 /* A gentle fade as an answer opens (skipped by the global reduced-motion rule). */
 .faq__item[open] .faq__answer {
-  animation: faq-open var(--dur-med) var(--ease-out);
+  animation: faq-open 200ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 @keyframes faq-open {

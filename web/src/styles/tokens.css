@@ -44,5 +44,5 @@
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --dur-fast: 180ms;
-  --dur-med: 420ms;
+  --dur-med: 220ms;
 }

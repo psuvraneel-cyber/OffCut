@@ -22,6 +22,44 @@ const STATUS_LABELS: Record<FeatureStatus, string> = {
 // A vote waits this long for a bot-check token before giving up.
 const TOKEN_TIMEOUT_MS = 15_000
 
+const FALLBACK_FEATURES: Feature[] = [
+  {
+    id: 'hindi-captions',
+    title: 'Hindi & Hinglish captions',
+    description: 'Accurate captions for Hindi and Hinglish speech.',
+    status: 'building',
+    votes: 42,
+  },
+  {
+    id: 'caption-styles',
+    title: 'More caption styles',
+    description: 'New fonts, colours, emoji and animation presets.',
+    status: 'planned',
+    votes: 29,
+  },
+  {
+    id: 'batch-export',
+    title: 'Export all clips at once',
+    description: 'Render every selected clip in one go.',
+    status: 'idea',
+    votes: 18,
+  },
+  {
+    id: 'auto-broll',
+    title: 'Auto B-roll suggestions',
+    description: 'Suggest cut-aways and zooms to keep viewers watching.',
+    status: 'idea',
+    votes: 14,
+  },
+  {
+    id: 'desktop-app',
+    title: 'Desktop app',
+    description: 'A faster installable app for long podcasts.',
+    status: 'planned',
+    votes: 35,
+  },
+]
+
 export function Roadmap() {
   const sectionRef = useRef<HTMLElement>(null)
   const widgetRef = useRef<HTMLDivElement>(null)
@@ -70,7 +108,10 @@ export function Roadmap() {
         setList('ready')
       })
       .catch(() => {
-        if (!controller.signal.aborted) setList('error')
+        if (!controller.signal.aborted) {
+          setFeatures(FALLBACK_FEATURES)
+          setList('error')
+        }
       })
     return () => controller.abort()
   }, [refresh])
@@ -290,10 +331,10 @@ export function Roadmap() {
         )}
 
         {list === 'error' && (
-          <div className="roadmap__problem" role="alert">
-            <p>The roadmap couldn’t load. Check your connection and try again.</p>
-            <button type="button" className="button button--primary" onClick={retry}>
-              Try again
+          <div className="roadmap__banner" role="status">
+            <span>Live roadmap data offline &middot; Showing planned roadmap preview</span>
+            <button type="button" className="roadmap__banner-retry" onClick={retry}>
+              Retry connection
             </button>
           </div>
         )}
@@ -302,11 +343,11 @@ export function Roadmap() {
           <p className="roadmap__problem">Nothing on the roadmap yet. Check back soon.</p>
         )}
 
-        {list === 'ready' && features.length > 0 && (
+        {(list === 'ready' || list === 'error') && features.length > 0 && (
           <ul className="roadmap__list">
             {features.map((feature) => {
               const isVoted = voted.has(feature.id)
-              const isBusy = pending.has(feature.id)
+              const isBusy = pending.has(feature.id) || list === 'error'
               const count = `${feature.votes} ${feature.votes === 1 ? 'vote' : 'votes'}`
               return (
                 <li key={feature.id} className={`roadmap__card roadmap__card--${feature.status}`}>
@@ -321,6 +362,7 @@ export function Roadmap() {
                       className={`button roadmap__vote${isVoted ? ' is-voted' : ''}`}
                       aria-pressed={isVoted}
                       aria-disabled={isBusy || undefined}
+                      disabled={list === 'error'}
                       onClick={() => toggleVote(feature)}
                     >
                       <svg className="roadmap__arrow" viewBox="0 0 16 16" aria-hidden="true">

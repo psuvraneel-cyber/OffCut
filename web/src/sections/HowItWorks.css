@@ -162,14 +162,42 @@
 }
 
 .how__footnote {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   border-top: 1px solid var(--glass-border);
   color: var(--ink-soft);
 }
 
+.how__footnote-stat {
+  margin: 0;
+}
+
+.how__footnote-link {
+  color: var(--violet-deep);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.how__footnote-link:hover {
+  color: var(--violet);
+  text-decoration: underline;
+}
+
 .how__footnote strong {
   color: var(--violet-deep);
   font-weight: 400;
+}
+
+@media (max-width: 899px) {
+  .how__station-body {
+    max-width: none;
+  }
 }
 
 /* Wide screens: the intro stays put on the left while the pipeline scrolls past it. */
