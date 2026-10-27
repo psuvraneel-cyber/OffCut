@@ -24,6 +24,7 @@ import {
   DEFAULT_STYLE_CONFIG,
   HIGHLIGHT_COLORS,
   STYLE_PRESETS,
+  type CaptionPacing,
   type CaptionStyleConfig,
   type CaptionStylePreset,
 } from './captionStyles'
@@ -255,7 +256,10 @@ export function CaptionsPage() {
       })
 
       setTranscript(result)
-      const generatedCues = buildCaptionCues(result.words, { includeSoundCues })
+      const generatedCues = buildCaptionCues(result.words, {
+        includeSoundCues,
+        pacing: styleConfig.pacing,
+      })
       setCues(generatedCues)
       setStep('result')
     } catch (err) {
@@ -466,6 +470,17 @@ export function CaptionsPage() {
       highlightColor: found.defaultHighlight,
       uppercase: found.uppercase,
     }))
+  }
+
+  const handlePacingChange = (newPacing: CaptionPacing) => {
+    setStyleConfig((prev) => ({ ...prev, pacing: newPacing }))
+    if (transcript?.words && transcript.words.length > 0) {
+      const generated = buildCaptionCues(transcript.words, {
+        includeSoundCues,
+        pacing: newPacing,
+      })
+      setCues(generated)
+    }
   }
 
   const handleBurnAndDownload = async () => {
@@ -911,7 +926,49 @@ export function CaptionsPage() {
                 {cues.length > 0 && !file?.type.startsWith('audio/') && (
                   <div className="captions-style-card">
                     <div className="captions-style-row">
-                      <span className="captions-style-label">Style:</span>
+                      <span className="captions-style-label">Pacing:</span>
+                      <div className="captions-style-pills">
+                        <button
+                          type="button"
+                          className={`captions-style-pill ${
+                            styleConfig.pacing === 'viral'
+                              ? 'captions-style-pill--active'
+                              : ''
+                          }`}
+                          onClick={() => handlePacingChange('viral')}
+                          title="1-3 words per cue. High-retention rapid chunking for TikTok, Reels & Shorts."
+                        >
+                          ⚡ Viral (1-3 words)
+                        </button>
+                        <button
+                          type="button"
+                          className={`captions-style-pill ${
+                            styleConfig.pacing === 'balanced'
+                              ? 'captions-style-pill--active'
+                              : ''
+                          }`}
+                          onClick={() => handlePacingChange('balanced')}
+                          title="4-6 words per cue. Natural flow for podcasts, interviews & explainers."
+                        >
+                          ✨ Balanced (4-6 words)
+                        </button>
+                        <button
+                          type="button"
+                          className={`captions-style-pill ${
+                            styleConfig.pacing === 'subtitle'
+                              ? 'captions-style-pill--active'
+                              : ''
+                          }`}
+                          onClick={() => handlePacingChange('subtitle')}
+                          title="Standard movie & YouTube sentences."
+                        >
+                          📄 Subtitle (Full line)
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="captions-style-row">
+                      <span className="captions-style-label">Preset:</span>
                       <div className="captions-style-pills">
                         {STYLE_PRESETS.map((preset) => (
                           <button
@@ -923,6 +980,7 @@ export function CaptionsPage() {
                                 : ''
                             }`}
                             onClick={() => handlePresetChange(preset.id)}
+                            title={preset.tagline}
                           >
                             {preset.name}
                           </button>
@@ -961,7 +1019,7 @@ export function CaptionsPage() {
                         Size:
                       </span>
                       <div className="captions-style-pills">
-                        {(['sm', 'md', 'lg'] as const).map((s) => (
+                        {(['sm', 'md', 'lg', 'xl'] as const).map((s) => (
                           <button
                             key={s}
                             type="button"

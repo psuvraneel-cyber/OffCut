@@ -68,19 +68,24 @@ export function drawCaptionOnCanvas(
   }
 
   // Responsive font size based on canvas width (e.g. 1080p base)
-  const sizeMultipliers = { sm: 0.038, md: 0.048, lg: 0.06 }
+  const sizeMultipliers: Record<string, number> = {
+    sm: 0.038,
+    md: 0.05,
+    lg: 0.065,
+    xl: 0.082,
+  }
   const fontSize = Math.max(
     20,
-    Math.round(width * (sizeMultipliers[styleConfig.size] || 0.048))
+    Math.round(width * (sizeMultipliers[styleConfig.size] || 0.05))
   )
   const lineHeight = fontSize * 1.25
 
   ctx.save()
-  ctx.font = `800 ${fontSize}px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`
+  ctx.font = `900 ${fontSize}px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`
   ctx.textBaseline = 'middle'
 
   const spaceWidth = ctx.measureText(' ').width
-  const maxLineWidth = width * 0.85
+  const maxLineWidth = width * 0.86
 
   // Wrap words into lines
   const lines: WrappedLine[] = []
@@ -123,33 +128,43 @@ export function drawCaptionOnCanvas(
   const totalBlockHeight = lines.length * lineHeight
   let startY: number
   if (styleConfig.position === 'top') {
-    startY = height * 0.15
+    startY = height * 0.14
   } else if (styleConfig.position === 'center') {
     startY = height * 0.5 - totalBlockHeight / 2
   } else {
     // bottom
-    startY = height * 0.82 - totalBlockHeight / 2
+    startY = height * 0.80 - totalBlockHeight / 2
   }
 
   // Draw pill background if preset calls for it
   if (styleConfig.preset === 'clean' || styleConfig.preset === 'neon') {
     const maxLineW = Math.max(...lines.map((l) => l.totalWidth))
-    const padX = fontSize * 0.7
-    const padY = fontSize * 0.4
+    const padX = fontSize * 0.8
+    const padY = fontSize * 0.45
     const pillX = (width - maxLineW) / 2 - padX
     const pillY = startY - padY
     const pillW = maxLineW + padX * 2
     const pillH = totalBlockHeight + padY * 2
-    const radius = Math.min(20, fontSize * 0.4)
+    const radius = Math.min(24, fontSize * 0.45)
 
     ctx.fillStyle =
       styleConfig.preset === 'neon'
-        ? 'rgba(10, 6, 22, 0.82)'
-        : 'rgba(18, 11, 36, 0.85)'
+        ? 'rgba(8, 6, 20, 0.85)'
+        : 'rgba(18, 12, 34, 0.82)'
 
     ctx.beginPath()
     ctx.roundRect(pillX, pillY, pillW, pillH, radius)
     ctx.fill()
+
+    if (styleConfig.preset === 'neon') {
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)'
+      ctx.lineWidth = Math.max(1.5, fontSize * 0.04)
+      ctx.stroke()
+    } else {
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)'
+      ctx.lineWidth = Math.max(1, fontSize * 0.03)
+      ctx.stroke()
+    }
   }
 
   // Draw words
@@ -161,30 +176,63 @@ export function drawCaptionOnCanvas(
       ctx.save()
 
       if (item.isActive) {
-        ctx.fillStyle = styleConfig.highlightColor
+        if (styleConfig.preset === 'comic') {
+          // Marker Box highlight behind active word
+          const padX = fontSize * 0.22
+          const padY = fontSize * 0.08
+          const bgX = currentX - padX
+          const bgY = lineY - lineHeight / 2 + padY
+          const bgW = item.width + padX * 2
+          const bgH = lineHeight - padY * 2
+          const rad = Math.min(8, fontSize * 0.2)
 
-        if (styleConfig.preset === 'neon') {
-          ctx.shadowColor = styleConfig.highlightColor
-          ctx.shadowBlur = fontSize * 0.4
+          ctx.fillStyle = styleConfig.highlightColor
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.45)'
+          ctx.shadowBlur = 8
+          ctx.shadowOffsetY = 3
+          ctx.beginPath()
+          ctx.roundRect(bgX, bgY, bgW, bgH, rad)
+          ctx.fill()
+
+          ctx.shadowColor = 'transparent'
+          ctx.fillStyle = '#000000'
+          ctx.fillText(item.text, currentX, lineY)
         } else {
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)'
-          ctx.shadowBlur = 6
-        }
+          ctx.fillStyle = styleConfig.highlightColor
 
-        // Heavy dark outline for punchy contrast
-        ctx.strokeStyle = '#000000'
-        ctx.lineWidth = Math.max(3, fontSize * 0.14)
-        ctx.lineJoin = 'round'
-        ctx.strokeText(item.text, currentX, lineY)
-        ctx.fillText(item.text, currentX, lineY)
+          if (styleConfig.preset === 'neon') {
+            ctx.shadowColor = styleConfig.highlightColor
+            ctx.shadowBlur = fontSize * 0.45
+          } else {
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.95)'
+            ctx.shadowBlur = 8
+            ctx.shadowOffsetY = 2
+          }
+
+          if (styleConfig.preset !== 'clean') {
+            // Heavy punchy outline
+            ctx.strokeStyle = '#000000'
+            ctx.lineWidth = Math.max(3.5, fontSize * 0.16)
+            ctx.lineJoin = 'round'
+            ctx.strokeText(item.text, currentX, lineY)
+          }
+
+          ctx.fillText(item.text, currentX, lineY)
+        }
       } else {
         ctx.fillStyle = '#FFFFFF'
-        ctx.strokeStyle = '#000000'
-        ctx.lineWidth = Math.max(2.5, fontSize * 0.12)
-        ctx.lineJoin = 'round'
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.85)'
-        ctx.shadowBlur = 4
-        ctx.strokeText(item.text, currentX, lineY)
+        if (styleConfig.preset !== 'clean') {
+          ctx.strokeStyle = '#000000'
+          ctx.lineWidth = Math.max(2.8, fontSize * 0.13)
+          ctx.lineJoin = 'round'
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.85)'
+          ctx.shadowBlur = 4
+          ctx.shadowOffsetY = 2
+          ctx.strokeText(item.text, currentX, lineY)
+        } else {
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.6)'
+          ctx.shadowBlur = 4
+        }
         ctx.fillText(item.text, currentX, lineY)
       }
 
