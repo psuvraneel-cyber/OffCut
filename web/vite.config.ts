@@ -77,6 +77,7 @@ export default defineConfig(({ mode }) => ({
       allow: [
         searchForWorkspaceRoot(process.cwd()),
         fileURLToPath(new URL('../engine', import.meta.url)),
+        fileURLToPath(new URL('../runtime', import.meta.url)),
       ],
     },
     // The API runs separately (`npm run dev:api`, port 8788). Proxying keeps calls same-origin;
