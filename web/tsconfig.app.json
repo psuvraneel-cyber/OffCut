@@ -8,7 +8,8 @@
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
     "paths": {
-      "@offcut/engine": ["../engine/src/index.ts"]
+      "@offcut/engine": ["../engine/src/index.ts"],
+      "@offcut/runtime": ["../runtime/src/index.ts"]
     },
 
     /* Bundler mode */

@@ -44,6 +44,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       '@offcut/engine': fileURLToPath(new URL('../engine/src/index.ts', import.meta.url)),
+      '@offcut/runtime': fileURLToPath(new URL('../runtime/src/index.ts', import.meta.url)),
     },
   },
   worker: {

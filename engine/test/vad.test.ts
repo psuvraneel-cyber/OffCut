@@ -20,16 +20,14 @@ describe("Silero VAD probabilitiesToSegments", () => {
 
   it("detects valid speech segment with padding", () => {
     const probs = new Float32Array(100);
-    // 20 frames = 640ms >= 250ms (frames 20 to 40 -> 0.64s to 1.28s)
+    // 20 frames = 640ms >= minSpeechMs
     probs.fill(0.9, 20, 40);
     const segments = probabilitiesToSegments(probs, {}, 3.2);
     expect(segments).toHaveLength(1);
 
-    // Padding is 200ms
-    // start: 20 * 0.032 - 0.2 = 0.44s
-    // end: 40 * 0.032 + 0.2 = 1.48s
-    expect(segments[0].start).toBeCloseTo(0.44, 2);
-    expect(segments[0].end).toBeCloseTo(1.48, 2);
+    const padSec = VAD_CONSTANTS.speechPadMs / 1000;
+    expect(segments[0].start).toBeCloseTo(Math.max(0, 20 * frameSec - padSec), 2);
+    expect(segments[0].end).toBeCloseTo(40 * frameSec + padSec, 2);
   });
 
   it("bridges silence gaps shorter than minSilenceMs (300ms)", () => {
@@ -41,8 +39,9 @@ describe("Silero VAD probabilitiesToSegments", () => {
 
     const segments = probabilitiesToSegments(probs, {}, 3.2);
     expect(segments).toHaveLength(1);
-    expect(segments[0].start).toBeCloseTo(Math.max(0, 10 * frameSec - 0.2), 2);
-    expect(segments[0].end).toBeCloseTo(45 * frameSec + 0.2, 2);
+    const padSec = VAD_CONSTANTS.speechPadMs / 1000;
+    expect(segments[0].start).toBeCloseTo(Math.max(0, 10 * frameSec - padSec), 2);
+    expect(segments[0].end).toBeCloseTo(45 * frameSec + padSec, 2);
   });
 
   it("splits segments when silence gap exceeds minSilenceMs", () => {

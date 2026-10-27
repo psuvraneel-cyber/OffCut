@@ -57,6 +57,12 @@ export {
   createTranscriptionStage,
   mapTranscriptionProgress,
 } from "./stage.js";
+export {
+  DSP_CONSTANTS,
+  applyHighPassFilter,
+  normalizePeak,
+  conditionAudio,
+} from "./audio/dsp";
 
 interface PendingRequest {
   file?: Blob;
