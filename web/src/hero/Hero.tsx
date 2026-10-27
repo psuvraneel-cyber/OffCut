@@ -75,6 +75,12 @@ export function Hero() {
     }
 
     const ctx = gsap.context(() => {
+      if (reducedMotion) {
+        // Under reduced motion, do not pin stage or scroll-jack 300vh.
+        // CSS media query displays all steps in normal flow.
+        return
+      }
+
       const lines = gsap.utils.toArray<HTMLElement>('.hero__step')
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -82,7 +88,7 @@ export function Hero() {
           start: 'top top',
           end: '+=300%',
           pin: stage,
-          scrub: reducedMotion ? true : 0.8,
+          scrub: 0.8,
           // Settle on a finished shape when the visitor stops scrolling mid-morph.
           snap: { snapTo: 'labels', duration: { min: 0.3, max: 0.9 }, delay: 0.15, ease: 'power2.inOut' },
         },
@@ -100,7 +106,7 @@ export function Hero() {
       tl.to({}, { duration: HOLD })
 
       // The intro text waits for its cue (the end of the intro, or a fallback below).
-      if (!reducedMotion) gsap.set('.hero__intro', { autoAlpha: 0, y: 24 })
+      gsap.set('.hero__intro', { autoAlpha: 0, y: 24 })
     }, section)
 
     let textShown = reducedMotion
@@ -303,23 +309,26 @@ export function Hero() {
 
         <div className="hero__copy">
           <p className="mono hero__eyebrow hero__intro">Free · Private · Runs in your browser</p>
-          <h1 id="hero-title" className="visually-hidden">
-            Offcut turns long videos into captioned Reels for free, right in your browser
-          </h1>
           <ol className="hero__steps">
             {steps.map((step, i) => (
               <li key={step.label} className="hero__step">
                 <span className={`mono hero__step-label${i === 0 ? ' hero__intro' : ''}`}>{step.label}</span>
-                <p className={`hero__step-title${i === 0 ? ' hero__intro' : ''}`}>{step.title}</p>
+                {i === 0 ? (
+                  <h1 id="hero-title" className={`hero__step-title${i === 0 ? ' hero__intro' : ''}`}>
+                    {step.title}
+                  </h1>
+                ) : (
+                  <p className={`hero__step-title${i === 0 ? ' hero__intro' : ''}`}>{step.title}</p>
+                )}
                 <p className={`hero__step-body${i === 0 ? ' hero__intro' : ''}`}>{step.body}</p>
               </li>
             ))}
           </ol>
           <div className="hero__actions hero__intro">
-            <a className="button button--primary" href="#early-access" data-magnetic>
-              Join early access
+            <a className="button button--primary" href="/captions">
+              Try caption studio &rarr;
             </a>
-            <a className="button button--ghost" href="#how-it-works" data-magnetic>
+            <a className="button button--ghost" href="#how-it-works">
               How it works
             </a>
           </div>

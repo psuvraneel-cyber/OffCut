@@ -14,7 +14,7 @@ export default function App() {
 
   return (
     <>
-      {/* Keyboard order: skip link, menu, page, footer. The menu floats at the bottom but comes first here. */}
+      {/* Keyboard order: skip link, top navigation header, page content, footer. */}
       <a className="skip-link" href="#main">
         Skip to content
       </a>

@@ -68,6 +68,7 @@
 }
 
 .hero__step-title {
+  margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2.75rem, 6.5vw, 6.25rem);
   line-height: 0.95;
@@ -122,7 +123,7 @@
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: linear-gradient(180deg, transparent 40%, rgba(18, 11, 36, 0.85) 72%);
+    background: linear-gradient(180deg, rgba(18, 11, 36, 0.2) 0%, rgba(18, 11, 36, 0.7) 35%, rgba(18, 11, 36, 0.95) 70%);
     pointer-events: none;
   }
 
@@ -164,3 +165,39 @@
 .hero :focus-visible {
   outline-color: var(--lilac);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__stage {
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
+  }
+
+  .hero__copy {
+    height: auto;
+    max-width: 44rem;
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
+
+  .hero__steps {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-4);
+  }
+
+  .hero__step {
+    grid-area: auto;
+  }
+
+  .hero__step:not(:first-child) {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .hero__progress,
+  .hero__hint {
+    display: none;
+  }
+}
+
