@@ -5,12 +5,14 @@ import {
   type CaptionStyleConfig,
   type TimedWord,
 } from './captionStyles'
+import { isVerticalMode, type ReframingMode } from './reframing'
 
 interface CaptionPlayerOverlayProps {
   mediaRef: React.RefObject<HTMLVideoElement | HTMLAudioElement | null>
   cues: readonly CaptionCue[]
   transcriptWords?: readonly Word[]
   styleConfig: CaptionStyleConfig
+  reframingMode?: ReframingMode
 }
 
 export function CaptionPlayerOverlay({
@@ -18,6 +20,7 @@ export function CaptionPlayerOverlay({
   cues,
   transcriptWords,
   styleConfig,
+  reframingMode = 'original',
 }: CaptionPlayerOverlayProps) {
   const [currentTime, setCurrentTime] = useState(0)
 
@@ -91,10 +94,11 @@ export function CaptionPlayerOverlay({
   const positionClass = `captions-overlay--pos-${styleConfig.position}`
   const sizeClass = `captions-overlay--size-${styleConfig.size}`
   const presetClass = `captions-overlay--preset-${styleConfig.preset}`
+  const verticalClass = isVerticalMode(reframingMode) ? 'captions-overlay--vertical' : ''
 
   return (
     <div
-      className={`captions-overlay ${positionClass} ${sizeClass} ${presetClass}`}
+      className={`captions-overlay ${positionClass} ${sizeClass} ${presetClass} ${verticalClass}`}
       style={
         {
           '--caption-highlight': styleConfig.highlightColor,

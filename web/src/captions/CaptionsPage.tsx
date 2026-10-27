@@ -16,6 +16,7 @@ import {
   type CapabilityReport,
   type Transcript,
   type ModelSize,
+  type Word,
 } from '@offcut/engine'
 import { createRuntime, RuntimeAbortError, type JobProgress } from '@offcut/runtime'
 import { Logo } from '../components/Logo'
@@ -29,6 +30,13 @@ import {
   type CaptionStyleConfig,
   type CaptionStylePreset,
 } from './captionStyles'
+import {
+  REFRAMING_OPTIONS,
+  isVerticalMode,
+  type ReframingMode,
+} from './reframing'
+import { scanVideoFaces } from './faceDetector'
+import { buildCameraTrajectory, type CameraTrajectory } from './cameraTrajectory'
 import { ExportProgressModal } from './ExportProgressModal'
 import { burnVideoWithCaptions } from './VideoBurner'
 import './CaptionsPage.css'
@@ -167,6 +175,10 @@ export function CaptionsPage() {
   const [exportStatus, setExportStatus] = useState<'rendering' | 'finishing' | 'done' | 'error'>('rendering')
   const [exportError, setExportError] = useState('')
   const exportAbortRef = useRef<AbortController | null>(null)
+  const [reframingMode, setReframingMode] = useState<ReframingMode>('original')
+  const [cameraTrajectory, setCameraTrajectory] = useState<CameraTrajectory | null>(null)
+  const [isScanningFaces, setIsScanningFaces] = useState(false)
+  const [speakerStatus, setSpeakerStatus] = useState('')
 
   const mediaUrl = useMemo(() => {
     if (!file) return null
@@ -189,6 +201,79 @@ export function CaptionsPage() {
   useEffect(() => {
     detectCapabilities().then(setCapabilities).catch(() => {})
   }, [])
+
+  const triggerFaceScan = async (
+    videoFile: File,
+    activeCues: CaptionCue[],
+    words?: readonly Word[]
+  ) => {
+    setIsScanningFaces(true)
+    try {
+      const samples = await scanVideoFaces(videoFile)
+      const vid = mediaRef.current as HTMLVideoElement | null
+      const vidW = vid?.videoWidth || 1920
+      const vidH = vid?.videoHeight || 1080
+      const traj = buildCameraTrajectory(vidW, vidH, samples, activeCues, words)
+      setCameraTrajectory(traj)
+    } catch (err) {
+      console.warn('Face scan skipped or failed, using default center:', err)
+    } finally {
+      setIsScanningFaces(false)
+    }
+  }
+
+  useEffect(() => {
+    const video = mediaRef.current as HTMLVideoElement | null
+    if (!video || file?.type.startsWith('audio/')) return
+
+    let animId: number
+    const updateCameraman = () => {
+      if (reframingMode === 'smart-9-16' && cameraTrajectory && video.videoWidth > 0) {
+        const center = cameraTrajectory.getCenterAt(video.currentTime)
+        const pct = (center / video.videoWidth) * 100
+        video.style.objectPosition = `${pct}% 50%`
+
+        const status = cameraTrajectory.getSpeakerStatusAt(video.currentTime)
+        setSpeakerStatus(status.label)
+      } else if (reframingMode === 'center-9-16') {
+        video.style.objectPosition = '50% 50%'
+        setSpeakerStatus('Center Crop')
+      } else {
+        video.style.objectPosition = 'center'
+        setSpeakerStatus('')
+      }
+
+      if (!video.paused && !video.ended) {
+        animId = requestAnimationFrame(updateCameraman)
+      }
+    }
+
+    const onPlay = () => {
+      animId = requestAnimationFrame(updateCameraman)
+    }
+    const onPause = () => {
+      cancelAnimationFrame(animId)
+      updateCameraman()
+    }
+    const onSeek = () => {
+      updateCameraman()
+    }
+
+    video.addEventListener('play', onPlay)
+    video.addEventListener('pause', onPause)
+    video.addEventListener('seeked', onSeek)
+    video.addEventListener('timeupdate', onSeek)
+
+    updateCameraman()
+
+    return () => {
+      cancelAnimationFrame(animId)
+      video.removeEventListener('play', onPlay)
+      video.removeEventListener('pause', onPause)
+      video.removeEventListener('seeked', onSeek)
+      video.removeEventListener('timeupdate', onSeek)
+    }
+  }, [cameraTrajectory, reframingMode, file])
 
   const handleModelChange = (newModel: ModelSize) => {
     if (newModel === model) return
@@ -263,6 +348,10 @@ export function CaptionsPage() {
       })
       setCues(generatedCues)
       setStep('result')
+
+      if (!file.type.startsWith('audio/')) {
+        void triggerFaceScan(file, generatedCues, result.words)
+      }
     } catch (err) {
       if (
         err instanceof RuntimeAbortError ||
@@ -499,6 +588,8 @@ export function CaptionsPage() {
         cues,
         transcriptWords: transcript?.words,
         styleConfig,
+        reframingMode,
+        cameraTrajectory: cameraTrajectory || undefined,
         signal: abortController.signal,
         onProgress: (p) => {
           setExportProgress(p)
@@ -510,10 +601,11 @@ export function CaptionsPage() {
 
       setExportStatus('done')
       const baseName = file.name.replace(/\.[^/.]+$/, '')
+      const suffix = isVerticalMode(reframingMode) ? '_9x16_captioned' : '_captioned'
       const downloadUrl = URL.createObjectURL(result.blob)
       const a = document.createElement('a')
       a.href = downloadUrl
-      a.download = `${baseName}_captioned.${result.extension}`
+      a.download = `${baseName}${suffix}.${result.extension}`
       a.click()
       setTimeout(() => URL.revokeObjectURL(downloadUrl), 10000)
     } catch (err) {
@@ -545,6 +637,9 @@ export function CaptionsPage() {
     setFile(null)
     setTranscript(null)
     setCues([])
+    setReframingMode('original')
+    setCameraTrajectory(null)
+    setSpeakerStatus('')
     setSearchQuery('')
     setErrorMessage('')
     setActiveCueIndex(null)
@@ -904,7 +999,19 @@ export function CaptionsPage() {
 
             {mediaUrl && (
               <div className="captions-preview-card">
-                <div className="captions-preview-player-wrap">
+                <div
+                  className={`captions-preview-player-wrap ${
+                    isVerticalMode(reframingMode) ? 'captions-preview-player-wrap--9-16' : ''
+                  } ${reframingMode === 'blur-9-16' ? 'captions-preview-player-wrap--blur' : ''}`}
+                >
+                  {reframingMode === 'blur-9-16' && !file?.type.startsWith('audio/') && (
+                    <video
+                      src={mediaUrl}
+                      aria-hidden="true"
+                      className="captions-preview-backdrop"
+                      tabIndex={-1}
+                    />
+                  )}
                   {file?.type.startsWith('audio/') ? (
                     <audio
                       ref={mediaRef as React.RefObject<HTMLAudioElement>}
@@ -920,7 +1027,9 @@ export function CaptionsPage() {
                       controls
                       playsInline
                       onTimeUpdate={handleTimeUpdate}
-                      className="captions-preview-video"
+                      className={`captions-preview-video ${
+                        isVerticalMode(reframingMode) ? 'captions-preview-video--vertical' : ''
+                      }`}
                     />
                   )}
                   <CaptionPlayerOverlay
@@ -928,13 +1037,39 @@ export function CaptionsPage() {
                     cues={cues}
                     transcriptWords={transcript?.words}
                     styleConfig={styleConfig}
+                    reframingMode={reframingMode}
                   />
+
+                  {reframingMode === 'smart-9-16' && (
+                    <div className="captions-cameraman-badge">
+                      <span className="captions-cameraman-dot" />
+                      <span>{isScanningFaces ? 'Scanning faces...' : speakerStatus || 'Auto-Focus: Active Speaker'}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="captions-preview-hint">
                   Tip: Click the time button (e.g. ▶ 0:02.4) on any caption to jump to that moment in the video.
                 </div>
                 {cues.length > 0 && !file?.type.startsWith('audio/') && (
                   <div className="captions-style-card">
+                    <div className="captions-style-row captions-style-row--reframing">
+                      <span className="captions-style-label">Layout:</span>
+                      <div className="captions-style-pills">
+                        {REFRAMING_OPTIONS.map((opt) => (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            className={`captions-style-pill ${
+                              reframingMode === opt.id ? 'captions-style-pill--active' : ''
+                            }`}
+                            onClick={() => setReframingMode(opt.id)}
+                            title={opt.description}
+                          >
+                            <span aria-hidden="true">{opt.icon}</span> {opt.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                     <div className="captions-style-row">
                       <span className="captions-style-label">Pacing:</span>
                       <div className="captions-style-pills">

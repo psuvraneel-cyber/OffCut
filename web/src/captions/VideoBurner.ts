@@ -1,15 +1,23 @@
 import type { CaptionCue, Word } from '@offcut/engine'
+import type { CameraTrajectory } from './cameraTrajectory'
 import {
   getCueWords,
   type CaptionStyleConfig,
   type TimedWord,
 } from './captionStyles'
+import {
+  drawReframedVideoFrame,
+  isVerticalMode,
+  type ReframingMode,
+} from './reframing'
 
 export interface BurnVideoOptions {
   videoFile: File
   cues: readonly CaptionCue[]
   transcriptWords?: readonly Word[]
   styleConfig: CaptionStyleConfig
+  reframingMode?: ReframingMode
+  cameraTrajectory?: CameraTrajectory
   onProgress?: (progress: {
     currentSeconds: number
     totalSeconds: number
@@ -250,8 +258,16 @@ export function drawCaptionOnCanvas(
 export async function burnVideoWithCaptions(
   options: BurnVideoOptions
 ): Promise<BurnVideoResult> {
-  const { videoFile, cues, transcriptWords, styleConfig, onProgress, signal } =
-    options
+  const {
+    videoFile,
+    cues,
+    transcriptWords,
+    styleConfig,
+    reframingMode = 'original',
+    cameraTrajectory,
+    onProgress,
+    signal,
+  } = options
 
   if (typeof MediaRecorder === 'undefined') {
     throw new Error('Your browser does not support in-browser video recording.')
@@ -292,13 +308,14 @@ export async function burnVideoWithCaptions(
 
     if (signal?.aborted) throw new Error('Export cancelled')
 
-    const width = video.videoWidth || 1280
-    const height = video.videoHeight || 720
     const duration = video.duration || 1
+    const isVertical = isVerticalMode(reframingMode)
+    const targetWidth = isVertical ? 1080 : (video.videoWidth || 1280)
+    const targetHeight = isVertical ? 1920 : (video.videoHeight || 720)
 
     const canvas = document.createElement('canvas')
-    canvas.width = width
-    canvas.height = height
+    canvas.width = targetWidth
+    canvas.height = targetHeight
     container.appendChild(canvas)
 
     const ctx = canvas.getContext('2d', { alpha: false })
@@ -365,14 +382,25 @@ export async function burnVideoWithCaptions(
           return
         }
 
-        // Draw video frame
-        ctx.drawImage(video, 0, 0, width, height)
+        // Draw reframed video frame (smart pan, blur background, or center)
+        const currentCenter = cameraTrajectory
+          ? cameraTrajectory.getCenterAt(video.currentTime)
+          : undefined
+
+        drawReframedVideoFrame(
+          ctx,
+          video,
+          reframingMode,
+          targetWidth,
+          targetHeight,
+          currentCenter
+        )
 
         // Draw styled captions
         drawCaptionOnCanvas(
           ctx,
-          width,
-          height,
+          targetWidth,
+          targetHeight,
           video.currentTime,
           cues,
           transcriptWords,
