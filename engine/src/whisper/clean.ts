@@ -176,7 +176,7 @@ export function groupWordsIntoSegments(words: readonly WindowWord[]): WindowSegm
     const shouldStartNew =
       !previous ||
       word.start - previous.end > 1.25 ||
-      /[.!?]$/.test(previous.text);
+      /[.?!।॥]$/.test(previous.text);
     if (shouldStartNew) {
       segments.push({ text: word.text, start: word.start, end: word.end, words: [{ ...word }] });
     } else {

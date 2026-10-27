@@ -12,6 +12,7 @@ import { chooseDtype } from "./whisper/models";
 import type { WorkerRequest, WorkerResponse, WorkerRuntimeOptions } from "./protocol";
 import type {
   CapabilityReport,
+  CaptionLanguage,
   Device,
   ModelSize,
   Progress,
@@ -23,6 +24,7 @@ import type {
 
 export type {
   CapabilityReport,
+  CaptionLanguage,
   Device,
   ModelSize,
   Progress,
@@ -32,6 +34,10 @@ export type {
   TranscribeOptions,
 } from "./types";
 export type { CaptionCue, CaptionOptions } from "./captions";
+export type {
+  NormalizedProgress,
+  TranscriptionStageOptions,
+} from "./stage.js";
 export {
   AbortError,
   GpuLostError,
@@ -47,6 +53,10 @@ export {
   toSrt,
   toVtt,
 } from "./captions";
+export {
+  createTranscriptionStage,
+  mapTranscriptionProgress,
+} from "./stage.js";
 
 interface PendingRequest {
   file?: Blob;
@@ -61,6 +71,7 @@ interface PendingRequest {
 class BrowserTranscriber implements Transcriber {
   readonly #model: ModelSize;
   readonly #requestedDevice: Device;
+  readonly #defaultLanguage?: CaptionLanguage;
   readonly #pending = new Map<number, PendingRequest>();
   #worker: Worker;
   #nextRequestId = 1;
@@ -72,6 +83,7 @@ class BrowserTranscriber implements Transcriber {
   constructor(options: TranscriberOptions = {}) {
     this.#model = options.model ?? "base";
     this.#requestedDevice = options.device ?? "auto";
+    this.#defaultLanguage = options.defaultLanguage;
     this.#worker = this.createWorker();
   }
 
@@ -104,7 +116,8 @@ class BrowserTranscriber implements Transcriber {
       requestId,
       file,
       options: {
-        language: options.language ?? "auto",
+        language: options.language ?? this.#defaultLanguage ?? "auto",
+        initialPrompt: options.initialPrompt,
         vad: options.vad,
         retry: (options as { retry?: boolean }).retry,
       },
@@ -287,7 +300,8 @@ class BrowserTranscriber implements Transcriber {
         sampleRate: 16000,
         duration,
         options: {
-          language: pending.options?.language ?? "auto",
+          language: pending.options?.language ?? this.#defaultLanguage ?? "auto",
+          initialPrompt: pending.options?.initialPrompt,
           vad: pending.options?.vad,
           retry: (pending.options as { retry?: boolean } | undefined)?.retry,
         },

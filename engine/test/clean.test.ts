@@ -188,4 +188,20 @@ describe("sound cues", () => {
       { text: "Hello", start: 1.0, end: 1.5 },
     ]);
   });
+
+  it("groups words into segments on Devanagari sentence boundaries (। and ॥)", () => {
+    const segments = groupWordsIntoSegments([
+      { text: "नमस्ते", start: 1.0, end: 1.4 },
+      { text: "भारत।", start: 1.4, end: 1.8 },
+      { text: "यह", start: 1.9, end: 2.2 },
+      { text: "ऑफ़कट", start: 2.2, end: 2.6 },
+      { text: "है॥", start: 2.6, end: 3.0 },
+      { text: "धन्यवाद", start: 3.1, end: 3.5 },
+    ]);
+
+    expect(segments.length).toBe(3);
+    expect(segments[0].text).toBe("नमस्ते भारत।");
+    expect(segments[1].text).toBe("यह ऑफ़कट है॥");
+    expect(segments[2].text).toBe("धन्यवाद");
+  });
 });

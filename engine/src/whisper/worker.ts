@@ -62,6 +62,8 @@ let gpuDevice: WatchedGpuDevice | null = null;
 let gpuLost = false;
 
 const GPU_LOSS_CHECK_MS = 250;
+export const DEFAULT_HINGLISH_PROMPT =
+  "Namaste dosto, this video is about tech, coding, tutorials and daily life. Please like, share and subscribe.";
 
 transformersEnv.useBrowserCache = true;
 transformersEnv.allowRemoteModels = true;
@@ -409,9 +411,13 @@ async function runTranscription(
   const windowResults: WindowTranscript[] = [];
   const preloadedAudio = new Map<number, Float32Array>();
 
-  // --- LANGUAGE DETECTION ---
-  let lockedLanguage = language;
-  if (language === "auto") {
+  // --- LANGUAGE DETECTION & PROMPT BIASING ---
+  const isHinglish = language === "hinglish";
+  const targetLanguage = isHinglish ? "hi" : language;
+  const initialPrompt = options.initialPrompt ?? (isHinglish ? DEFAULT_HINGLISH_PROMPT : undefined);
+
+  let lockedLanguage = targetLanguage;
+  if (targetLanguage === "auto") {
     if (windows.length === 0) {
       lockedLanguage = "en";
     } else {
@@ -480,16 +486,22 @@ async function runTranscription(
       emitProgress({ stage: "transcribe", seconds: lastTranscribeSeconds, duration });
       const windowTranscribeStartedAt = performance.now();
 
-      const output = await speechPipeline(audio, {
+      const pipelineOptions: Record<string, unknown> = {
         return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
         language: lockedLanguage,
         task: "transcribe",
         max_new_tokens: maxNewTokensFor(audio.length / 16000),
-      });
+      };
+      if (initialPrompt) {
+        pipelineOptions.initial_prompt = initialPrompt;
+        pipelineOptions.prompt = initialPrompt;
+      }
+
+      const output = await speechPipeline(audio, pipelineOptions);
 
       throwIfAborted(signal);
       transcribeMs += performance.now() - windowTranscribeStartedAt;
-      let windowResult = parseWindowOutput(output, window, lockedLanguage);
+      let windowResult = parseWindowOutput(output, window, isHinglish ? "hinglish" : lockedLanguage);
 
       if (retryEnabled) {
         let segmentsInWindow: SpeechSegment[];
@@ -555,21 +567,30 @@ async function runTranscription(
             const half2Audio = audio.subarray(half2StartSample).slice();
 
             if (half1Audio.length > 0 && half2Audio.length > 0) {
-              const out1 = await speechPipeline(half1Audio, {
+              const retryOpts1: Record<string, unknown> = {
                 return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
                 language: lockedLanguage,
                 task: "transcribe",
                 max_new_tokens: maxNewTokensFor(half1Audio.length / 16000),
-              });
-              const out2 = await speechPipeline(half2Audio, {
+              };
+              const retryOpts2: Record<string, unknown> = {
                 return_timestamps: MODEL_CONFIG[runtime.model].supportsWordTimestamps ? "word" : true,
                 language: lockedLanguage,
                 task: "transcribe",
                 max_new_tokens: maxNewTokensFor(half2Audio.length / 16000),
-              });
+              };
+              if (initialPrompt) {
+                retryOpts1.initial_prompt = initialPrompt;
+                retryOpts1.prompt = initialPrompt;
+                retryOpts2.initial_prompt = initialPrompt;
+                retryOpts2.prompt = initialPrompt;
+              }
 
-              const half1Res = parseWindowOutput(out1, { index: 0, start: 0, end: half1EndRel }, lockedLanguage);
-              const half2Res = parseWindowOutput(out2, { index: 1, start: half2StartRel, end: winDur }, lockedLanguage);
+              const out1 = await speechPipeline(half1Audio, retryOpts1);
+              const out2 = await speechPipeline(half2Audio, retryOpts2);
+
+              const half1Res = parseWindowOutput(out1, { index: 0, start: 0, end: half1EndRel }, isHinglish ? "hinglish" : lockedLanguage);
+              const half2Res = parseWindowOutput(out2, { index: 1, start: half2StartRel, end: winDur }, isHinglish ? "hinglish" : lockedLanguage);
               const retryMerged = mergeWindowTranscripts([half1Res, half2Res], winDur);
 
               const retryTokens = retryMerged.words.map((w) => normalizeToken(w.text)).filter(Boolean);
@@ -627,7 +648,7 @@ async function runTranscription(
   const realTimeFactor = processingWallMs > 0 ? duration / (processingWallMs / 1000) : 0;
 
   return {
-    language: lockedLanguage,
+    language: isHinglish ? "hinglish" : lockedLanguage,
     duration,
     granularity: merged.granularity,
     segments: merged.segments,

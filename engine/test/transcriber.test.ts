@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createTranscriber } from "../src/index";
-import { AbortError, GpuLostError } from "../src/errors";
+import { createTranscriber } from "../src/index.js";
+import { AbortError, GpuLostError } from "../src/errors.js";
+import type { WorkerRequest } from "../src/protocol.js";
 
 class MockWorker {
   static instances: MockWorker[] = [];
@@ -61,6 +62,46 @@ describe("BrowserTranscriber lifecycle & cancellation (5a)", () => {
     expect(() => transcriber.dispose()).not.toThrow();
     expect(() => transcriber.dispose()).not.toThrow();
     expect(MockWorker.instances[0].terminated).toBe(true);
+  });
+
+  it("forwards language ('hi', 'hinglish') and initialPrompt to worker request", async () => {
+    const transcriber = createTranscriber({ model: "tiny", device: "wasm", defaultLanguage: "hi" });
+    const blob = new Blob(["audio"]);
+    const transcribePromise = transcriber.transcribe(blob, {
+      language: "hinglish",
+      initialPrompt: "Namaste dosto",
+    });
+
+    await new Promise((r) => setTimeout(r, 10));
+    const worker = MockWorker.instances[0];
+    const transcribeMsg = worker.postedMessages.find((m) => (m as WorkerRequest).type === "transcribe") as Extract<WorkerRequest, { type: "transcribe" }>;
+    expect(transcribeMsg).toBeDefined();
+    expect(transcribeMsg.options.language).toBe("hinglish");
+    expect(transcribeMsg.options.initialPrompt).toBe("Namaste dosto");
+
+    worker.emitMessage({
+      type: "result",
+      requestId: transcribeMsg.requestId,
+      transcript: {
+        language: "hinglish",
+        duration: 2.0,
+        granularity: "word",
+        segments: [],
+        words: [],
+        stats: {
+          model: "tiny",
+          device: "wasm",
+          dtype: "q8",
+          loadMs: 0,
+          decodeMs: 0,
+          transcribeMs: 10,
+          realTimeFactor: 2,
+        },
+      },
+    });
+
+    const result = await transcribePromise;
+    expect(result.language).toBe("hinglish");
   });
 
   it("rejects load() and transcribe() after dispose() with clear error", async () => {

@@ -18,7 +18,8 @@ export interface CaptionOptions extends Partial<typeof CAPTION_CONSTANTS> {
   includeSoundCues?: boolean; // default false
 }
 
-const SENTENCE_END_REGEX = /[.?!]$/;
+// Sentence boundary marks: Latin (. ? !) and Devanagari Hindi Purna Viram (।) and Deergh Viram (॥)
+const SENTENCE_END_REGEX = /[.?!।॥]$/;
 
 function wrapLines(words: readonly string[], maxCharsPerLine: number): string[] {
   const lines: string[] = [];

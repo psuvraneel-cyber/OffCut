@@ -12,6 +12,7 @@ import {
   OutOfMemoryError,
   UnsupportedFormatError,
   type CaptionCue,
+  type CaptionLanguage,
   type CapabilityReport,
   type Progress,
   type Transcriber,
@@ -19,6 +20,46 @@ import {
 } from '@offcut/engine'
 import { Logo } from '../components/Logo'
 import './CaptionsPage.css'
+
+interface LanguageOption {
+  id: CaptionLanguage
+  label: string
+  hint: string
+  badge?: string
+}
+
+const LANGUAGE_OPTIONS: readonly LanguageOption[] = [
+  {
+    id: 'auto',
+    label: 'Auto Detect',
+    hint: 'Identifies speech language automatically from the first frames.',
+  },
+  {
+    id: 'en',
+    label: 'English',
+    hint: 'Optimized for English speech recognition with standard punctuation.',
+  },
+  {
+    id: 'hi',
+    label: 'Hindi (हिंदी)',
+    hint: 'Generates clean Devanagari captions with Purna Viram (।) punctuation.',
+  },
+  {
+    id: 'hinglish',
+    label: 'Hinglish',
+    hint: 'Primes Whisper for bilingual Indian speech mixing Hindi and English.',
+    badge: 'Popular',
+  },
+] as const
+
+function formatLanguageLabel(detected?: string, requested?: CaptionLanguage): string {
+  const code = (detected || requested || 'auto').toLowerCase()
+  if (code === 'hinglish') return 'Hinglish (Hindi + English)'
+  if (code === 'hi') return 'Hindi (हिंदी)'
+  if (code === 'en') return 'English'
+  if (code === 'auto') return 'Auto (Detected)'
+  return `Language: ${code}`
+}
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024 * 1024) {
@@ -79,6 +120,7 @@ function getErrorMessage(error: unknown): string {
 export function CaptionsPage() {
   const [capabilities, setCapabilities] = useState<CapabilityReport | null>(null)
   const [file, setFile] = useState<File | null>(null)
+  const [language, setLanguage] = useState<CaptionLanguage>('auto')
   const [includeSoundCues, setIncludeSoundCues] = useState(false)
   const [step, setStep] = useState<'pick' | 'working' | 'result' | 'error'>('pick')
   const [statusText, setStatusText] = useState('')
@@ -117,6 +159,23 @@ export function CaptionsPage() {
     }
   }, [])
 
+  const handleLanguageKeyDown = (e: React.KeyboardEvent, currentIndex: number) => {
+    let nextIndex = currentIndex
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault()
+      nextIndex = (currentIndex + 1) % LANGUAGE_OPTIONS.length
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault()
+      nextIndex = (currentIndex - 1 + LANGUAGE_OPTIONS.length) % LANGUAGE_OPTIONS.length
+    } else {
+      return
+    }
+    const nextOption = LANGUAGE_OPTIONS[nextIndex]
+    setLanguage(nextOption.id)
+    const buttons = document.querySelectorAll<HTMLButtonElement>('.captions-lang-group button[role="radio"]')
+    buttons[nextIndex]?.focus()
+  }
+
   const handleFileSelected = (selectedFile: File) => {
     setFile(selectedFile)
     setErrorMessage('')
@@ -147,7 +206,7 @@ export function CaptionsPage() {
 
     try {
       const result = await transcriberRef.current.transcribe(file, {
-        language: 'en',
+        language,
         signal: abortController.signal,
         onProgress: (p: Progress) => {
           if (p.stage === 'download') {
@@ -292,7 +351,7 @@ export function CaptionsPage() {
             Your video never leaves your device. The speech model runs in your browser.
           </p>
           <div className="captions-note-row">
-            <span className="captions-badge mono">English only for now.</span>
+            <span className="captions-badge mono">Now supporting English, Hindi & Hinglish</span>
           </div>
         </section>
 
@@ -311,6 +370,40 @@ export function CaptionsPage() {
 
         {step === 'pick' && (
           <section className="captions-card" aria-label="Upload video or audio">
+            <div className="captions-lang-section">
+              <div className="captions-lang-header">
+                <span className="captions-lang-label">Speech language</span>
+                <span className="captions-lang-badge mono">Multilingual WebGPU</span>
+              </div>
+              <div
+                className="captions-lang-group"
+                role="radiogroup"
+                aria-label="Speech language"
+              >
+                {LANGUAGE_OPTIONS.map((opt, index) => {
+                  const isSelected = language === opt.id
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={isSelected}
+                      tabIndex={isSelected ? 0 : -1}
+                      className={`captions-lang-pill ${isSelected ? 'captions-lang-pill--active' : ''}`}
+                      onClick={() => setLanguage(opt.id)}
+                      onKeyDown={(e) => handleLanguageKeyDown(e, index)}
+                    >
+                      <span className="captions-lang-pill__label">{opt.label}</span>
+                      {opt.badge && <span className="captions-lang-pill__tag">{opt.badge}</span>}
+                    </button>
+                  )
+                })}
+              </div>
+              <p className="captions-lang-hint" aria-live="polite">
+                {LANGUAGE_OPTIONS.find((o) => o.id === language)?.hint}
+              </p>
+            </div>
+
             <input
               ref={fileInputRef}
               type="file"
@@ -417,11 +510,26 @@ export function CaptionsPage() {
 
         {step === 'result' && (
           <section className="captions-card" aria-label="Captions result">
-            {transcript?.language && transcript.language !== 'en' && (
-              <div className="captions-warning" role="alert">
-                Detected language: {transcript.language} (English only is supported; results may be poor).
+            <div className="captions-result-header">
+              <div className="captions-result-badges">
+                <span className="captions-badge-lang mono">
+                  <span className="captions-dot" aria-hidden="true" />
+                  {formatLanguageLabel(transcript?.language, language)}
+                </span>
+                {transcript?.stats && (
+                  <span className="captions-badge-stat mono">
+                    {transcript.stats.device.toUpperCase()} • {transcript.stats.realTimeFactor > 0 ? `${transcript.stats.realTimeFactor.toFixed(1)}x realtime` : 'WebGPU'}
+                  </span>
+                )}
               </div>
-            )}
+            </div>
+
+            {transcript?.language &&
+              !['en', 'hi', 'hinglish'].includes(transcript.language.toLowerCase()) && (
+                <div className="captions-warning" role="alert">
+                  Detected language: {transcript.language} (English, Hindi, and Hinglish are officially optimized).
+                </div>
+              )}
 
             {cues.length === 0 ? (
               <div className="captions-empty">

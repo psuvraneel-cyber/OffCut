@@ -183,6 +183,25 @@ describe("Caption building and export", () => {
     );
   });
 
+  it("Splits Hindi sentences on Devanagari Purna Viram (।) and Deergh Viram (॥)", () => {
+    const words: Word[] = [
+      { text: "नमस्ते", start: 0.0, end: 0.5 },
+      { text: "दोस्तों।", start: 0.5, end: 1.0 },
+      { text: "आज", start: 1.2, end: 1.5 },
+      { text: "हम", start: 1.5, end: 1.8 },
+      { text: "सीखेंगे॥", start: 1.8, end: 2.3 },
+      { text: "अगला", start: 2.5, end: 2.8 },
+      { text: "भाग", start: 2.8, end: 3.2 },
+    ];
+
+    const cues = buildCaptionCues(words);
+    expect(cues).toEqual([
+      { start: 0.0, end: 1.0, text: "नमस्ते दोस्तों।" },
+      { start: 1.2, end: 2.3, text: "आज हम सीखेंगे॥" },
+      { start: 2.5, end: 3.2, text: "अगला भाग" },
+    ]);
+  });
+
   it('Empty input gives [], then "" (SRT) and "WEBVTT\\n" (VTT)', () => {
     const cues = buildCaptionCues([]);
     expect(cues).toEqual([]);

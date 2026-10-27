@@ -1,13 +1,16 @@
 export type ModelSize = "tiny" | "base" | "small";
 export type Device = "auto" | "webgpu" | "wasm";
+export type CaptionLanguage = "auto" | "en" | "hi" | "hinglish" | (string & {});
 
 export interface TranscriberOptions {
   model?: ModelSize;
   device?: Device;
+  defaultLanguage?: CaptionLanguage;
 }
 
 export interface TranscribeOptions {
-  language?: string;
+  language?: CaptionLanguage;
+  initialPrompt?: string;
   signal?: AbortSignal;
   onProgress?: (progress: Progress) => void;
   vad?: boolean;
