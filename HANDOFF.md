@@ -1,6 +1,6 @@
 # Offcut handoff
 
-_Last updated: 2026-10-26 (engine CPU fixes committed as `1bdeb32`; runtime foundation M0 done; ONNX WASM self-hosted; after the move to C:\OffCut and the live launch)_
+_Last updated: 2026-10-30 (`main` at `19253ea`, same as GitHub; Phase 2 P0.1 engine work uncommitted in `C:\OffCut`; Hindi/Hinglish audit received 2026-10-29)_
 
 Read this first if you're picking up the project in a new session.
 
@@ -14,106 +14,147 @@ The owner is building it in public on a new Instagram tech channel, so every mil
 
 ## Where it lives
 
-The project lives at **`C:\OffCut`** (moved out of OneDrive, which kept locking files). Ignore any old copy under OneDrive. GitHub: `https://github.com/psuvraneel-cyber/offcut` (`main` there has only the README commit `c1389ec`).
+The project lives at **`C:\OffCut`** (moved out of OneDrive, which kept locking files). Ignore any old copy under OneDrive. GitHub: `https://github.com/psuvraneel-cyber/offcut`; `origin/main` matches local `main` at `19253ea`.
 
-## Status right now (2026-10-25, live on offcut-ai.pages.dev)
+## Status right now (2026-10-30)
 
-- **The marketing site and backend are LIVE** at **`https://offcut-ai.pages.dev`** on Cloudflare Pages free tier.
-- **Database:** D1 database `clipper-db` (ID: `d0ad6cad-064b-432f-80f9-f883d91ad009`) created and migrated (`0001_init.sql` and `0002_seed_features.sql`). Both IDs set in `wrangler.toml`.
-- **Bot protection:** Production Cloudflare Turnstile widget is active with real site key in `web/src/lib/turnstile.ts` and secret key in Cloudflare Pages secrets (`TURNSTILE_SECRET_KEY`).
-- **Analytics:** Cloudflare Web Analytics active with token in `web/vite.config.ts`.
-- **Legal & License:** Owner blanks filled in `web/privacy.html` and `web/terms.html`, draft notices removed, and Apache License 2.0 with `NOTICE` added.
-- **GitHub:** Pushed to `https://github.com/psuvraneel-cyber/OffCut` on branch `main`.
-- **Smoke test verified:** Health check (`/api/health`) answers `ok:true`, roadmap features load from D1, owner verified waitlist signup lands in D1 (1 verified row), branded 404 works.
-- **Engine:** Transcription engine (Whisper in browser) is on `main` at `1bdeb32`, 5 commits ahead of GitHub (not pushed). It has Silero VAD, a safety net for junk, loops and skipped speech, `base` as the default on every device, and a self-hosted ONNX WASM file. See Work in progress.
-- **What's left for later:** Formal legal review, and before ads: custom domain, Google AdSense application, and certified consent tool.
+- **Live:** the marketing site and backend at **`https://offcut-ai.pages.dev`** (Cloudflare Pages free tier).
+  - D1 database `clipper-db` (ID `d0ad6cad-064b-432f-80f9-f883d91ad009`), migrations `0001_init.sql` and `0002_seed_features.sql` applied.
+  - Production Turnstile (site key in `web/src/lib/turnstile.ts`, secret `TURNSTILE_SECRET_KEY` in Pages secrets) and Cloudflare Web Analytics (token in `web/vite.config.ts`).
+  - Owner blanks in `web/privacy.html` and `web/terms.html` filled; Apache 2.0 `LICENSE` and `NOTICE` added.
+  - Smoke test passed: `/api/health` answers `ok:true`, roadmap loads from D1, a verified waitlist row landed, branded 404 works.
+- **Built and committed since the last handoff:**
+  - **Captions page** at `/captions` (`web/captions.html`, `web/src/captions/`): upload a video, transcribe in the browser, edit captions in sync with the video (split, insert, delete), word-by-word overlay, style presets and pacing modes, SRT / VTT / plain-text download, and burned-in video export done client-side (`VideoBurner.ts`).
+  - **Smart 9:16 reframe** (`reframing.ts`, `faceDetector.ts`, `cameraTrajectory.ts`): follows the active speaker's face with a smoothed "virtual cameraman".
+  - **Engine:** sound cues tagged instead of counted as words; caption cue builder with SRT/VTT exporters (`engine/src/captions.ts`); audio DSP pre-conditioning and window overlap for short videos; Whisper `small` as an optional model; Hindi and Hinglish modes with a script sanity filter and Devanagari→Roman transliteration (`transliterate.ts`); a runtime stage (`engine/src/stage.ts`).
+  - **Runtime core** (`runtime/`, package `@offcut/runtime`): runs a job's stages in order, one GPU-heavy stage at a time (Web Locks across tabs), always releases stages, retries on WASM after a lost GPU. The captions page uses it.
+  - **Launch reel studio** at `/reel.html` (`web/public/reel.html`) for making the launch motion graphic.
+  - **Site polish and SEO:** sitemap, `robots.txt`, metadata and JSON-LD; P0–P2 accessibility, performance and design fixes.
+- **Not verified:** whether the live site has been redeployed with the captions page. Check `https://offcut-ai.pages.dev/captions` before announcing it.
+- **Left for later:** formal legal review; before ads, a custom domain, the AdSense application and a certified consent tool.
 
-## Repo map
+## Engine status
 
-| Path | What | Status |
-|---|---|---|
-| `web/` | Website (React 19 + TS + Vite 8, GSAP/ScrollTrigger, Lenis, Three.js r186) | Committed, launch-ready apart from the owner's blanks |
-| `web/src/hero/` | Particle hero v2: GPU particle physics with quality tiers (GPU high/medium, lite, static) and a frame watchdog that steps down a tier when frames run long; fluid cursor with swipe-to-cut; bloom/post-processing; timeline-horizon world; camera choreography and intro | Finished (phases 1–6, `a878f08`…`444801c`) |
-| `web/src/sections/` | How it works, Roadmap (feature voting), FAQ, Early access (waitlist form) | Finished and merged |
-| `web/src/components/` | `NavPill` (floating menu), `Logo`, `Footer`, site-wide `CustomCursor` and `PointerEffects` | Finished |
-| `web/privacy.html`, `web/terms.html`, `web/404.html` | Legal drafts (owner blanks highlighted) and the branded 404 page, as extra Vite entries | Committed |
-| `web/public/` | Favicon, app icons, `og.png` share card, `site.webmanifest`, `_headers` | Committed |
-| `web/scripts/brand-images/` | HTML sources for `og.png` and the icons; `node web/scripts/brand-images/render.mjs` re-renders them with headless Edge/Chrome | Committed |
-| `functions/`, `migrations/`, `shared/`, `test/` | Backend: Cloudflare Pages Functions + D1 + Turnstile (waitlist, feedback, feature votes, clip counter, error reports) | Committed (`b02384b`), 12/12 tests pass |
-| `engine/` | Transcription engine (Whisper in the browser) | Base committed (`c3d6892`). Round 1 committed (`5eab197`): Silero VAD two-pass windows, retry safety net, dev-only benchmark in `engine/bench/`. Test-set results stay local (`asr-evaluation-assets/` is git-ignored) |
-| `docs/launch.md` | Production checklist: what's verified, go-live commands, Turnstile and Web Analytics steps | Committed |
-| `docs/backend-prompt.md` | Backend spec and API contract (source of truth) | Committed |
-| `docs/backend.md` | Backend setup and deploy guide | Committed |
-| `docs/hero-v2-prompt.md`, `docs/engine-transcription-prompt.md` | Briefs for the hero v2 session and Omnirush | Committed |
+### What works
 
-The page order is Hero, How it works, Roadmap, FAQ, Early access, then the footer. The site-wide cursor (`CustomCursor` + `PointerEffects`) steps aside inside the hero, which draws its own pointer effects.
+English is good. Benchmarks (`engine/bench/RESULTS.md`), `base` on WebGPU with VAD and retry:
 
-## Work in progress
+| Clip | Words wrong |
+|---|---|
+| NPR podcast clip (101 s) | 4.7% |
+| Full podcast episode (28 min) | 5.4% |
+| 10-minute English recording | 0.2% |
+| Noisy vlog clips | 0–6% |
 
-- **Engine status (`main`, `1bdeb32`):**
-  - Round 1 (VAD windows, retry safety net, benchmark) is committed. Full benchmark results are in `engine/bench/RESULTS.md`.
-  - Fixed since: `base` on WebGPU (fp16 encoder produced garbage; now fp32 encoder, fp16 decoder). Speaker dashes stripped; runaway output capped. Self-hosted ONNX WASM. CPU quality: `tiny` on q8 looped, so `base` is now the default everywhere; a skipped-speech check triggers retries.
-  - Benchmark, `base` on WebGPU: NPR clip 4.7% words wrong, full 28-min episode 5.4%, 10-min loop 0.2%, noisy vlog clips 0–6%. `tiny` is worse everywhere (full episode 6.2%). Hindi and Hinglish are unusable with both (about 90–100% wrong).
-  - Runtime foundation M0 is done (`0f593bd`): the model and VAD session are fully released, and a lost GPU is recovered by restarting the worker and using the CPU. M1 is not started.
-- **Engine to-do before the captioner (in progress):**
-  1. Tag sound cues like "(laughing)" and "(upbeat music)" instead of treating them as words. Brief prepared for Antigravity; not yet run.
-  2. Keep `stats.speechSegments` and document it (decided: keep, optional, only with VAD).
-  3. Word-timing check for word-by-word captions: later, at the start of the caption step.
-  4. Re-run the full benchmark with the skipped-speech check (it may add retries or time on long files).
-- **Known gaps (carry forward):**
-    - Full-episode wall time is +43% over baseline (262 s → 374 s); the brief's target was +10%. Retries and the VAD pass are the cost.
-    - `stats.speechSegments` was added without approval in `5eab197`; now being kept and documented (item 2 above).
-    - With `vad: false`, the retry also runs (the brief said exact old behaviour). `retry: false` is an internal flag that restores it.
-    - Hindi and Hinglish stay poor with `tiny`. That's a model limit.
-    - On a repetition loop, retry acceptance takes a loop-free retry even with fewer words (a deliberate deviation).
-  - Benchmark runs and the bench page need the dev server (`npm --prefix engine run dev`, port 5180). `asr-evaluation-assets/` stays local and untracked.
-- **Going live:** follow `docs/launch.md`. The site is built and checked; what's left needs the owner's accounts.
+`tiny` is worse everywhere (full episode 6.2%; podcast clip 12.3% with the new recovery ladder).
 
-## Key decisions (don't undo without a reason)
+### What doesn't: Hindi and Hinglish
 
-- **Hosting:** Cloudflare Pages, free tier. The project is named `offcut` → `https://offcut.pages.dev`.
-  - Not Vercel: its free Hobby plan bans commercial use, which includes ads.
-  - Buy a domain only when adding AdSense, which needs one.
-- **Everything heavy runs client-side:** Whisper via Transformers.js (WebGPU first, WASM fallback), WebCodecs/Mediabunny for media, MediaPipe for faces later. AI model files load from Hugging Face's CDN, never from our host.
-- **Never set COOP/COEP headers.** Cross-origin isolation blocks ad iframes, so nothing may need `SharedArrayBuffer`. This means single-threaded WASM.
-- **The backend never receives media.** It stores no IPs and sets no cookies.
-- **The API middleware must stay in `functions/api/_middleware.ts`.** At the root of `functions/`, it would route every static file through Functions and burn the free quota.
-- **Production write origins live in `wrangler.toml` under `[env.production.vars]`.** Update them if the pages.dev address differs or a custom domain is added.
-- **Originality.** The look was inspired by emotion-agency.com, but none of its code or assets are copied.
-- **Brand:**
-  - Name: **Offcut**
-  - Logo: a tall violet slice tilting out of a wide video frame
-  - Palette: night `#120b24`, violet `#7a4dff`, violet-deep `#4b23c8`, orchid `#d77bff`, lilac `#c9b8ff`, mist `#f1ecff`, signal `#6fe3ff`
-  - Fonts: Instrument Serif, Inter, JetBrains Mono (self-hosted)
-- **"clipper"** is the internal codename and survives only in package names and the `clipper-db` database name.
+An outside audit (`OffCut_Hindi_Hinglish_ASR_Engine_Audit_Report.html` / `.pdf`, untracked in `C:\OffCut`, on commit `19253ea`) rates Hindi and Hinglish **not production-ready**. On `tiny`/WASM with VAD, Hindi averages 116.67% words wrong and Hinglish 94.88%, with 68.9% of Hinglish words dropped.
 
-## Gotchas
+Its main findings:
 
-- **Build the website locally with `npm run build:web`** (or `npm --prefix web run build`). The root `npm run build` runs `npm ci` inside `web/` (it's meant for Cloudflare) and wiped `web/node_modules` once.
-- **The project moved from OneDrive to `C:\OffCut`.** Old worktrees and notes may still point at the OneDrive path; ignore them. If `web/node_modules` ever breaks: stop the dev server, run `npm ci` in `web/`, restart. npm paused some install scripts at the root after the move; if wrangler misbehaves, run `npm approve-scripts`.
-- **There's a stray `C:\postcss.config.mjs` on the C: drive.** `web/vite.config.ts` sets an inline PostCSS config to ignore it.
-- **Two AIs work in this folder.** Only one of them commits at a time; Omnirush never commits.
-- **The local dev server for the site** is the "web" config in `.claude/launch.json` (port 5173). The backend runs locally with `npm run dev:api` (port 8788, serves `web/dist`). Run `npm run db:migrate:local` once per checkout first.
-- **Never add COOP/COEP headers** (see Key decisions). `web/public/_headers` says so too.
-- **Keyboard order:** the skip link and the NavPill come before `<main>` in `App.tsx` on purpose, even though the pill floats at the bottom. The hero's first-Tab handler shows the intro text at once so its buttons can take focus.
+1. **Volume boost per window** (`engine/src/audio/decode.ts` calls `conditionAudio()` per window; `normalizePeak` in `dsp.ts`): a quiet window can get up to +45 dB of gain, which turns room hiss into noise Whisper "hears" as words.
+2. `tiny` often translates Hindi speech into English instead of transcribing it.
+3. `base` writes some Hindi in Urdu (Perso-Arabic) script, and the script filter deletes it, leaving empty output.
+4. Transliteration mangles English loanwords (for example "believe" written in Devanagari comes out wrong in Roman).
+5. The captions page claims "3× higher accuracy" for the Small model (`web/src/captions/CaptionsPage.tsx`, around lines 770–778). No benchmark has tested `small`.
 
-## Before going live
+### Phase 2 P0.1 and P0.1.1 (uncommitted in `C:\OffCut`)
 
-Everything that can be done without the owner's accounts is done and checked. The full checklist, with the exact commands and click-by-click Turnstile and Web Analytics steps, is in **`docs/launch.md`**. In short: owner blanks (links, legal pages, licence) → D1 database + remote migrations → Turnstile widget → Pages project + deploy → Turnstile secret → smoke test → push to GitHub. Each outward step needs the owner's explicit yes.
+Another AI's work, not yet committed. `npm --prefix engine test` gives 198/198 passing across 20 files and the typecheck is clean (checked 2026-10-30).
 
-Before ads: buy a domain, apply for AdSense, add a certified cookie-consent tool for EU/UK visitors.
+- **Window planning** (`engine/src/whisper/windows.ts`): policies `baseline`, `fixed_duration`, `largest_pause`, `adaptive_pause`; windows capped at 15 s for conversation.
+- **Repetition controls** (`worker.ts`): `repetition_penalty: 1.15` and `no_repeat_ngram_size: 3`.
+- **Recovery ladder** (`worker.ts`, `retry.ts`): a flagged window is retried as (1) the full window with the penalties, (2) two halves split at a pause, (3) temperature sampling. `validateCandidateTranscript` rejects loops, one word taking over 60% of the output, foreign scripts and junk over 25%. If every candidate fails, the original window is cleaned instead of swapped for a bad one.
+- **Benchmark v2** (`engine/bench/`, see `engine/bench/README.md`): separate scoring per output (`english_latin`, `hindi_devanagari`, `hinglish_roman`, `mixed_diagnostic`), micro and macro WER, script diagnostics, a `hinglish` language queue, and Romanized Hinglish references written to the "OffCut Romanization Standard v1".
+- New tests: `bench-wer`, `diagnostics`, `dynamic-windows`, `recovery-ladder`.
+- **P0.1.1 fixes (2026-10-30):**
+  - **Ladder acceptance bug** (`worker.ts`): candidates are now compared against the original window (`windowResult`) so a shorter, truncated retry isn't accepted blindly. The bug had pushed `EN_PODCAST_001` on `tiny` from 12.29% to 20.34% WER.
+  - **Mixed-script junk** (`script.ts`, `detectWordScript`): the foreign-script test (CJK, Cyrillic and others) now runs before the Devanagari and Latin tests, so words like `"र議"` or `"चИचै"` are caught.
+- **Benchmark reconciliation (P0.1.1):**
+  - The 17.9% deletion rate once reported for `HINGLISH_COSHE_002` (run `D1_rep115_ngram3`) wasn't a real win. The output was 96 junk tokens (Chinese/Cyrillic) that the scorer counted as substitutions instead of deletions, and WER was 97.4%.
+  - The 55.6% figure (adaptive-pause windows) is the honest one. The Hindi window is still dropped, but the English window comes out as 47 real, coherent words.
+  - `HINGLISH_COSHE_001` has 72 reference words and `HINGLISH_COSHE_003` has 62. An earlier summary table had them swapped by mistake.
+- **Experiment matrix A–G on `HINGLISH_COSHE_002`** (`tiny`, WebGPU; WER / words dropped, Hinglish mode):
+
+| Run | Setup | WER | Dropped |
+|---|---|---|---|
+| G | Full window, plain greedy (baseline) | 99.2% | 98.3% |
+| A | Full window, penalties, no ladder | 97.4% | 19.7% (junk) |
+| C | Full window, penalties, ladder | 92.3% | 12.0% (RTF 4.07, slow) |
+| B / D | Adaptive windows, penalties, with or without ladder | 94.9% | 55.6% |
+| E | Adaptive, penalty 1.10, ladder | 93.2% | 53.0% |
+| F | Adaptive, penalty 1.15, no n-gram block, ladder | 93.2% | 23.1% |
+
+**Read the results carefully.**
+- **Hinglish:** dropped words fell from about 98% to 37–56%, and the output is real dialogue instead of a loop. But **92–95% of words are still wrong.**
+- **Hindi:** still at 100% WER.
+
+The fixes stop the engine collapsing; they don't make it accurate.
+
+**Open question on English (`tiny`).** Run alone, `EN_PODCAST_001` gets 12.29% after the ladder fix (13.56% in a later run, RTF 0.229). But in the full short-set run `Phase2_P0_1_1_FullEval_fixed_ladder`, the same clip scored **32.63%**, and the noisy vlogs got 22.92% micro WER, against 16.56–20.83% before. Find out why the full run differs before calling English regression-free. `base` hasn't been re-run on the new code.
+
+**The P0.1.1 write-up's "GO for Phase 2 P1"** (move on to Indic-specialised models such as IndicConformer or fine-tuned Whisper ONNX) is the right direction. Settle the English question above first.
 
 ## What's next
 
-1. Go live (above).
-2. Finish the engine to-do (see Work in progress), then the captioner. Realistic cut for the first release: a **captions file download (SRT/VTT)** on the website, which Instagram, YouTube and CapCut accept. Burned-in captions (video decode, render and encode, on the runtime foundation from `docs/runtime-foundation-plan.md`) come after.
-3. Head-to-head against OpusClip on clips the owner owns, then decide whether to push `main` (5 commits are local only).
-3. Build the tool, one station at a time, starting with the free auto-captioner:
-   1. split the audio out
-   2. transcribe (from `engine/`)
-   3. pick the best moments
-   4. reframe wide to tall around faces
-   5. paint captions
-   6. encode with WebCodecs
-   7. download
-4. Installable app (PWA, works offline). The web manifest and icons already exist.
+1. **Finish P0.1/P0.1.1:** work out why `EN_PODCAST_001` on `tiny` scores 32.63% in the full run but 12–14% alone. Re-run `base` on the new code. Then review and commit it (16 engine files plus the bench).
+2. **Fix the audit's remaining P0 items:**
+   - level the whole track's volume once (global RMS) instead of boosting each window;
+   - convert Urdu-script output to Devanagari in `hi` mode instead of deleting it.
+3. **Hinglish quality (audit P1/P2):** a bilingual starting prompt, a loanword lexicon for transliteration, the missing candra matras (ॉ, ॅ), retries split at VAD pauses, and a temperature fallback schedule `[0.0, 0.2, 0.4]`.
+4. **Be honest in the UI:** remove the unverified "3× higher accuracy" Small-model claim, or benchmark `small` first. Until Hindi/Hinglish improve, label them as experimental.
+5. **The real fix is the model.** `tiny` and `base` are too small for Hindi. Evaluate Indic fine-tuned Whisper checkpoints in ONNX that can run in the browser.
+6. **Head-to-head against OpusClip** on English clips the owner owns.
+7. **Remaining tool stations:** pick the best moments from a long video (not started), then the full long-video → clips flow on top of captions + reframe + burn-in.
+8. **Installable app (PWA, works offline).** The manifest and icons already exist.
+9. **Marketing:** drafts for launch threads and directory listings are in `docs/marketing/` (untracked).
+
+## Repo map
+
+| Path | What |
+|---|---|
+| `web/` | Website (React 19 + TS + Vite 8, GSAP/ScrollTrigger, Lenis, Three.js r186). Entries: `index.html`, `captions.html`, `privacy.html`, `terms.html`, `404.html` |
+| `web/src/hero/` | Particle hero v2 with quality tiers and a frame watchdog |
+| `web/src/sections/` | How it works, Roadmap (feature voting), FAQ, Early access |
+| `web/src/components/` | `NavPill`, `Logo`, `Footer`, site-wide `CustomCursor` and `PointerEffects` |
+| `web/src/captions/` | Captions page: editor, player overlay, style presets, burn-in export, face-tracking reframe |
+| `web/public/` | Favicon, icons, `og.png`, `site.webmanifest`, `_headers`, `robots.txt`, `reel.html` |
+| `web/scripts/brand-images/` | Sources for `og.png` and icons; `node web/scripts/brand-images/render.mjs` re-renders them |
+| `engine/` | Transcription engine: Whisper via Transformers.js 3.8.1, Silero VAD, DSP, windows, retry/recovery, language/script handling, transliteration, captions export, runtime stage |
+| `engine/bench/` | Dev-only benchmark (`RESULTS.md` holds numbers only; `README.md` explains the method) |
+| `runtime/` | `@offcut/runtime`: stage runner with GPU lock, release, cancel and WASM fallback |
+| `functions/`, `migrations/`, `shared/`, `test/` | Backend: Pages Functions + D1 + Turnstile |
+| `docs/` | `launch.md` (production checklist), `backend-prompt.md` (API contract, source of truth), `backend.md`, `runtime-foundation-plan.md`, and briefs for other AI sessions |
+
+Untracked in `C:\OffCut`: the audit report (HTML/PDF), `generate_pdf_report.cjs`, `docs/marketing/`, `opencode.jsonc`, `website screenshots/`, `asr-evaluation-assets/` (test set and results; stays local, git-ignored).
+
+The home page order is Hero, How it works, Roadmap, FAQ, Early access, then the footer.
+
+## Key decisions (don't undo without a reason)
+
+- **Hosting:** Cloudflare Pages, free tier. Not Vercel: its free Hobby plan bans commercial use, which includes ads. Buy a domain only when adding AdSense, which needs one.
+- **Everything heavy runs client-side:** Whisper via Transformers.js (WebGPU first, WASM fallback), WebCodecs for media, face detection in the browser. Model files load from Hugging Face's CDN, never from our host. The ONNX WASM runtime file is self-hosted.
+- **Never set COOP/COEP headers.** Cross-origin isolation blocks ad iframes, so nothing may need `SharedArrayBuffer`. This means single-threaded WASM.
+- **The backend never receives media.** It stores no IPs and sets no cookies.
+- **The API middleware stays in `functions/api/_middleware.ts`.** At the root of `functions/` it would route every static file through Functions and burn the free quota.
+- **Production write origins live in `wrangler.toml` under `[env.production.vars]`.** Update them if a custom domain is added.
+- **Benchmark honesty:** `RESULTS.md` holds numbers only, never transcript or reference text. The scorer never uses the production transliteration to build references.
+- **Originality.** The look was inspired by emotion-agency.com; none of its code or assets are copied.
+- **Brand:** name **Offcut**; logo is a tall violet slice tilting out of a wide video frame; palette night `#120b24`, violet `#7a4dff`, violet-deep `#4b23c8`, orchid `#d77bff`, lilac `#c9b8ff`, mist `#f1ecff`, signal `#6fe3ff`; fonts Instrument Serif, Inter, JetBrains Mono (self-hosted).
+- **"clipper"** is the internal codename, kept only in package names and the `clipper-db` database name.
+
+## Gotchas
+
+- **Build the website locally with `npm run build:web`.** The root `npm run build` runs `npm ci` inside `web/` (meant for Cloudflare) and once wiped `web/node_modules`.
+- **Several AIs work in this folder.** Only one commits at a time. Check `git status` in `C:\OffCut` before assuming what's committed; worktrees under `.claude/worktrees/` don't see uncommitted work in the main folder.
+- **Dev servers:** the site is the "web" config in `.claude/launch.json` (port 5173). The backend runs with `npm run dev:api` (port 8788, serves `web/dist`); run `npm run db:migrate:local` once per checkout first. The engine dev server and bench page run with `npm --prefix engine run dev` (port 5180, `http://127.0.0.1:5180/bench/index.html`).
+- **Engine checks:** `npm --prefix engine test` and `npm --prefix engine run typecheck`.
+- **A stray `C:\postcss.config.mjs`** exists; `web/vite.config.ts` sets an inline PostCSS config to ignore it.
+- **After the OneDrive move,** if `web/node_modules` breaks: stop the dev server, run `npm ci` in `web/`, restart. If wrangler misbehaves, run `npm approve-scripts`.
+- **Keyboard order:** the skip link and NavPill come before `<main>` in `App.tsx` on purpose.
+
+## Before ads
+
+Buy a domain, apply for AdSense, add a certified cookie-consent tool for EU/UK visitors. Every outward step needs the owner's explicit yes.
