@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>IndicConformer Browser Runtime Test</title>
+    <style>
+      body {
+        background: #0f172a;
+        color: #f8fafc;
+        font-family: monospace;
+        padding: 24px;
+      }
+      pre {
+        background: #1e293b;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+        white-space: pre-wrap;
+      }
+      .pass { color: #4ade80; }
+      .fail { color: #f87171; }
+      .warn { color: #facc15; }
+    </style>
+  </head>
+  <body>
+    <h1>IndicConformer 120M — Browser Runtime Feasibility Test</h1>
+    <div id="status">Starting test suite...</div>
+    <pre id="log"></pre>
+    <script type="module" src="./test-conformer.ts"></script>
+  </body>
+</html>

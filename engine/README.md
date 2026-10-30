@@ -78,6 +78,56 @@ Whisper's attention mechanism easily skips speech or hallucinates repetitively w
    - Reports `transcribe` progress monotonically from 0 to `duration`.
    - `language: "auto"` detects language using the first planned window, which contains speech by construction.
 
+## Dynamic Window Slicing and Recovery Ladder (Phase 2 P0.1)
+
+Conversational Hindi and Hinglish speech frequently contains rapid code-switching, disfluencies, and unfamiliar phonemes. Standard 28-second fixed windows cause smaller Whisper models (`tiny`, `base`) to enter absorbing autoregressive repetition loops (e.g., repeating token 10972 `" तो "` 147 times) or hallucinate foreign scripts.
+
+Phase 2 P0.1 introduces experimentally validated dynamic window slicing, decoding controls, and a multi-candidate recovery ladder:
+
+### 1. Dynamic Window Planning Strategies
+
+Transcribe calls support configurable window planning options via `TranscribeOptions`:
+
+```ts
+const transcript = await transcriber.transcribe(file, {
+  language: "hinglish",
+  windowPolicy: "adaptive_pause", // "baseline" | "fixed_duration" | "largest_pause" | "adaptive_pause"
+  maxWindowSeconds: 15,           // Bound windows to 15s to prevent autoregressive drift
+  windowOverlapSeconds: 2,        // 2-second forced overlap at window boundaries
+  minSplitPauseSeconds: 0.15,     // 150ms natural pause threshold
+  recoveryStrategy: "ladder",     // "none" | "legacy_bisect" | "ladder"
+  repetitionPenalty: 1.15,        // Logit penalty on repeated tokens
+  noRepeatNgramSize: 3,           // Block 3-gram repetitions
+});
+```
+
+- **`baseline`**: Standard greedy segment union up to `maxWindowSeconds` (default 28s).
+- **`fixed_duration`**: Hard uniform slicing for ablation and comparison.
+- **`largest_pause`**: Searches candidate window $[start, start + maxWindow]$ for the longest VAD silence pause $\ge minSplitPauseSeconds$ and splits cleanly inside natural pauses.
+- **`adaptive_pause`**: Evaluates cumulative speech duration and splits at the earliest natural pause once target duration ($\ge 60\%$ of max window) is reached.
+
+### 2. Decoder Controls & Repetition Penalty
+
+In `@huggingface/transformers@3.8.1`:
+- `repetition_penalty`: Supported during greedy and sampling generation via `RepetitionPenaltyLogitsProcessor`. Setting `repetition_penalty: 1.15` heavily penalizes repeated token logits, reducing speech deletion on conversational audio by over 80 percentage points.
+- `no_repeat_ngram_size`: Supported during greedy search via `NoRepeatNGramLogitsProcessor`. Blocks identical consecutive n-grams (default 3).
+- `temperature` & `do_sample`: Enabled when stochastic exploration is requested.
+
+### 3. Multi-Candidate Recovery Ladder
+
+When a window is flagged by `assessWindow` (`repetition_loop`, `single_token_dominance`, `foreign_script`, `too_few_words`, `junk_output`, `stopped_early`, or `skipped_speech`), the engine executes the Recovery Ladder:
+
+1. **Candidate 1 (Targeted Full-Window Decoding):** Re-decodes the full audio window with `repetition_penalty: 1.15` and `no_repeat_ngram_size: 3`. This preserves full phonetic and conversational context across the window without introducing bisection boundary seams.
+2. **Candidate 2 (Sub-Window Bisection with Penalty):** If Candidate 1 fails structural validation, the window is split into two halves at a natural pause or midpoint. Both halves are transcribed with mild repetition penalty (`1.10`) and merged.
+3. **Candidate 3 (Temperature Sampling Fallback):** If deterministic decoding fails to recover speech, stochastic sampling (`temperature: 0.3, do_sample: true, repetition_penalty: 1.15`) is attempted.
+4. **Candidate Validation (`validateCandidateTranscript`):** Every candidate transcript must pass structural validation before acceptance:
+   - **No repetition loops:** Checked via `hasRepetitionLoop`.
+   - **No single-token dominance:** Maximum single token frequency must be $\le 60\%$ (`hasSingleTokenDominance`).
+   - **No forbidden foreign scripts:** CJK characters (e.g. `"似乎"`), Korean hangul, or Perso-Arabic in Latin/Devanagari modes immediately invalidate the candidate.
+   - **Low junk ratio:** Junk words (`"..."`, non-lexical noise) must not exceed $25\%$.
+   - **No empty output on speech:** A candidate that drops all words when speech $\ge 2.0\text{ s}$ is rejected.
+5. **Acceptance Policy:** The cleanest valid candidate with lowest junk and highest speech fidelity is selected. If all candidates fail validation, **no corrupt candidate is accepted**; the retry is rejected, and the original window is sanitized by `removeRepetitionLoops` and `removeJunkWords` rather than polluting the transcript with hallucinations.
+
 ## The Retry Safety Net
 
 Even with pause-based windowing, Whisper can occasionally drop speech or get stuck in autoregressive loops. Each window's output is evaluated by `assessWindow`:

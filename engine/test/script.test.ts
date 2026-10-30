@@ -18,6 +18,10 @@ describe("script detection and sanity filter", () => {
     expect(detectWordScript("யுஎல்சி")).toBe("tamil"); // Tamil 'ULC'
     expect(detectWordScript("12345")).toBe("symbol");
     expect(detectWordScript("...")).toBe("symbol");
+    // Chinese and Cyrillic mixed tokens should be detected as "other"
+    expect(detectWordScript("似乎")).toBe("other");
+    expect(detectWordScript("र議")).toBe("other");
+    expect(detectWordScript("चИचै")).toBe("other");
   });
 
   it("identifies foreign script presence", () => {
@@ -60,6 +64,8 @@ describe("script detection and sanity filter", () => {
     expect(isWordAllowedInLanguage("घर", "hinglish")).toBe(true);
     expect(isWordAllowedInLanguage("میں", "hinglish")).toBe(false);
     expect(isWordAllowedInLanguage("யுஎல்சி", "hinglish")).toBe(false);
+    expect(isWordAllowedInLanguage("र議", "hinglish")).toBe(false);
+    expect(isWordAllowedInLanguage("चИचै", "hinglish")).toBe(false);
   });
 
   it("counts and filters foreign script words in window transcripts", () => {
@@ -70,9 +76,11 @@ describe("script detection and sanity filter", () => {
       { text: "aur" },
       { text: "broker" },
       { text: "ek" },
+      { text: "र議" },
+      { text: "चИचै" },
     ];
 
-    expect(countForeignScriptWords(rawWords, "hinglish")).toBe(3); // tamil + 2 urdu words
+    expect(countForeignScriptWords(rawWords, "hinglish")).toBe(5); // tamil + 2 urdu words + 2 cjk/cyrillic hybrid words
 
     const filtered = filterForeignScriptWords(rawWords, "hinglish");
     expect(filtered).toHaveLength(3);

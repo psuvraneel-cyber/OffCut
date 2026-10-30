@@ -832,3 +832,1641 @@ No transcript text or reference text is recorded in this repository.
 | 02_hindi | 18 | 100.00% | 14.65% | 364.76% | 3.258 | 306.9 |
 | 03_hinglish | 18 | 98.64% | 50.91% | 97.25% | 1.667 | 708.1 |
 | 04_noisy_vlog | 12 | 1.56% | 0.00% | 1.17% | 0.808 | 27.6 |
+
+
+## Run: audit-test (2026-10-29T17:27:10.002Z)
+
+| Config | Model: tiny | Device: wasm | VAD: on | Set: short | Runs: 1 |
+|---|---|---|---|---|---|
+
+| Sample ID | Lang | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EN_PODCAST_001 | en | 101.0 | 236 | 195 | 32.20% | 19 | 49 | 8 | 20.76% | 28.52% | 10.50 | 0 | 41.7 | 0.413 | silero | 5 | 3 |
+| HI_INDIC_001 | auto | 4.5 | 12 | 9 | 100.00% | 9 | 3 | 0 | 25.00% | 100.00% | 0.40 | 0 | 6.1 | 1.347 | silero | 1 | 0 |
+| HI_INDIC_001 | hi | 4.5 | 12 | 9 | 100.00% | 9 | 3 | 0 | 25.00% | 100.00% | 0.40 | 0 | 4.9 | 1.096 | silero | 1 | 0 |
+| HI_INDIC_002 | auto | 5.3 | 11 | 7 | 100.00% | 7 | 4 | 0 | 36.36% | 100.00% | 0.30 | 0 | 4.9 | 0.925 | silero | 1 | 0 |
+| HI_INDIC_002 | hi | 5.3 | 11 | 7 | 100.00% | 7 | 4 | 0 | 36.36% | 100.00% | 0.30 | 0 | 4.1 | 0.771 | silero | 1 | 0 |
+| HI_INDIC_003 | auto | 4.7 | 12 | 18 | 150.00% | 12 | 0 | 6 | 0.00% | 124.39% | 0.26 | 0 | 7.0 | 1.494 | silero | 1 | 0 |
+| HI_INDIC_003 | hi | 4.7 | 12 | 18 | 150.00% | 12 | 0 | 6 | 0.00% | 124.39% | 0.26 | 0 | 5.1 | 1.095 | silero | 1 | 0 |
+| HINGLISH_COSHE_001 | auto | 19.3 | 72 | 42 | 90.28% | 35 | 30 | 0 | 41.67% | 84.26% | 9.56 | 0 | 27.8 | 1.438 | silero | 1 | 1 |
+| HINGLISH_COSHE_001 | hi | 19.3 | 72 | 38 | 90.28% | 31 | 34 | 0 | 47.22% | 84.72% | 9.02 | 0 | 26.7 | 1.383 | silero | 1 | 1 |
+| HINGLISH_COSHE_002 | auto | 27.8 | 117 | 6 | 100.00% | 6 | 111 | 0 | 94.87% | 96.39% | 13.13 | 0 | 28.0 | 1.008 | silero | 1 | 1 |
+| HINGLISH_COSHE_002 | hi | 27.8 | 117 | 1 | 100.00% | 1 | 116 | 0 | 99.15% | 99.28% | 0.00 | 0 | 55.9 | 2.011 | silero | 1 | 1 |
+| HINGLISH_COSHE_003 | auto | 19.5 | 62 | 18 | 93.55% | 14 | 44 | 0 | 70.97% | 86.90% | 0.17 | 0 | 28.1 | 1.442 | silero | 1 | 1 |
+| HINGLISH_COSHE_003 | hi | 19.5 | 62 | 25 | 95.16% | 22 | 37 | 0 | 59.68% | 88.21% | 0.15 | 0 | 33.8 | 1.732 | silero | 1 | 1 |
+| VLOG_DRIVE_001 | en | 1.1 | 2 | 2 | 0.00% | 0 | 0 | 0 | 0.00% | 0.00% | 0.00 | 0 | 4.6 | 4.107 | silero | 1 | 0 |
+| VLOG_DRIVE_002 | en | 6.6 | 16 | 16 | 6.25% | 1 | 0 | 0 | 0.00% | 4.69% | 0.16 | 0 | 5.5 | 0.834 | silero | 1 | 0 |
+| VLOG_DRIVE_003 | en | 3.3 | 15 | 9 | 53.33% | 2 | 6 | 0 | 40.00% | 43.75% | 0.00 | 0 | 5.2 | 1.560 | silero | 1 | 0 |
+| VLOG_DRIVE_004 | en | 4.7 | 15 | 14 | 6.67% | 0 | 1 | 0 | 6.67% | 6.45% | 0.00 | 0 | 5.2 | 1.100 | silero | 1 | 0 |
+
+### Category Averages
+| Category | Samples | Mean WER | Mean Del Rate | Mean CER | Mean RTF | Total Wall (s) |
+|---|---|---|---|---|---|---|
+| 01_english_podcast | 1 | 32.20% | 20.76% | 28.52% | 0.413 | 41.7 |
+| 02_hindi | 6 | 116.67% | 20.45% | 108.13% | 1.122 | 32.2 |
+| 03_hinglish | 6 | 94.88% | 68.93% | 89.96% | 1.502 | 200.3 |
+| 04_noisy_vlog | 4 | 16.56% | 11.67% | 13.72% | 1.900 | 20.5 |
+
+
+## Run: phase1-repair-benchmark (2026-10-29T20:10:17.026Z)
+
+| Config | Model: tiny | Device: wasm | VAD: on | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EN_PODCAST_001 | en | english_latin | 101.0 | 236 | 195 | 32.20% | 19 | 49 | 8 | 20.76% | 28.52% | 0/848/0/0 | 100.00% | 10.50 | 0 | 32.5 | 0.322 | silero | 5 | 3 | Yes |
+| HI_INDIC_001 | hi | hindi_devanagari | 4.5 | 12 | 9 | 100.00% | 9 | 3 | 0 | 25.00% | 100.00% | 0/30/0/0 | 100.00% | 0.40 | 0 | 3.0 | 0.666 | silero | 1 | 0 | Yes |
+| HI_INDIC_001 | auto | hindi_devanagari | 4.5 | 12 | 9 | 100.00% | 9 | 3 | 0 | 25.00% | 100.00% | 0/30/0/0 | 100.00% | 0.40 | 0 | 4.1 | 0.918 | silero | 1 | 0 | Yes |
+| HI_INDIC_002 | hi | hindi_devanagari | 5.3 | 11 | 7 | 100.00% | 7 | 4 | 0 | 36.36% | 100.00% | 0/27/0/0 | 100.00% | 0.30 | 0 | 2.8 | 0.533 | silero | 1 | 0 | Yes |
+| HI_INDIC_002 | auto | hindi_devanagari | 5.3 | 11 | 7 | 100.00% | 7 | 4 | 0 | 36.36% | 100.00% | 0/27/0/0 | 100.00% | 0.30 | 0 | 4.2 | 0.780 | silero | 1 | 0 | Yes |
+| HI_INDIC_003 | hi | hindi_devanagari | 4.7 | 12 | 18 | 150.00% | 12 | 0 | 6 | 0.00% | 124.39% | 0/51/0/0 | 100.00% | 0.26 | 0 | 3.2 | 0.686 | silero | 1 | 0 | Yes |
+| HI_INDIC_003 | auto | hindi_devanagari | 4.7 | 12 | 18 | 150.00% | 12 | 0 | 6 | 0.00% | 124.39% | 0/51/0/0 | 100.00% | 0.26 | 0 | 4.1 | 0.872 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_001 | hinglish | hinglish_roman | 19.3 | 72 | 38 | 90.28% | 31 | 34 | 0 | 47.22% | 70.75% | 0/129/0/0 | 100.00% | 9.02 | 0 | 18.8 | 0.976 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_001 | auto | mixed_diagnostic | 19.3 | 72 | 42 | 90.28% | 35 | 30 | 0 | 41.67% | 84.26% | 0/153/0/0 | 100.00% | 9.56 | 0 | 16.6 | 0.861 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_001 | hi | hindi_devanagari | 19.3 | 72 | 38 | 90.28% | 31 | 34 | 0 | 47.22% | 84.72% | 0/129/0/0 | 100.00% | 9.02 | 0 | 14.7 | 0.760 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 1 | 100.00% | 1 | 116 | 0 | 99.15% | 99.18% | 0/4/0/0 | 100.00% | 0.00 | 0 | 36.3 | 1.305 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 6 | 100.00% | 6 | 111 | 0 | 94.87% | 96.39% | 0/22/0/0 | 100.00% | 13.13 | 0 | 16.1 | 0.581 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 1 | 100.00% | 1 | 116 | 0 | 99.15% | 99.28% | 0/4/0/0 | 100.00% | 0.00 | 0 | 32.8 | 1.181 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_003 | hinglish | hinglish_roman | 19.5 | 62 | 25 | 95.16% | 22 | 37 | 0 | 59.68% | 80.77% | 0/100/0/0 | 100.00% | 0.15 | 0 | 26.9 | 1.380 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_003 | auto | mixed_diagnostic | 19.5 | 62 | 18 | 93.55% | 14 | 44 | 0 | 70.97% | 86.90% | 0/83/0/0 | 100.00% | 0.17 | 0 | 16.5 | 0.846 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_003 | hi | hindi_devanagari | 19.5 | 62 | 25 | 95.16% | 22 | 37 | 0 | 59.68% | 88.21% | 0/100/0/0 | 100.00% | 0.15 | 0 | 20.5 | 1.052 | silero | 1 | 1 | Yes |
+| VLOG_DRIVE_001 | en | english_latin | 1.1 | 2 | 2 | 0.00% | 0 | 0 | 0 | 0.00% | 0.00% | 0/6/0/0 | 100.00% | 0.00 | 0 | 2.5 | 2.249 | silero | 1 | 0 | Yes |
+| VLOG_DRIVE_002 | en | english_latin | 6.6 | 16 | 16 | 6.25% | 1 | 0 | 0 | 0.00% | 4.69% | 0/63/0/0 | 100.00% | 0.16 | 0 | 2.9 | 0.444 | silero | 1 | 0 | Yes |
+| VLOG_DRIVE_003 | en | english_latin | 3.3 | 15 | 9 | 53.33% | 2 | 6 | 0 | 40.00% | 43.75% | 0/41/0/0 | 100.00% | 0.00 | 0 | 3.1 | 0.941 | silero | 1 | 0 | Yes |
+| VLOG_DRIVE_004 | en | english_latin | 4.7 | 15 | 14 | 6.67% | 0 | 1 | 0 | 6.67% | 6.45% | 0/57/0/0 | 100.00% | 0.00 | 0 | 3.1 | 0.648 | silero | 1 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 01_english_podcast [en] | english_latin | 1 | 32.20% | 32.20% | 20.76% | 28.52% | 100.00% | 0.322 | 32.5 | Yes |
+| 02_hindi [hi] | hindi_devanagari | 3 | 117.14% | 116.67% | 20.00% | 108.13% | 100.00% | 0.628 | 9.1 | Yes |
+| 02_hindi [auto] | hindi_devanagari | 3 | 117.14% | 116.67% | 20.00% | 108.13% | 100.00% | 0.856 | 12.4 | Yes |
+| 03_hinglish [hinglish] | hinglish_roman | 3 | 96.02% | 95.15% | 74.50% | 83.57% | 100.00% | 1.220 | 82.0 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 3 | 95.62% | 94.61% | 73.71% | 89.18% | 100.00% | 0.763 | 49.3 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 3 | 96.02% | 95.15% | 74.50% | 90.74% | 100.00% | 0.997 | 68.0 | Yes |
+| 04_noisy_vlog [en] | english_latin | 4 | 20.83% | 16.56% | 14.58% | 13.72% | 100.00% | 1.070 | 11.7 | Yes |
+
+
+## Run: exp0-baseline (2026-10-29T21:17:39.613Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 1 | 99.15% | 0 | 116 | 0 | 99.15% | 99.59% | 0/2/0/0 | 100.00% | 0.00 | 0 | 70.7 | 2.544 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 106 | 97.44% | 103 | 11 | 0 | 9.40% | 90.36% | 0/413/0/0 | 100.00% | 13.58 | 0 | 29.2 | 1.052 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 1 | 99.15% | 0 | 116 | 0 | 99.15% | 99.52% | 2/0/0/0 | 100.00% | 0.00 | 0 | 61.2 | 2.201 | silero | 1 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 99.15% | 99.15% | 99.15% | 99.59% | 100.00% | 2.544 | 70.7 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 97.44% | 97.44% | 9.40% | 90.36% | 100.00% | 1.052 | 29.2 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 99.15% | 99.15% | 99.15% | 99.52% | 100.00% | 2.201 | 61.2 | Yes |
+
+
+## Run: exp0-baseline (2026-10-29T21:22:28.371Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 1 | 99.15% | 0 | 116 | 0 | 99.15% | 99.59% | 0/2/0/0 | 100.00% | 0.00 | 0 | 66.6 | 2.394 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 106 | 97.44% | 103 | 11 | 0 | 9.40% | 90.36% | 0/413/0/0 | 100.00% | 13.58 | 0 | 26.8 | 0.962 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 1 | 99.15% | 0 | 116 | 0 | 99.15% | 99.52% | 2/0/0/0 | 100.00% | 0.00 | 0 | 56.1 | 2.017 | silero | 1 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 99.15% | 99.15% | 99.15% | 99.59% | 100.00% | 2.394 | 66.6 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 97.44% | 97.44% | 9.40% | 90.36% | 100.00% | 0.962 | 26.8 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 99.15% | 99.15% | 99.15% | 99.52% | 100.00% | 2.017 | 56.1 | Yes |
+
+
+## Run: exp1-vad-off (2026-10-29T21:26:13.681Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: off | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 2 | 99.15% | 1 | 115 | 0 | 98.29% | 99.38% | 0/3/0/0 | 100.00% | 0.00 | 0 | 66.2 | 2.382 | off | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 16 | 100.00% | 16 | 101 | 0 | 86.32% | 94.46% | 0/51/0/0 | 100.00% | 0.00 | 0 | 23.2 | 0.836 | off | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 2 | 99.15% | 1 | 115 | 0 | 98.29% | 99.28% | 3/0/0/0 | 100.00% | 0.00 | 0 | 65.5 | 2.357 | off | 1 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 99.15% | 99.15% | 98.29% | 99.38% | 100.00% | 2.382 | 66.2 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 100.00% | 100.00% | 86.32% | 94.46% | 100.00% | 0.836 | 23.2 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 99.15% | 99.15% | 98.29% | 99.28% | 100.00% | 2.357 | 65.5 | Yes |
+
+
+## Run: exp2-retry-off (2026-10-29T21:27:32.570Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: off | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 2 | 99.15% | 1 | 115 | 0 | 98.29% | 99.38% | 0/3/0/0 | 100.00% | 0.00 | 0 | 21.9 | 0.786 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 2 | 99.15% | 1 | 115 | 0 | 98.29% | 99.28% | 3/0/0/0 | 100.00% | 0.00 | 0 | 23.1 | 0.829 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 2 | 99.15% | 1 | 115 | 0 | 98.29% | 99.28% | 3/0/0/0 | 100.00% | 0.00 | 0 | 23.7 | 0.851 | silero | 1 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 99.15% | 99.15% | 98.29% | 99.38% | 100.00% | 0.786 | 21.9 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 99.15% | 99.15% | 98.29% | 99.28% | 100.00% | 0.829 | 23.1 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 99.15% | 99.15% | 98.29% | 99.28% | 100.00% | 0.851 | 23.7 | Yes |
+
+
+## Run: exp3a-no-cond (2026-10-29T21:30:38.479Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: none | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 1 | 99.15% | 0 | 116 | 0 | 99.15% | 99.59% | 0/2/0/0 | 100.00% | 0.00 | 0 | 75.4 | 2.714 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 102 | 97.44% | 99 | 15 | 0 | 12.82% | 90.84% | 0/403/0/0 | 100.00% | 13.64 | 0 | 28.7 | 1.032 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 1 | 99.15% | 0 | 116 | 0 | 99.15% | 99.52% | 2/0/0/0 | 100.00% | 0.00 | 0 | 65.0 | 2.338 | silero | 1 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 99.15% | 99.15% | 99.15% | 99.59% | 100.00% | 2.714 | 75.4 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 97.44% | 97.44% | 12.82% | 90.84% | 100.00% | 1.032 | 28.7 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 99.15% | 99.15% | 99.15% | 99.52% | 100.00% | 2.338 | 65.0 | Yes |
+
+
+## Run: exp3b-filter-only (2026-10-29T21:33:36.496Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: filter_only | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 1 | 100.00% | 1 | 116 | 0 | 99.15% | 99.38% | 0/3/0/0 | 100.00% | 0.00 | 0 | 66.5 | 2.392 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 103 | 98.29% | 101 | 14 | 0 | 11.97% | 92.29% | 0/384/0/0 | 100.00% | 1.70 | 0 | 32.5 | 1.168 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 1 | 100.00% | 1 | 116 | 0 | 99.15% | 99.52% | 2/0/0/0 | 100.00% | 0.00 | 0 | 68.8 | 2.475 | silero | 1 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 100.00% | 100.00% | 99.15% | 99.38% | 100.00% | 2.392 | 66.5 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 98.29% | 98.29% | 11.97% | 92.29% | 100.00% | 1.168 | 32.5 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 100.00% | 100.00% | 99.15% | 99.52% | 100.00% | 2.475 | 68.8 | Yes |
+
+
+## Run: exp3c-norm-only (2026-10-29T21:36:32.470Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: norm_only | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 1 | 100.00% | 1 | 116 | 0 | 99.15% | 99.38% | 0/3/0/0 | 100.00% | 0.00 | 0 | 64.6 | 2.322 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 102 | 97.44% | 99 | 15 | 0 | 12.82% | 90.84% | 0/403/0/0 | 100.00% | 13.64 | 0 | 28.9 | 1.041 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 1 | 100.00% | 1 | 116 | 0 | 99.15% | 99.52% | 2/0/0/0 | 100.00% | 0.00 | 0 | 65.2 | 2.347 | silero | 1 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 100.00% | 100.00% | 99.15% | 99.38% | 100.00% | 2.322 | 64.6 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 97.44% | 97.44% | 12.82% | 90.84% | 100.00% | 1.041 | 28.9 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 100.00% | 100.00% | 99.15% | 99.52% | 100.00% | 2.347 | 65.2 | Yes |
+
+
+## Run: exp4-coshe1 (2026-10-29T21:37:37.895Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_001 | hinglish | hinglish_roman | 19.3 | 72 | 58 | 87.50% | 49 | 14 | 0 | 19.44% | 64.43% | 0/201/0/0 | 100.00% | 0.95 | 0 | 13.9 | 0.721 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_001 | auto | mixed_diagnostic | 19.3 | 72 | 52 | 88.89% | 44 | 20 | 0 | 27.78% | 82.41% | 0/190/0/0 | 100.00% | 11.26 | 0 | 11.0 | 0.569 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_001 | hi | hindi_devanagari | 19.3 | 72 | 58 | 88.89% | 50 | 14 | 0 | 19.44% | 80.09% | 0/201/0/0 | 100.00% | 0.95 | 0 | 11.4 | 0.591 | silero | 1 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 87.50% | 87.50% | 19.44% | 64.43% | 100.00% | 0.721 | 13.9 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 88.89% | 88.89% | 27.78% | 82.41% | 100.00% | 0.569 | 11.0 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 88.89% | 88.89% | 19.44% | 80.09% | 100.00% | 0.591 | 11.4 | Yes |
+
+
+## Run: exp5-hi-indic1 (2026-10-29T21:38:03.845Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HI_INDIC_001 | hi | hindi_devanagari | 4.5 | 12 | 5 | 100.00% | 5 | 7 | 0 | 58.33% | 100.00% | 0/19/0/0 | 100.00% | 0.00 | 0 | 9.8 | 2.187 | silero | 1 | 1 | Yes |
+| HI_INDIC_001 | auto | hindi_devanagari | 4.5 | 12 | 10 | 100.00% | 10 | 2 | 0 | 16.67% | 100.00% | 0/33/0/0 | 100.00% | 0.33 | 0 | 10.1 | 2.246 | silero | 1 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 02_hindi [hi] | hindi_devanagari | 1 | 100.00% | 100.00% | 58.33% | 100.00% | 100.00% | 2.187 | 9.8 | Yes |
+| 02_hindi [auto] | hindi_devanagari | 1 | 100.00% | 100.00% | 16.67% | 100.00% | 100.00% | 2.246 | 10.1 | Yes |
+
+
+## Run: exp6-en-podcast1 (2026-10-29T21:38:52.763Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EN_PODCAST_001 | en | english_latin | 101.0 | 236 | 249 | 12.29% | 10 | 3 | 16 | 1.27% | 7.87% | 0/1098/0/0 | 100.00% | 2.21 | 0 | 26.4 | 0.262 | silero | 5 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 01_english_podcast [en] | english_latin | 1 | 12.29% | 12.29% | 1.27% | 7.87% | 100.00% | 0.262 | 26.4 | Yes |
+
+
+## Run: W0_baseline (2026-10-29T22:16:22.557Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 2 | 99.15% | 1 | 115 | 0 | 98.29% | 99.38% | 0/3/0/0 | 100.00% | 0.00 | 0 | 24.8 | 0.891 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 2 | 99.15% | 1 | 115 | 0 | 98.29% | 99.28% | 3/0/0/0 | 100.00% | 0.00 | 0 | 25.7 | 0.926 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 2 | 99.15% | 1 | 115 | 0 | 98.29% | 99.28% | 3/0/0/0 | 100.00% | 0.00 | 0 | 26.1 | 0.939 | silero | 1 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 99.15% | 99.15% | 98.29% | 99.38% | 100.00% | 0.891 | 24.8 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 99.15% | 99.15% | 98.29% | 99.28% | 100.00% | 0.926 | 25.7 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 99.15% | 99.15% | 98.29% | 99.28% | 100.00% | 0.939 | 26.1 | Yes |
+
+
+## Run: W2_fixed_15s (2026-10-29T22:19:00.256Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 2 | 100.00% | 2 | 115 | 0 | 98.29% | 99.18% | 0/4/0/0 | 100.00% | 0.00 | 0 | 46.4 | 1.669 | silero | 2 | 0 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 2 | 100.00% | 2 | 115 | 0 | 98.29% | 99.28% | 3/0/0/0 | 100.00% | 0.00 | 0 | 45.6 | 1.641 | silero | 2 | 0 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 2 | 100.00% | 2 | 115 | 0 | 98.29% | 99.28% | 3/0/0/0 | 100.00% | 0.00 | 0 | 47.1 | 1.694 | silero | 2 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 100.00% | 100.00% | 98.29% | 99.18% | 100.00% | 1.669 | 46.4 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 100.00% | 100.00% | 98.29% | 99.28% | 100.00% | 1.641 | 45.6 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 100.00% | 100.00% | 98.29% | 99.28% | 100.00% | 1.694 | 47.1 | Yes |
+
+
+## Run: D1_rep115_ngram3 (2026-10-29T22:20:28.732Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 96 | 97.44% | 93 | 21 | 0 | 17.95% | 73.25% | 6/410/0/2 | 98.09% | 0.00 | 0 | 24.8 | 0.891 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 96 | 97.44% | 93 | 21 | 0 | 17.95% | 83.86% | 309/0/0/2 | 99.36% | 0.00 | 0 | 24.2 | 0.870 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 96 | 97.44% | 93 | 21 | 0 | 17.95% | 83.86% | 309/0/0/2 | 99.36% | 0.00 | 0 | 23.7 | 0.851 | silero | 1 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 97.44% | 97.44% | 17.95% | 73.25% | 98.09% | 0.891 | 24.8 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 97.44% | 97.44% | 17.95% | 83.86% | 99.36% | 0.870 | 24.2 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 97.44% | 97.44% | 17.95% | 83.86% | 99.36% | 0.851 | 23.7 | Yes |
+
+
+## Run: W7_largest_pause_rep115 (2026-10-29T22:21:25.135Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 52 | 94.87% | 46 | 65 | 0 | 55.56% | 77.16% | 0/216/0/0 | 100.00% | 0.52 | 0 | 13.5 | 0.486 | silero | 3 | 0 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 49 | 94.87% | 43 | 68 | 0 | 58.12% | 88.92% | 0/208/0/0 | 100.00% | 0.24 | 0 | 13.8 | 0.496 | silero | 3 | 0 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 13.6 | 0.488 | silero | 3 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 94.87% | 94.87% | 55.56% | 77.16% | 100.00% | 0.486 | 13.5 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 94.87% | 94.87% | 58.12% | 88.92% | 100.00% | 0.496 | 13.8 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 94.87% | 94.87% | 57.26% | 89.88% | 100.00% | 0.488 | 13.6 | Yes |
+
+
+## Run: D4_ladder_adaptive (2026-10-29T22:23:35.414Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 52 | 94.87% | 46 | 65 | 0 | 55.56% | 77.16% | 0/216/0/0 | 100.00% | 0.52 | 0 | 14.8 | 0.532 | silero | 3 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 15.4 | 0.554 | silero | 3 | 2 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 11.9 | 0.429 | silero | 3 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 94.87% | 94.87% | 55.56% | 77.16% | 100.00% | 0.532 | 14.8 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 94.87% | 94.87% | 57.26% | 89.88% | 100.00% | 0.554 | 15.4 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 94.87% | 94.87% | 57.26% | 89.88% | 100.00% | 0.429 | 11.9 | Yes |
+
+
+## Run: HI001_baseline (2026-10-29T22:24:23.384Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HI_INDIC_001 | hi | hindi_devanagari | 4.5 | 12 | 1 | 100.00% | 1 | 11 | 0 | 91.67% | 95.65% | 3/0/0/0 | 100.00% | 0.00 | 0 | 9.6 | 2.131 | silero | 1 | 0 | Yes |
+| HI_INDIC_001 | auto | hindi_devanagari | 4.5 | 12 | 1 | 100.00% | 1 | 11 | 0 | 91.67% | 95.65% | 3/0/0/0 | 100.00% | 0.00 | 0 | 9.4 | 2.081 | silero | 1 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 02_hindi [hi] | hindi_devanagari | 1 | 100.00% | 100.00% | 91.67% | 95.65% | 100.00% | 2.131 | 9.6 | Yes |
+| 02_hindi [auto] | hindi_devanagari | 1 | 100.00% | 100.00% | 91.67% | 95.65% | 100.00% | 2.081 | 9.4 | Yes |
+
+
+## Run: HI001_ladder (2026-10-29T22:24:59.755Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HI_INDIC_001 | hi | hindi_devanagari | 4.5 | 12 | 7 | 100.00% | 7 | 5 | 0 | 41.67% | 89.13% | 9/20/0/0 | 100.00% | 0.16 | 0 | 11.3 | 2.500 | silero | 1 | 1 | Yes |
+| HI_INDIC_001 | auto | hindi_devanagari | 4.5 | 12 | 7 | 100.00% | 7 | 5 | 0 | 41.67% | 100.00% | 0/29/0/0 | 100.00% | 0.00 | 0 | 13.7 | 3.047 | silero | 1 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 02_hindi [hi] | hindi_devanagari | 1 | 100.00% | 100.00% | 41.67% | 89.13% | 100.00% | 2.500 | 11.3 | Yes |
+| 02_hindi [auto] | hindi_devanagari | 1 | 100.00% | 100.00% | 41.67% | 100.00% | 100.00% | 3.047 | 13.7 | Yes |
+
+
+## Run: EN_podcast_regression (2026-10-29T22:26:25.296Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EN_PODCAST_001 | en | english_latin | 101.0 | 236 | 202 | 20.34% | 8 | 37 | 3 | 15.68% | 16.48% | 0/928/0/0 | 100.00% | 5.58 | 0 | 59.3 | 0.587 | silero | 5 | 2 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 01_english_podcast [en] | english_latin | 1 | 20.34% | 20.34% | 15.68% | 16.48% | 100.00% | 0.587 | 59.3 | Yes |
+
+
+## Run: COSHE_001_ladder (2026-10-29T22:27:09.671Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_001 | hinglish | hinglish_roman | 19.3 | 72 | 54 | 87.50% | 45 | 18 | 0 | 25.00% | 65.22% | 0/207/0/0 | 100.00% | 1.47 | 0 | 11.8 | 0.613 | silero | 2 | 1 | Yes |
+| HINGLISH_COSHE_001 | auto | mixed_diagnostic | 19.3 | 72 | 54 | 88.89% | 46 | 18 | 0 | 25.00% | 83.80% | 0/207/0/0 | 100.00% | 1.47 | 0 | 10.1 | 0.525 | silero | 2 | 1 | Yes |
+| HINGLISH_COSHE_001 | hi | hindi_devanagari | 19.3 | 72 | 54 | 88.89% | 46 | 18 | 0 | 25.00% | 83.80% | 0/207/0/0 | 100.00% | 1.47 | 0 | 9.5 | 0.491 | silero | 2 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 87.50% | 87.50% | 25.00% | 65.22% | 100.00% | 0.613 | 11.8 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 88.89% | 88.89% | 25.00% | 83.80% | 100.00% | 0.525 | 10.1 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 88.89% | 88.89% | 25.00% | 83.80% | 100.00% | 0.491 | 9.5 | Yes |
+
+
+## Run: COSHE_003_ladder (2026-10-29T22:27:55.489Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_003 | hinglish | hinglish_roman | 19.5 | 62 | 52 | 93.55% | 48 | 10 | 0 | 16.13% | 69.23% | 0/200/0/0 | 100.00% | 1.29 | 0 | 7.7 | 0.394 | silero | 2 | 0 | Yes |
+| HINGLISH_COSHE_003 | auto | mixed_diagnostic | 19.5 | 62 | 52 | 93.55% | 48 | 10 | 0 | 16.13% | 80.79% | 0/200/0/0 | 100.00% | 1.29 | 0 | 7.5 | 0.382 | silero | 2 | 0 | Yes |
+| HINGLISH_COSHE_003 | hi | hindi_devanagari | 19.5 | 62 | 52 | 93.55% | 48 | 10 | 0 | 16.13% | 80.79% | 0/200/0/0 | 100.00% | 1.29 | 0 | 6.5 | 0.332 | silero | 2 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 93.55% | 93.55% | 16.13% | 69.23% | 100.00% | 0.394 | 7.7 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 93.55% | 93.55% | 16.13% | 80.79% | 100.00% | 0.382 | 7.5 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 93.55% | 93.55% | 16.13% | 80.79% | 100.00% | 0.332 | 6.5 | Yes |
+
+
+## Run: COSHE_002_stability_3runs (2026-10-29T22:30:29.783Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 3 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 52 | 94.87% | 46 | 65 | 0 | 55.56% | 77.16% | 0/216/0/0 | 100.00% | 0.52 | 0 | 14.6 | 0.524 | silero | 3 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 14.9 | 0.536 | silero | 3 | 2 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 12.1 | 0.434 | silero | 3 | 1 | Yes |
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 52 | 94.87% | 46 | 65 | 0 | 55.56% | 77.16% | 0/216/0/0 | 100.00% | 0.52 | 0 | 14.9 | 0.537 | silero | 3 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 14.0 | 0.504 | silero | 3 | 2 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 12.5 | 0.450 | silero | 3 | 1 | Yes |
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 52 | 94.87% | 46 | 65 | 0 | 55.56% | 77.16% | 0/216/0/0 | 100.00% | 0.52 | 0 | 14.2 | 0.511 | silero | 3 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 14.1 | 0.508 | silero | 3 | 2 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 13.2 | 0.473 | silero | 3 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 3 | 94.87% | 94.87% | 55.56% | 77.16% | 100.00% | 0.524 | 43.7 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 3 | 94.87% | 94.87% | 57.26% | 89.88% | 100.00% | 0.516 | 43.0 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 3 | 94.87% | 94.87% | 57.26% | 89.88% | 100.00% | 0.452 | 37.7 | Yes |
+
+
+## Run: HI002_ladder (2026-10-29T22:31:05.069Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HI_INDIC_002 | hi | hindi_devanagari | 5.3 | 11 | 6 | 100.00% | 6 | 5 | 0 | 45.45% | 100.00% | 0/28/0/0 | 100.00% | 0.38 | 0 | 4.4 | 0.821 | silero | 1 | 0 | Yes |
+| HI_INDIC_002 | auto | hindi_devanagari | 5.3 | 11 | 6 | 100.00% | 6 | 5 | 0 | 45.45% | 100.00% | 0/28/0/0 | 100.00% | 0.38 | 0 | 4.8 | 0.905 | silero | 1 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 02_hindi [hi] | hindi_devanagari | 1 | 100.00% | 100.00% | 45.45% | 100.00% | 100.00% | 0.821 | 4.4 | Yes |
+| 02_hindi [auto] | hindi_devanagari | 1 | 100.00% | 100.00% | 45.45% | 100.00% | 100.00% | 0.905 | 4.8 | Yes |
+
+
+## Run: HI003_ladder (2026-10-29T22:31:37.925Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HI_INDIC_003 | hi | hindi_devanagari | 4.7 | 12 | 8 | 100.00% | 8 | 4 | 0 | 33.33% | 129.27% | 0/53/0/0 | 100.00% | 0.50 | 0 | 4.9 | 1.059 | silero | 1 | 0 | Yes |
+| HI_INDIC_003 | auto | hindi_devanagari | 4.7 | 12 | 8 | 100.00% | 8 | 4 | 0 | 33.33% | 129.27% | 0/53/0/0 | 100.00% | 0.50 | 0 | 4.9 | 1.048 | silero | 1 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 02_hindi [hi] | hindi_devanagari | 1 | 100.00% | 100.00% | 33.33% | 129.27% | 100.00% | 1.059 | 4.9 | Yes |
+| 02_hindi [auto] | hindi_devanagari | 1 | 100.00% | 100.00% | 33.33% | 129.27% | 100.00% | 1.048 | 4.9 | Yes |
+
+
+## Run: EN_podcast_fixed_ladder (2026-10-30T06:39:04.039Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EN_PODCAST_001 | en | english_latin | 101.0 | 236 | 221 | 12.29% | 8 | 18 | 3 | 7.63% | 9.07% | 0/1003/0/0 | 100.00% | 2.57 | 0 | 65.0 | 0.644 | silero | 5 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 01_english_podcast [en] | english_latin | 1 | 12.29% | 12.29% | 7.63% | 9.07% | 100.00% | 0.644 | 65.0 | Yes |
+
+
+## Run: Matrix_ExpA_full_rep115_ngram3_recNone (2026-10-30T06:41:19.899Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 94 | 97.44% | 91 | 23 | 0 | 19.66% | 73.05% | 6/403/0/0 | 98.53% | 0.00 | 0 | 34.4 | 1.238 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 94 | 97.44% | 91 | 23 | 0 | 19.66% | 83.86% | 305/0/0/0 | 100.00% | 0.00 | 0 | 32.9 | 1.182 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 94 | 97.44% | 91 | 23 | 0 | 19.66% | 83.86% | 305/0/0/0 | 100.00% | 0.00 | 0 | 33.3 | 1.197 | silero | 1 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 97.44% | 97.44% | 19.66% | 73.05% | 98.53% | 1.238 | 34.4 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 97.44% | 97.44% | 19.66% | 83.86% | 100.00% | 1.182 | 32.9 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 97.44% | 97.44% | 19.66% | 83.86% | 100.00% | 1.197 | 33.3 | Yes |
+
+
+## Run: Matrix_ExpB_adaptive_rep115_ngram3_recNone (2026-10-30T06:42:56.718Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 52 | 94.87% | 46 | 65 | 0 | 55.56% | 77.16% | 0/216/0/0 | 100.00% | 0.52 | 0 | 18.3 | 0.658 | silero | 3 | 0 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 49 | 94.87% | 43 | 68 | 0 | 58.12% | 88.92% | 0/208/0/0 | 100.00% | 0.24 | 0 | 14.5 | 0.522 | silero | 3 | 0 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 16.1 | 0.579 | silero | 3 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 94.87% | 94.87% | 55.56% | 77.16% | 100.00% | 0.658 | 18.3 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 94.87% | 94.87% | 58.12% | 88.92% | 100.00% | 0.522 | 14.5 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 94.87% | 94.87% | 57.26% | 89.88% | 100.00% | 0.579 | 16.1 | Yes |
+
+
+## Run: Matrix_ExpC_full_rep115_ngram3_recLadder (2026-10-30T06:48:51.650Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 103 | 92.31% | 94 | 14 | 0 | 11.97% | 71.40% | 0/393/0/0 | 100.00% | 1.33 | 0 | 113.2 | 4.073 | silero | 1 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 94 | 97.44% | 91 | 23 | 0 | 19.66% | 83.86% | 305/0/0/0 | 100.00% | 0.00 | 0 | 117.6 | 4.230 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 126 | 104.27% | 113 | 0 | 9 | 0.00% | 103.37% | 0/485/0/0 | 100.00% | 0.24 | 0 | 107.9 | 3.881 | silero | 1 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 92.31% | 92.31% | 11.97% | 71.40% | 100.00% | 4.073 | 113.2 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 97.44% | 97.44% | 19.66% | 83.86% | 100.00% | 4.230 | 117.6 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 104.27% | 104.27% | 0.00% | 103.37% | 100.00% | 3.881 | 107.9 | Yes |
+
+
+## Run: Matrix_ExpD_adaptive_rep115_ngram3_recLadder (2026-10-30T06:50:56.892Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 52 | 94.87% | 46 | 65 | 0 | 55.56% | 77.16% | 0/216/0/0 | 100.00% | 0.52 | 0 | 17.2 | 0.619 | silero | 3 | 0 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 17.0 | 0.612 | silero | 3 | 1 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 24.8 | 0.894 | silero | 3 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 94.87% | 94.87% | 55.56% | 77.16% | 100.00% | 0.619 | 17.2 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 94.87% | 94.87% | 57.26% | 89.88% | 100.00% | 0.612 | 17.0 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 94.87% | 94.87% | 57.26% | 89.88% | 100.00% | 0.894 | 24.8 | Yes |
+
+
+## Run: Matrix_ExpE_adaptive_rep110_ngram3_recLadder (2026-10-30T06:54:09.274Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 55 | 93.16% | 47 | 62 | 0 | 52.99% | 76.13% | 0/249/0/0 | 100.00% | 0.84 | 0 | 56.0 | 2.015 | silero | 3 | 0 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 53 | 93.16% | 45 | 64 | 0 | 54.70% | 87.23% | 0/246/0/0 | 100.00% | 0.84 | 0 | 50.9 | 1.830 | silero | 3 | 1 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 53 | 93.16% | 45 | 64 | 0 | 54.70% | 87.23% | 0/246/0/0 | 100.00% | 0.84 | 0 | 52.1 | 1.874 | silero | 3 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 93.16% | 93.16% | 52.99% | 76.13% | 100.00% | 2.015 | 56.0 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 93.16% | 93.16% | 54.70% | 87.23% | 100.00% | 1.830 | 50.9 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 93.16% | 93.16% | 54.70% | 87.23% | 100.00% | 1.874 | 52.1 | Yes |
+
+
+## Run: Matrix_ExpF_adaptive_rep115_ngram0_recLadder (2026-10-30T06:58:57.743Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 90 | 93.16% | 82 | 27 | 0 | 23.08% | 70.58% | 2/359/0/0 | 99.45% | 5.69 | 0 | 107.3 | 3.858 | silero | 3 | 1 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 88 | 93.16% | 80 | 29 | 0 | 24.79% | 83.37% | 121/213/0/0 | 100.00% | 5.69 | 0 | 100.7 | 3.622 | silero | 3 | 2 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 88 | 93.16% | 80 | 29 | 0 | 24.79% | 83.37% | 121/213/0/0 | 100.00% | 5.69 | 0 | 67.3 | 2.420 | silero | 3 | 1 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 93.16% | 93.16% | 23.08% | 70.58% | 99.45% | 3.858 | 107.3 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 93.16% | 93.16% | 24.79% | 83.37% | 100.00% | 3.622 | 100.7 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 93.16% | 93.16% | 24.79% | 83.37% | 100.00% | 2.420 | 67.3 | Yes |
+
+
+## Run: Matrix_ExpG_full_baseline_greedy (2026-10-30T07:00:14.225Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 2 | 99.15% | 1 | 115 | 0 | 98.29% | 99.38% | 0/3/0/0 | 100.00% | 0.00 | 0 | 22.9 | 0.825 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 2 | 99.15% | 1 | 115 | 0 | 98.29% | 99.28% | 3/0/0/0 | 100.00% | 0.00 | 0 | 23.1 | 0.831 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 2 | 99.15% | 1 | 115 | 0 | 98.29% | 99.28% | 3/0/0/0 | 100.00% | 0.00 | 0 | 23.4 | 0.843 | silero | 1 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 03_hinglish [hinglish] | hinglish_roman | 1 | 99.15% | 99.15% | 98.29% | 99.38% | 100.00% | 0.825 | 22.9 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 1 | 99.15% | 99.15% | 98.29% | 99.28% | 100.00% | 0.831 | 23.1 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 1 | 99.15% | 99.15% | 98.29% | 99.28% | 100.00% | 0.843 | 23.4 | Yes |
+
+
+## Run: Phase2_P0_1_1_FullEval_fixed_ladder (2026-10-30T07:03:38.472Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EN_PODCAST_001 | en | english_latin | 101.0 | 236 | 183 | 32.63% | 8 | 61 | 8 | 25.85% | 27.87% | 0/810/0/0 | 100.00% | 12.97 | 0 | 28.5 | 0.282 | silero | 10 | 0 | Yes |
+| HI_INDIC_001 | hi | hindi_devanagari | 4.5 | 12 | 7 | 100.00% | 7 | 5 | 0 | 41.67% | 89.13% | 9/20/0/0 | 100.00% | 0.16 | 0 | 4.1 | 0.902 | silero | 1 | 0 | Yes |
+| HI_INDIC_001 | auto | hindi_devanagari | 4.5 | 12 | 7 | 100.00% | 7 | 5 | 0 | 41.67% | 89.13% | 9/20/0/0 | 100.00% | 0.16 | 0 | 4.3 | 0.957 | silero | 1 | 0 | Yes |
+| HI_INDIC_002 | hi | hindi_devanagari | 5.3 | 11 | 6 | 100.00% | 6 | 5 | 0 | 45.45% | 100.00% | 0/23/0/0 | 100.00% | 0.16 | 0 | 3.7 | 0.701 | silero | 1 | 0 | Yes |
+| HI_INDIC_002 | auto | hindi_devanagari | 5.3 | 11 | 6 | 100.00% | 6 | 5 | 0 | 45.45% | 100.00% | 0/23/0/0 | 100.00% | 0.16 | 0 | 4.2 | 0.784 | silero | 1 | 0 | Yes |
+| HI_INDIC_003 | hi | hindi_devanagari | 4.7 | 12 | 4 | 100.00% | 4 | 8 | 0 | 66.67% | 100.00% | 0/24/0/0 | 100.00% | 0.00 | 0 | 4.6 | 0.983 | silero | 1 | 0 | Yes |
+| HI_INDIC_003 | auto | hindi_devanagari | 4.7 | 12 | 4 | 100.00% | 4 | 8 | 0 | 66.67% | 100.00% | 0/24/0/0 | 100.00% | 0.00 | 0 | 5.0 | 1.079 | silero | 1 | 0 | Yes |
+| HINGLISH_COSHE_001 | hinglish | hinglish_roman | 19.3 | 72 | 54 | 87.50% | 45 | 18 | 0 | 25.00% | 65.22% | 0/207/0/0 | 100.00% | 1.47 | 0 | 9.4 | 0.488 | silero | 2 | 1 | Yes |
+| HINGLISH_COSHE_001 | auto | mixed_diagnostic | 19.3 | 72 | 54 | 88.89% | 46 | 18 | 0 | 25.00% | 83.80% | 0/207/0/0 | 100.00% | 1.47 | 0 | 10.0 | 0.520 | silero | 2 | 1 | Yes |
+| HINGLISH_COSHE_001 | hi | hindi_devanagari | 19.3 | 72 | 54 | 88.89% | 46 | 18 | 0 | 25.00% | 83.80% | 0/207/0/0 | 100.00% | 1.47 | 0 | 8.5 | 0.442 | silero | 2 | 1 | Yes |
+| HINGLISH_COSHE_002 | hinglish | hinglish_roman | 27.8 | 117 | 52 | 94.87% | 46 | 65 | 0 | 55.56% | 77.16% | 0/216/0/0 | 100.00% | 0.52 | 0 | 13.8 | 0.496 | silero | 3 | 0 | Yes |
+| HINGLISH_COSHE_002 | auto | mixed_diagnostic | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 15.4 | 0.555 | silero | 3 | 1 | Yes |
+| HINGLISH_COSHE_002 | hi | hindi_devanagari | 27.8 | 117 | 50 | 94.87% | 44 | 67 | 0 | 57.26% | 89.88% | 0/213/0/0 | 100.00% | 0.54 | 0 | 13.6 | 0.488 | silero | 3 | 0 | Yes |
+| HINGLISH_COSHE_003 | hinglish | hinglish_roman | 19.5 | 62 | 52 | 93.55% | 48 | 10 | 0 | 16.13% | 69.23% | 0/200/0/0 | 100.00% | 1.29 | 0 | 7.1 | 0.365 | silero | 2 | 0 | Yes |
+| HINGLISH_COSHE_003 | auto | mixed_diagnostic | 19.5 | 62 | 52 | 93.55% | 48 | 10 | 0 | 16.13% | 80.79% | 0/200/0/0 | 100.00% | 1.29 | 0 | 7.2 | 0.371 | silero | 2 | 0 | Yes |
+| HINGLISH_COSHE_003 | hi | hindi_devanagari | 19.5 | 62 | 52 | 93.55% | 48 | 10 | 0 | 16.13% | 80.79% | 0/200/0/0 | 100.00% | 1.29 | 0 | 6.5 | 0.335 | silero | 2 | 0 | Yes |
+| VLOG_DRIVE_001 | en | english_latin | 1.1 | 2 | 2 | 0.00% | 0 | 0 | 0 | 0.00% | 0.00% | 0/6/0/0 | 100.00% | 0.00 | 0 | 3.0 | 2.695 | silero | 1 | 0 | Yes |
+| VLOG_DRIVE_002 | en | english_latin | 6.6 | 16 | 15 | 25.00% | 3 | 1 | 0 | 6.25% | 12.50% | 0/58/0/0 | 100.00% | 0.22 | 0 | 4.8 | 0.731 | silero | 1 | 0 | Yes |
+| VLOG_DRIVE_003 | en | english_latin | 3.3 | 15 | 9 | 40.00% | 0 | 6 | 0 | 40.00% | 35.94% | 0/40/0/0 | 100.00% | 0.00 | 0 | 3.8 | 1.150 | silero | 1 | 0 | Yes |
+| VLOG_DRIVE_004 | en | english_latin | 4.7 | 15 | 14 | 6.67% | 0 | 1 | 0 | 6.67% | 6.45% | 0/57/0/0 | 100.00% | 0.00 | 0 | 3.8 | 0.803 | silero | 1 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 01_english_podcast [en] | english_latin | 1 | 32.63% | 32.63% | 25.85% | 27.87% | 100.00% | 0.282 | 28.5 | Yes |
+| 02_hindi [hi] | hindi_devanagari | 3 | 100.00% | 100.00% | 51.43% | 96.38% | 100.00% | 0.862 | 12.4 | Yes |
+| 02_hindi [auto] | hindi_devanagari | 3 | 100.00% | 100.00% | 51.43% | 96.38% | 100.00% | 0.940 | 13.5 | Yes |
+| 03_hinglish [hinglish] | hinglish_roman | 3 | 92.43% | 91.97% | 37.05% | 70.54% | 100.00% | 0.450 | 30.3 | Yes |
+| 03_hinglish [auto] | mixed_diagnostic | 3 | 92.83% | 92.44% | 37.85% | 84.82% | 100.00% | 0.482 | 32.7 | Yes |
+| 03_hinglish [hi] | hindi_devanagari | 3 | 92.83% | 92.44% | 37.85% | 84.82% | 100.00% | 0.422 | 28.7 | Yes |
+| 04_noisy_vlog [en] | english_latin | 4 | 22.92% | 17.92% | 16.67% | 13.72% | 100.00% | 1.345 | 15.5 | Yes |
+
+
+## Run: EN_podcast_regression_fixed_ladder_30s (2026-10-30T07:07:32.096Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EN_PODCAST_001 | en | english_latin | 101.0 | 236 | 224 | 13.56% | 14 | 15 | 3 | 6.36% | 7.22% | 0/1018/0/0 | 100.00% | 1.64 | 0 | 23.1 | 0.229 | silero | 4 | 0 | Yes |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 01_english_podcast [en] | english_latin | 1 | 13.56% | 13.56% | 6.36% | 7.22% | 100.00% | 0.229 | 23.1 | Yes |
+
+
+## Run: smoke_test (2026-10-30T08:26:26.704Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: off | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HI_CV_0001 | hi | hindi_devanagari | 6.6 | 10 | 13 | 130.00% | 10 | 0 | 3 | 0.00% | 114.29% | 0/40/0/0 | 100.00% | 0.10 | 0 | 3.9 | 0.584 | silero | 1 | 0 | No |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 02_hindi [hi] | hindi_devanagari | 1 | 130.00% | 130.00% | 0.00% | 114.29% | 100.00% | 0.584 | 3.9 | No |
+
+### Source Dataset Summaries
+| Source Dataset & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| common_voice_hindi [hi] | hindi_devanagari | 1 | 130.00% | 130.00% | 0.00% | 114.29% | 100.00% | 0.584 | 3.9 | No |
+
+
+## Run: p1_1_expA_tiny_rec_off (2026-10-30T08:32:08.464Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: off | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EN_PODCAST_001 | en | english_latin | 101.0 | 236 | 224 | 13.56% | 14 | 15 | 3 | 6.36% | 7.22% | 0/1018/0/0 | 100.00% | 1.64 | 0 | 26.1 | 0.259 | silero | 4 | 0 | Yes |
+| HI_CV_0001 | hi | hindi_devanagari | 6.6 | 10 | 13 | 130.00% | 10 | 0 | 3 | 0.00% | 114.29% | 0/40/0/0 | 100.00% | 0.10 | 0 | 2.0 | 0.307 | silero | 1 | 0 | No |
+| HI_CV_0002 | hi | hindi_devanagari | 5.5 | 9 | 9 | 100.00% | 9 | 0 | 0 | 0.00% | 115.38% | 0/45/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.405 | silero | 1 | 0 | No |
+| HI_CV_0003 | hi | hindi_devanagari | 3.1 | 5 | 6 | 120.00% | 5 | 0 | 1 | 0.00% | 110.53% | 0/21/0/0 | 100.00% | 0.00 | 0 | 1.3 | 0.432 | silero | 1 | 0 | No |
+| HI_CV_0004 | hi | hindi_devanagari | 5.4 | 6 | 8 | 133.33% | 6 | 0 | 2 | 0.00% | 150.00% | 0/27/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.308 | silero | 1 | 0 | No |
+| HI_CV_0005 | hi | hindi_devanagari | 4.9 | 12 | 10 | 100.00% | 10 | 2 | 0 | 16.67% | 102.33% | 0/44/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.340 | silero | 1 | 0 | No |
+| HI_CV_0006 | hi | hindi_devanagari | 5.6 | 9 | 9 | 100.00% | 9 | 0 | 0 | 0.00% | 112.50% | 0/45/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.305 | silero | 1 | 0 | No |
+| HI_CV_0007 | hi | hindi_devanagari | 4.9 | 8 | 7 | 100.00% | 7 | 1 | 0 | 12.50% | 100.00% | 0/25/0/1 | 96.15% | 0.00 | 0 | 1.7 | 0.357 | silero | 1 | 0 | No |
+| HI_CV_0008 | hi | hindi_devanagari | 7.4 | 13 | 11 | 100.00% | 11 | 2 | 0 | 15.38% | 113.46% | 0/58/0/0 | 100.00% | 0.33 | 0 | 1.9 | 0.263 | silero | 1 | 0 | No |
+| HI_CV_0009 | hi | hindi_devanagari | 4.7 | 6 | 5 | 100.00% | 5 | 1 | 0 | 16.67% | 133.33% | 0/24/0/0 | 100.00% | 0.10 | 0 | 1.5 | 0.310 | silero | 1 | 0 | No |
+| HI_CV_0010 | hi | hindi_devanagari | 7.0 | 10 | 12 | 120.00% | 10 | 0 | 2 | 0.00% | 112.20% | 0/46/0/0 | 100.00% | 0.30 | 0 | 1.6 | 0.225 | silero | 1 | 0 | No |
+| HI_CV_0011 | hi | hindi_devanagari | 4.2 | 5 | 4 | 100.00% | 4 | 1 | 0 | 20.00% | 100.00% | 0/15/0/0 | 100.00% | 0.00 | 0 | 1.0 | 0.242 | silero | 1 | 0 | No |
+| HI_CV_0012 | hi | hindi_devanagari | 4.1 | 9 | 7 | 100.00% | 7 | 2 | 0 | 22.22% | 109.38% | 0/35/0/0 | 100.00% | 0.14 | 0 | 1.9 | 0.453 | silero | 1 | 0 | No |
+| HI_CV_0013 | hi | hindi_devanagari | 3.7 | 7 | 6 | 100.00% | 6 | 1 | 0 | 14.29% | 113.04% | 0/26/0/0 | 100.00% | 0.08 | 0 | 1.4 | 0.374 | silero | 1 | 0 | No |
+| HI_CV_0014 | hi | hindi_devanagari | 7.1 | 10 | 9 | 100.00% | 9 | 1 | 0 | 10.00% | 113.64% | 0/50/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.285 | silero | 1 | 0 | No |
+| HI_CV_0015 | hi | hindi_devanagari | 5.0 | 11 | 9 | 100.00% | 9 | 2 | 0 | 18.18% | 113.51% | 0/42/0/0 | 100.00% | 0.02 | 0 | 2.0 | 0.404 | silero | 1 | 0 | No |
+| HI_CV_0016 | hi | hindi_devanagari | 5.9 | 12 | 6 | 100.00% | 6 | 6 | 0 | 50.00% | 105.56% | 0/57/0/0 | 100.00% | 0.14 | 0 | 2.8 | 0.469 | silero | 1 | 0 | No |
+| HI_CV_0017 | hi | hindi_devanagari | 7.1 | 14 | 11 | 100.00% | 11 | 3 | 0 | 21.43% | 100.00% | 0/58/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.278 | silero | 1 | 0 | No |
+| HI_CV_0018 | hi | hindi_devanagari | 6.6 | 12 | 11 | 100.00% | 11 | 1 | 0 | 8.33% | 109.09% | 0/48/0/0 | 100.00% | 0.00 | 0 | 1.6 | 0.250 | silero | 1 | 0 | No |
+| HI_CV_0019 | hi | hindi_devanagari | 3.2 | 5 | 3 | 100.00% | 3 | 2 | 0 | 40.00% | 105.88% | 0/18/0/0 | 100.00% | 0.00 | 0 | 1.6 | 0.491 | silero | 1 | 0 | No |
+| HI_CV_0020 | hi | hindi_devanagari | 6.2 | 9 | 7 | 100.00% | 7 | 2 | 0 | 22.22% | 103.92% | 0/53/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.301 | silero | 1 | 0 | No |
+| HI_CV_0021 | hi | hindi_devanagari | 5.2 | 10 | 8 | 100.00% | 8 | 2 | 0 | 20.00% | 107.32% | 0/44/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.361 | silero | 1 | 0 | No |
+| HI_CV_0022 | hi | hindi_devanagari | 5.5 | 6 | 6 | 100.00% | 6 | 0 | 0 | 0.00% | 100.00% | 0/29/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.349 | silero | 1 | 0 | No |
+| HI_CV_0023 | hi | hindi_devanagari | 3.5 | 5 | 3 | 100.00% | 3 | 2 | 0 | 40.00% | 107.14% | 0/15/0/0 | 100.00% | 0.00 | 0 | 1.0 | 0.295 | silero | 1 | 0 | No |
+| HI_CV_0024 | hi | hindi_devanagari | 8.2 | 13 | 12 | 100.00% | 12 | 1 | 0 | 7.69% | 100.00% | 0/54/0/0 | 100.00% | 0.41 | 0 | 2.3 | 0.285 | silero | 1 | 0 | No |
+| HI_CV_0025 | hi | hindi_devanagari | 6.0 | 12 | 11 | 100.00% | 11 | 1 | 0 | 8.33% | 105.56% | 0/56/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.409 | silero | 1 | 0 | No |
+| HI_KB_0001 | hi | hindi_devanagari | 4.9 | 14 | 15 | 107.14% | 14 | 0 | 1 | 0.00% | 101.59% | 0/64/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.513 | silero | 1 | 0 | No |
+| HI_KB_0002 | hi | hindi_devanagari | 6.8 | 13 | 11 | 100.00% | 11 | 2 | 0 | 15.38% | 116.33% | 0/57/0/0 | 100.00% | 0.06 | 0 | 2.5 | 0.374 | silero | 1 | 0 | No |
+| HI_KB_0003 | hi | hindi_devanagari | 3.9 | 11 | 9 | 100.00% | 9 | 2 | 0 | 18.18% | 100.00% | 0/40/0/0 | 100.00% | 0.22 | 0 | 2.1 | 0.534 | silero | 1 | 0 | No |
+| HI_KB_0004 | hi | hindi_devanagari | 4.4 | 15 | 11 | 100.00% | 11 | 4 | 0 | 26.67% | 101.89% | 0/54/0/0 | 100.00% | 0.28 | 0 | 3.6 | 0.830 | silero | 1 | 0 | No |
+| HI_KB_0005 | hi | hindi_devanagari | 4.8 | 13 | 7 | 100.00% | 7 | 6 | 0 | 46.15% | 100.00% | 0/46/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.567 | silero | 1 | 0 | No |
+| HI_KB_0006 | hi | hindi_devanagari | 3.7 | 12 | 12 | 100.00% | 12 | 0 | 0 | 0.00% | 119.05% | 0/50/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.591 | silero | 1 | 0 | No |
+| HI_KB_0007 | hi | hindi_devanagari | 4.4 | 12 | 8 | 100.00% | 8 | 4 | 0 | 33.33% | 109.76% | 0/44/0/0 | 100.00% | 0.00 | 0 | 1.6 | 0.375 | silero | 1 | 0 | No |
+| HI_KB_0008 | hi | hindi_devanagari | 4.9 | 13 | 11 | 100.00% | 11 | 2 | 0 | 15.38% | 110.00% | 0/54/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.443 | silero | 1 | 0 | No |
+| HI_KB_0009 | hi | hindi_devanagari | 3.5 | 9 | 8 | 100.00% | 8 | 1 | 0 | 11.11% | 100.00% | 0/28/0/0 | 100.00% | 0.36 | 0 | 1.5 | 0.418 | silero | 1 | 0 | No |
+| HI_KB_0010 | hi | hindi_devanagari | 5.7 | 13 | 14 | 107.69% | 13 | 0 | 1 | 0.00% | 103.64% | 0/56/0/0 | 100.00% | 0.00 | 0 | 4.2 | 0.741 | silero | 1 | 0 | No |
+| HI_KB_0011 | hi | hindi_devanagari | 3.6 | 10 | 11 | 110.00% | 10 | 0 | 1 | 0.00% | 130.30% | 0/43/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.637 | silero | 1 | 0 | No |
+| HI_KB_0012 | hi | hindi_devanagari | 4.5 | 9 | 9 | 100.00% | 9 | 0 | 0 | 0.00% | 100.00% | 0/36/0/0 | 100.00% | 0.42 | 0 | 2.0 | 0.457 | silero | 1 | 0 | No |
+| HI_KB_0013 | hi | hindi_devanagari | 3.7 | 12 | 9 | 100.00% | 9 | 3 | 0 | 25.00% | 100.00% | 0/31/0/0 | 100.00% | 0.00 | 0 | 1.3 | 0.357 | silero | 1 | 0 | No |
+| HI_KB_0014 | hi | hindi_devanagari | 3.8 | 8 | 6 | 100.00% | 6 | 2 | 0 | 25.00% | 100.00% | 0/35/0/0 | 100.00% | 0.00 | 0 | 1.4 | 0.367 | silero | 1 | 0 | No |
+| HI_KB_0015 | hi | hindi_devanagari | 6.8 | 15 | 17 | 113.33% | 15 | 0 | 2 | 0.00% | 110.42% | 0/51/0/0 | 100.00% | 0.04 | 0 | 2.2 | 0.318 | silero | 1 | 0 | No |
+| HI_KB_0016 | hi | hindi_devanagari | 8.1 | 10 | 11 | 110.00% | 10 | 0 | 1 | 0.00% | 131.91% | 0/62/0/0 | 100.00% | 0.54 | 0 | 2.9 | 0.362 | silero | 1 | 0 | No |
+| HI_KB_0017 | hi | hindi_devanagari | 6.0 | 8 | 10 | 125.00% | 8 | 0 | 2 | 0.00% | 122.58% | 0/38/0/0 | 100.00% | 0.24 | 0 | 1.9 | 0.319 | silero | 1 | 0 | No |
+| HI_KB_0018 | hi | hindi_devanagari | 8.8 | 8 | 12 | 150.00% | 8 | 0 | 4 | 0.00% | 114.75% | 0/70/0/0 | 100.00% | 0.52 | 0 | 2.3 | 0.262 | silero | 1 | 0 | No |
+| HI_KB_0019 | hi | hindi_devanagari | 6.0 | 14 | 12 | 100.00% | 12 | 2 | 0 | 14.29% | 120.37% | 0/65/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.369 | silero | 1 | 0 | No |
+| HI_KB_0020 | hi | hindi_devanagari | 5.2 | 9 | 6 | 100.00% | 6 | 3 | 0 | 33.33% | 105.41% | 0/39/0/0 | 100.00% | 0.00 | 0 | 1.6 | 0.302 | silero | 1 | 0 | No |
+| HI_KB_0021 | hi | hindi_devanagari | 8.6 | 14 | 13 | 100.00% | 13 | 1 | 0 | 7.14% | 107.14% | 0/60/0/0 | 100.00% | 0.08 | 0 | 2.5 | 0.291 | silero | 1 | 0 | No |
+| HI_KB_0022 | hi | hindi_devanagari | 4.0 | 14 | 10 | 100.00% | 10 | 4 | 0 | 28.57% | 100.00% | 0/51/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.492 | silero | 1 | 0 | No |
+| HI_KB_0023 | hi | hindi_devanagari | 4.9 | 8 | 4 | 100.00% | 4 | 4 | 0 | 50.00% | 109.68% | 0/34/0/0 | 100.00% | 0.20 | 0 | 1.4 | 0.295 | silero | 1 | 0 | No |
+| HI_KB_0024 | hi | hindi_devanagari | 5.2 | 15 | 11 | 100.00% | 11 | 4 | 0 | 26.67% | 104.84% | 0/65/0/0 | 100.00% | 0.00 | 0 | 2.9 | 0.566 | silero | 1 | 0 | No |
+| HI_KB_0025 | hi | hindi_devanagari | 4.7 | 11 | 10 | 100.00% | 10 | 1 | 0 | 9.09% | 113.16% | 0/43/0/0 | 100.00% | 0.00 | 0 | 1.5 | 0.328 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0001 | hinglish | hinglish_roman | 6.0 | 13 | 14 | 100.00% | 12 | 0 | 1 | 0.00% | 82.76% | 0/53/0/0 | 100.00% | 0.22 | 0 | 2.3 | 0.388 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0001 | hinglish | hinglish_mixed_verbatim | 6.0 | 13 | 14 | 100.00% | 12 | 0 | 1 | 0.00% | 90.74% | 0/53/0/0 | 100.00% | 0.22 | 0 | 2.3 | 0.388 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0001 | hinglish | hinglish_script_normalized | 6.0 | 13 | 14 | 100.00% | 12 | 0 | 1 | 0.00% | 79.31% | 0/53/0/0 | 100.00% | 0.22 | 0 | 2.3 | 0.388 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0002 | hinglish | hinglish_roman | 9.0 | 25 | 27 | 96.00% | 20 | 1 | 3 | 4.00% | 48.12% | 0/104/0/0 | 100.00% | 0.35 | 0 | 4.7 | 0.519 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0002 | hinglish | hinglish_mixed_verbatim | 9.0 | 24 | 27 | 100.00% | 21 | 0 | 3 | 0.00% | 83.90% | 0/104/0/0 | 100.00% | 0.35 | 0 | 4.7 | 0.519 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0002 | hinglish | hinglish_script_normalized | 9.0 | 24 | 27 | 95.83% | 20 | 0 | 3 | 0.00% | 47.37% | 0/104/0/0 | 100.00% | 0.35 | 0 | 4.7 | 0.519 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0003 | hinglish | hinglish_roman | 5.0 | 19 | 8 | 100.00% | 8 | 11 | 0 | 57.89% | 81.69% | 0/29/0/0 | 100.00% | 0.46 | 0 | 2.1 | 0.417 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0003 | hinglish | hinglish_mixed_verbatim | 5.0 | 18 | 8 | 100.00% | 8 | 10 | 0 | 55.56% | 93.85% | 0/29/0/0 | 100.00% | 0.46 | 0 | 2.1 | 0.417 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0003 | hinglish | hinglish_script_normalized | 5.0 | 18 | 8 | 100.00% | 8 | 10 | 0 | 55.56% | 81.69% | 0/29/0/0 | 100.00% | 0.46 | 0 | 2.1 | 0.417 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0004 | hinglish | hinglish_roman | 5.0 | 14 | 6 | 92.86% | 5 | 8 | 0 | 57.14% | 71.93% | 0/28/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.379 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0004 | hinglish | hinglish_mixed_verbatim | 5.0 | 14 | 6 | 92.86% | 5 | 8 | 0 | 57.14% | 90.74% | 0/28/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.379 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0004 | hinglish | hinglish_script_normalized | 5.0 | 14 | 6 | 92.86% | 5 | 8 | 0 | 57.14% | 69.64% | 0/28/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.379 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0005 | hinglish | hinglish_roman | 7.0 | 13 | 8 | 100.00% | 8 | 5 | 0 | 38.46% | 78.95% | 1/29/0/0 | 96.67% | 0.00 | 0 | 3.7 | 0.529 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0005 | hinglish | hinglish_mixed_verbatim | 7.0 | 13 | 8 | 100.00% | 8 | 5 | 0 | 38.46% | 84.91% | 1/29/0/0 | 100.00% | 0.00 | 0 | 3.7 | 0.529 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0005 | hinglish | hinglish_script_normalized | 7.0 | 13 | 7 | 100.00% | 7 | 6 | 0 | 46.15% | 76.79% | 1/29/0/0 | 100.00% | 0.00 | 0 | 3.7 | 0.529 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0006 | hinglish | hinglish_roman | 4.0 | 10 | 5 | 90.00% | 4 | 5 | 0 | 50.00% | 68.18% | 0/18/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.439 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0006 | hinglish | hinglish_mixed_verbatim | 4.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 83.72% | 0/18/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.439 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0006 | hinglish | hinglish_script_normalized | 4.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 66.67% | 0/18/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.439 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0007 | hinglish | hinglish_roman | 11.0 | 21 | 13 | 100.00% | 13 | 8 | 0 | 38.10% | 75.96% | 0/42/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.229 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0007 | hinglish | hinglish_mixed_verbatim | 11.0 | 21 | 13 | 100.00% | 13 | 8 | 0 | 38.10% | 78.13% | 0/42/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.229 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0007 | hinglish | hinglish_script_normalized | 11.0 | 21 | 13 | 100.00% | 13 | 8 | 0 | 38.10% | 74.51% | 0/42/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.229 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0008 | hinglish | hinglish_roman | 4.0 | 7 | 7 | 85.71% | 6 | 0 | 0 | 0.00% | 44.83% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.524 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0008 | hinglish | hinglish_mixed_verbatim | 4.0 | 7 | 7 | 85.71% | 6 | 0 | 0 | 0.00% | 66.67% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.524 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0008 | hinglish | hinglish_script_normalized | 4.0 | 7 | 7 | 85.71% | 6 | 0 | 0 | 0.00% | 44.83% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.524 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0009 | hinglish | hinglish_roman | 6.0 | 16 | 10 | 75.00% | 6 | 6 | 0 | 37.50% | 41.54% | 0/51/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.395 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0009 | hinglish | hinglish_mixed_verbatim | 6.0 | 16 | 10 | 75.00% | 6 | 6 | 0 | 37.50% | 55.17% | 0/51/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.395 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0009 | hinglish | hinglish_script_normalized | 6.0 | 16 | 10 | 75.00% | 6 | 6 | 0 | 37.50% | 40.63% | 0/51/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.395 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0010 | hinglish | hinglish_roman | 5.0 | 12 | 10 | 91.67% | 7 | 3 | 1 | 25.00% | 67.31% | 0/34/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.462 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0010 | hinglish | hinglish_mixed_verbatim | 5.0 | 12 | 10 | 91.67% | 7 | 3 | 1 | 25.00% | 75.00% | 0/34/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.462 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0010 | hinglish | hinglish_script_normalized | 5.0 | 12 | 10 | 91.67% | 7 | 3 | 1 | 25.00% | 67.31% | 0/34/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.462 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0011 | hinglish | hinglish_roman | 6.0 | 13 | 6 | 84.62% | 4 | 7 | 0 | 53.85% | 61.54% | 0/32/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.429 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0011 | hinglish | hinglish_mixed_verbatim | 6.0 | 13 | 6 | 84.62% | 4 | 7 | 0 | 53.85% | 67.39% | 0/32/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.429 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0011 | hinglish | hinglish_script_normalized | 6.0 | 13 | 6 | 84.62% | 4 | 7 | 0 | 53.85% | 61.54% | 0/32/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.429 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0012 | hinglish | hinglish_roman | 4.0 | 5 | 7 | 100.00% | 3 | 0 | 2 | 0.00% | 45.45% | 0/27/0/0 | 100.00% | 0.36 | 0 | 2.3 | 0.580 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0012 | hinglish | hinglish_mixed_verbatim | 4.0 | 5 | 7 | 120.00% | 4 | 0 | 2 | 0.00% | 90.00% | 0/27/0/0 | 100.00% | 0.36 | 0 | 2.3 | 0.580 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0012 | hinglish | hinglish_script_normalized | 4.0 | 5 | 7 | 100.00% | 3 | 0 | 2 | 0.00% | 45.45% | 0/27/0/0 | 100.00% | 0.36 | 0 | 2.3 | 0.580 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0013 | hinglish | hinglish_roman | 6.0 | 13 | 16 | 123.08% | 13 | 0 | 3 | 0.00% | 85.96% | 0/56/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.351 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0013 | hinglish | hinglish_mixed_verbatim | 6.0 | 13 | 16 | 123.08% | 13 | 0 | 3 | 0.00% | 101.92% | 0/56/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.351 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0013 | hinglish | hinglish_script_normalized | 6.0 | 13 | 16 | 123.08% | 13 | 0 | 3 | 0.00% | 85.96% | 0/56/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.351 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0014 | hinglish | hinglish_roman | 5.0 | 11 | 9 | 90.91% | 8 | 2 | 0 | 18.18% | 43.14% | 0/44/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.440 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0014 | hinglish | hinglish_mixed_verbatim | 5.0 | 11 | 9 | 90.91% | 8 | 2 | 0 | 18.18% | 74.47% | 0/44/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.440 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0014 | hinglish | hinglish_script_normalized | 5.0 | 11 | 9 | 90.91% | 8 | 2 | 0 | 18.18% | 43.14% | 0/44/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.440 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0015 | hinglish | hinglish_roman | 5.0 | 7 | 7 | 57.14% | 4 | 0 | 0 | 0.00% | 29.41% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.400 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0015 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 7 | 57.14% | 4 | 0 | 0 | 0.00% | 32.26% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.400 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0015 | hinglish | hinglish_script_normalized | 5.0 | 7 | 7 | 57.14% | 4 | 0 | 0 | 0.00% | 29.41% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.400 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0016 | hinglish | hinglish_roman | 4.0 | 7 | 7 | 71.43% | 5 | 0 | 0 | 0.00% | 23.08% | 0/37/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.644 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0016 | hinglish | hinglish_mixed_verbatim | 4.0 | 7 | 7 | 71.43% | 5 | 0 | 0 | 0.00% | 55.26% | 0/37/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.644 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0016 | hinglish | hinglish_script_normalized | 4.0 | 7 | 7 | 71.43% | 5 | 0 | 0 | 0.00% | 15.79% | 0/37/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.644 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0017 | hinglish | hinglish_roman | 15.0 | 23 | 34 | 130.43% | 17 | 1 | 12 | 4.35% | 82.69% | 0/140/0/0 | 100.00% | 0.46 | 0 | 4.3 | 0.287 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0017 | hinglish | hinglish_mixed_verbatim | 15.0 | 23 | 34 | 130.43% | 17 | 1 | 12 | 4.35% | 109.47% | 0/140/0/0 | 100.00% | 0.46 | 0 | 4.3 | 0.287 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0017 | hinglish | hinglish_script_normalized | 15.0 | 23 | 34 | 130.43% | 17 | 1 | 12 | 4.35% | 81.37% | 0/140/0/0 | 100.00% | 0.46 | 0 | 4.3 | 0.287 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0018 | hinglish | hinglish_roman | 5.0 | 9 | 8 | 77.78% | 6 | 1 | 0 | 11.11% | 57.14% | 0/29/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.443 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0018 | hinglish | hinglish_mixed_verbatim | 5.0 | 9 | 8 | 88.89% | 7 | 1 | 0 | 11.11% | 65.63% | 0/29/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.443 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0018 | hinglish | hinglish_script_normalized | 5.0 | 9 | 8 | 77.78% | 6 | 1 | 0 | 11.11% | 57.14% | 0/29/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.443 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0019 | hinglish | hinglish_roman | 4.0 | 8 | 9 | 112.50% | 8 | 0 | 1 | 0.00% | 85.00% | 0/32/0/0 | 100.00% | 0.02 | 0 | 2.6 | 0.661 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0019 | hinglish | hinglish_mixed_verbatim | 4.0 | 8 | 9 | 112.50% | 8 | 0 | 1 | 0.00% | 94.44% | 0/32/0/0 | 100.00% | 0.02 | 0 | 2.6 | 0.661 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0019 | hinglish | hinglish_script_normalized | 4.0 | 8 | 9 | 112.50% | 8 | 0 | 1 | 0.00% | 85.00% | 0/32/0/0 | 100.00% | 0.02 | 0 | 2.6 | 0.661 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0020 | hinglish | hinglish_roman | 15.0 | 34 | 28 | 76.47% | 20 | 6 | 0 | 17.65% | 41.01% | 0/118/0/0 | 100.00% | 0.39 | 0 | 7.2 | 0.477 | silero | 2 | 0 | No |
+| HINGLISH_MUCS_0020 | hinglish | hinglish_mixed_verbatim | 15.0 | 32 | 28 | 75.00% | 20 | 4 | 0 | 12.50% | 67.67% | 0/118/0/0 | 100.00% | 0.39 | 0 | 7.2 | 0.477 | silero | 2 | 0 | No |
+| HINGLISH_MUCS_0020 | hinglish | hinglish_script_normalized | 15.0 | 32 | 28 | 75.00% | 20 | 4 | 0 | 12.50% | 40.46% | 0/118/0/0 | 100.00% | 0.39 | 0 | 7.2 | 0.477 | silero | 2 | 0 | No |
+| HINGLISH_MUCS_0021 | hinglish | hinglish_roman | 5.0 | 7 | 7 | 42.86% | 3 | 0 | 0 | 0.00% | 20.59% | 0/38/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.413 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0021 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 7 | 57.14% | 4 | 0 | 0 | 0.00% | 42.86% | 0/38/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.413 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0021 | hinglish | hinglish_script_normalized | 5.0 | 7 | 7 | 42.86% | 3 | 0 | 0 | 0.00% | 20.59% | 0/38/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.413 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0022 | hinglish | hinglish_roman | 8.0 | 15 | 7 | 93.33% | 6 | 8 | 0 | 53.33% | 77.22% | 1/29/0/0 | 96.67% | 0.00 | 0 | 4.6 | 0.574 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0022 | hinglish | hinglish_mixed_verbatim | 8.0 | 15 | 7 | 100.00% | 7 | 8 | 0 | 53.33% | 89.19% | 1/29/0/0 | 100.00% | 0.00 | 0 | 4.6 | 0.574 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0022 | hinglish | hinglish_script_normalized | 8.0 | 15 | 6 | 93.33% | 5 | 9 | 0 | 60.00% | 80.77% | 1/29/0/0 | 100.00% | 0.00 | 0 | 4.6 | 0.574 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0023 | hinglish | hinglish_roman | 5.0 | 9 | 7 | 88.89% | 6 | 2 | 0 | 22.22% | 33.33% | 0/38/0/0 | 100.00% | 0.00 | 0 | 2.8 | 0.566 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0023 | hinglish | hinglish_mixed_verbatim | 5.0 | 9 | 7 | 88.89% | 6 | 2 | 0 | 22.22% | 40.48% | 0/38/0/0 | 100.00% | 0.00 | 0 | 2.8 | 0.566 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0023 | hinglish | hinglish_script_normalized | 5.0 | 9 | 7 | 88.89% | 6 | 2 | 0 | 22.22% | 33.33% | 0/38/0/0 | 100.00% | 0.00 | 0 | 2.8 | 0.566 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0024 | hinglish | hinglish_roman | 5.0 | 7 | 0 | 100.00% | 0 | 7 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.395 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0024 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 0 | 100.00% | 0 | 7 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.395 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0024 | hinglish | hinglish_script_normalized | 5.0 | 7 | 0 | 100.00% | 0 | 7 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.395 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0025 | hinglish | hinglish_roman | 8.0 | 13 | 11 | 76.92% | 8 | 2 | 0 | 15.38% | 25.40% | 0/52/0/0 | 100.00% | 0.43 | 0 | 2.9 | 0.363 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0025 | hinglish | hinglish_mixed_verbatim | 8.0 | 13 | 11 | 84.62% | 9 | 2 | 0 | 15.38% | 55.17% | 0/52/0/0 | 100.00% | 0.43 | 0 | 2.9 | 0.363 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0025 | hinglish | hinglish_script_normalized | 8.0 | 13 | 11 | 69.23% | 7 | 2 | 0 | 15.38% | 23.81% | 0/52/0/0 | 100.00% | 0.43 | 0 | 2.9 | 0.363 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0026 | hinglish | hinglish_roman | 5.0 | 10 | 3 | 100.00% | 3 | 7 | 0 | 70.00% | 75.44% | 0/21/0/0 | 100.00% | 0.10 | 0 | 1.9 | 0.380 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0026 | hinglish | hinglish_mixed_verbatim | 5.0 | 10 | 3 | 100.00% | 3 | 7 | 0 | 70.00% | 88.46% | 0/21/0/0 | 100.00% | 0.10 | 0 | 1.9 | 0.380 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0026 | hinglish | hinglish_script_normalized | 5.0 | 10 | 3 | 100.00% | 3 | 7 | 0 | 70.00% | 75.44% | 0/21/0/0 | 100.00% | 0.10 | 0 | 1.9 | 0.380 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0027 | hinglish | hinglish_roman | 11.0 | 19 | 23 | 121.05% | 19 | 0 | 4 | 0.00% | 82.05% | 0/76/0/0 | 100.00% | 0.42 | 0 | 3.1 | 0.285 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0027 | hinglish | hinglish_mixed_verbatim | 11.0 | 18 | 23 | 127.78% | 18 | 0 | 5 | 0.00% | 114.06% | 0/76/0/0 | 100.00% | 0.42 | 0 | 3.1 | 0.285 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0027 | hinglish | hinglish_script_normalized | 11.0 | 18 | 23 | 127.78% | 18 | 0 | 5 | 0.00% | 79.49% | 0/76/0/0 | 100.00% | 0.42 | 0 | 3.1 | 0.285 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0028 | hinglish | hinglish_roman | 5.0 | 12 | 10 | 50.00% | 4 | 2 | 0 | 16.67% | 33.93% | 0/47/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.461 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0028 | hinglish | hinglish_mixed_verbatim | 5.0 | 12 | 10 | 58.33% | 5 | 2 | 0 | 16.67% | 57.69% | 0/47/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.461 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0028 | hinglish | hinglish_script_normalized | 5.0 | 12 | 10 | 50.00% | 4 | 2 | 0 | 16.67% | 35.71% | 0/47/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.461 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0029 | hinglish | hinglish_roman | 7.0 | 17 | 9 | 94.12% | 8 | 8 | 0 | 47.06% | 46.38% | 0/52/0/0 | 100.00% | 0.48 | 0 | 3.3 | 0.473 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0029 | hinglish | hinglish_mixed_verbatim | 7.0 | 17 | 9 | 94.12% | 8 | 8 | 0 | 47.06% | 77.59% | 0/52/0/0 | 100.00% | 0.48 | 0 | 3.3 | 0.473 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0029 | hinglish | hinglish_script_normalized | 7.0 | 17 | 9 | 94.12% | 8 | 8 | 0 | 47.06% | 45.59% | 0/52/0/0 | 100.00% | 0.48 | 0 | 3.3 | 0.473 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0030 | hinglish | hinglish_roman | 9.0 | 19 | 6 | 100.00% | 6 | 13 | 0 | 68.42% | 75.90% | 0/29/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.275 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0030 | hinglish | hinglish_mixed_verbatim | 9.0 | 19 | 6 | 100.00% | 6 | 13 | 0 | 68.42% | 90.00% | 0/29/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.275 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0030 | hinglish | hinglish_script_normalized | 9.0 | 19 | 6 | 100.00% | 6 | 13 | 0 | 68.42% | 75.90% | 0/29/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.275 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0031 | hinglish | hinglish_roman | 7.0 | 23 | 43 | 178.26% | 21 | 0 | 20 | 0.00% | 115.60% | 2/159/0/0 | 98.76% | 0.00 | 0 | 13.2 | 1.882 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0031 | hinglish | hinglish_mixed_verbatim | 7.0 | 22 | 43 | 195.45% | 22 | 0 | 21 | 0.00% | 145.00% | 2/159/0/0 | 100.00% | 0.00 | 0 | 13.2 | 1.882 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0031 | hinglish | hinglish_script_normalized | 7.0 | 22 | 41 | 177.27% | 20 | 0 | 19 | 0.00% | 109.17% | 2/159/0/0 | 100.00% | 0.00 | 0 | 13.2 | 1.882 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0032 | hinglish | hinglish_roman | 7.0 | 19 | 19 | 100.00% | 19 | 0 | 0 | 0.00% | 76.09% | 0/72/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.341 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0032 | hinglish | hinglish_mixed_verbatim | 7.0 | 18 | 19 | 105.56% | 18 | 0 | 1 | 0.00% | 94.05% | 0/72/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.341 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0032 | hinglish | hinglish_script_normalized | 7.0 | 18 | 19 | 105.56% | 18 | 0 | 1 | 0.00% | 76.09% | 0/72/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.341 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0033 | hinglish | hinglish_roman | 5.0 | 13 | 7 | 92.31% | 6 | 6 | 0 | 46.15% | 77.78% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.426 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0033 | hinglish | hinglish_mixed_verbatim | 5.0 | 13 | 7 | 100.00% | 7 | 6 | 0 | 46.15% | 91.49% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.426 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0033 | hinglish | hinglish_script_normalized | 5.0 | 13 | 7 | 92.31% | 6 | 6 | 0 | 46.15% | 77.78% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.426 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0034 | hinglish | hinglish_roman | 4.0 | 15 | 14 | 93.33% | 13 | 1 | 0 | 6.67% | 69.57% | 0/57/0/0 | 100.00% | 0.78 | 0 | 2.6 | 0.652 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0034 | hinglish | hinglish_mixed_verbatim | 4.0 | 15 | 14 | 93.33% | 13 | 1 | 0 | 6.67% | 81.36% | 0/57/0/0 | 100.00% | 0.78 | 0 | 2.6 | 0.652 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0034 | hinglish | hinglish_script_normalized | 4.0 | 15 | 14 | 93.33% | 13 | 1 | 0 | 6.67% | 68.57% | 0/57/0/0 | 100.00% | 0.78 | 0 | 2.6 | 0.652 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0035 | hinglish | hinglish_roman | 6.0 | 14 | 10 | 78.57% | 7 | 4 | 0 | 28.57% | 54.84% | 0/40/0/0 | 100.00% | 0.26 | 0 | 3.1 | 0.512 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0035 | hinglish | hinglish_mixed_verbatim | 6.0 | 14 | 10 | 78.57% | 7 | 4 | 0 | 28.57% | 66.07% | 0/40/0/0 | 100.00% | 0.26 | 0 | 3.1 | 0.512 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0035 | hinglish | hinglish_script_normalized | 6.0 | 14 | 10 | 78.57% | 7 | 4 | 0 | 28.57% | 54.84% | 0/40/0/0 | 100.00% | 0.26 | 0 | 3.1 | 0.512 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0036 | hinglish | hinglish_roman | 4.0 | 6 | 6 | 83.33% | 5 | 0 | 0 | 0.00% | 58.62% | 0/24/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.633 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0036 | hinglish | hinglish_mixed_verbatim | 4.0 | 6 | 6 | 83.33% | 5 | 0 | 0 | 0.00% | 62.96% | 0/24/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.633 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0036 | hinglish | hinglish_script_normalized | 4.0 | 6 | 6 | 83.33% | 5 | 0 | 0 | 0.00% | 58.62% | 0/24/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.633 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0037 | hinglish | hinglish_roman | 4.0 | 11 | 9 | 90.91% | 4 | 4 | 2 | 36.36% | 81.40% | 0/49/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.522 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0037 | hinglish | hinglish_mixed_verbatim | 4.0 | 11 | 9 | 90.91% | 4 | 4 | 2 | 36.36% | 107.69% | 0/49/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.522 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0037 | hinglish | hinglish_script_normalized | 4.0 | 11 | 9 | 90.91% | 4 | 4 | 2 | 36.36% | 79.07% | 0/49/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.522 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0038 | hinglish | hinglish_roman | 4.0 | 11 | 9 | 90.91% | 4 | 4 | 2 | 36.36% | 84.91% | 0/56/0/0 | 100.00% | 0.02 | 0 | 2.7 | 0.684 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0038 | hinglish | hinglish_mixed_verbatim | 4.0 | 11 | 9 | 90.91% | 4 | 4 | 2 | 36.36% | 113.04% | 0/56/0/0 | 100.00% | 0.02 | 0 | 2.7 | 0.684 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0038 | hinglish | hinglish_script_normalized | 4.0 | 11 | 9 | 90.91% | 4 | 4 | 2 | 36.36% | 86.79% | 0/56/0/0 | 100.00% | 0.02 | 0 | 2.7 | 0.684 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0039 | hinglish | hinglish_roman | 8.0 | 17 | 15 | 70.59% | 10 | 2 | 0 | 11.76% | 24.00% | 0/67/0/0 | 100.00% | 0.06 | 0 | 2.9 | 0.359 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0039 | hinglish | hinglish_mixed_verbatim | 8.0 | 16 | 15 | 81.25% | 12 | 1 | 0 | 6.25% | 69.01% | 0/67/0/0 | 100.00% | 0.06 | 0 | 2.9 | 0.359 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0039 | hinglish | hinglish_script_normalized | 8.0 | 16 | 15 | 68.75% | 10 | 1 | 0 | 6.25% | 25.00% | 0/67/0/0 | 100.00% | 0.06 | 0 | 2.9 | 0.359 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0040 | hinglish | hinglish_roman | 4.0 | 6 | 4 | 100.00% | 4 | 2 | 0 | 33.33% | 58.33% | 1/24/0/0 | 96.00% | 0.15 | 0 | 3.4 | 0.855 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0040 | hinglish | hinglish_mixed_verbatim | 4.0 | 6 | 4 | 100.00% | 4 | 2 | 0 | 33.33% | 77.14% | 1/24/0/0 | 100.00% | 0.15 | 0 | 3.4 | 0.855 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0040 | hinglish | hinglish_script_normalized | 4.0 | 6 | 3 | 100.00% | 3 | 3 | 0 | 50.00% | 63.89% | 1/24/0/0 | 100.00% | 0.15 | 0 | 3.4 | 0.855 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0041 | hinglish | hinglish_roman | 5.0 | 13 | 17 | 115.38% | 11 | 0 | 4 | 0.00% | 88.52% | 0/68/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.496 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0041 | hinglish | hinglish_mixed_verbatim | 5.0 | 13 | 17 | 115.38% | 11 | 0 | 4 | 0.00% | 101.75% | 0/68/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.496 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0041 | hinglish | hinglish_script_normalized | 5.0 | 13 | 17 | 115.38% | 11 | 0 | 4 | 0.00% | 86.89% | 0/68/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.496 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0042 | hinglish | hinglish_roman | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 33.33% | 0/29/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.353 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0042 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 42.11% | 0/29/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.353 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0042 | hinglish | hinglish_script_normalized | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 28.95% | 0/29/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.353 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0043 | hinglish | hinglish_roman | 4.0 | 9 | 9 | 88.89% | 8 | 0 | 0 | 0.00% | 28.26% | 0/46/0/0 | 100.00% | 0.30 | 0 | 2.4 | 0.610 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0043 | hinglish | hinglish_mixed_verbatim | 4.0 | 9 | 9 | 88.89% | 8 | 0 | 0 | 0.00% | 79.07% | 0/46/0/0 | 100.00% | 0.30 | 0 | 2.4 | 0.610 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0043 | hinglish | hinglish_script_normalized | 4.0 | 9 | 9 | 88.89% | 8 | 0 | 0 | 0.00% | 28.26% | 0/46/0/0 | 100.00% | 0.30 | 0 | 2.4 | 0.610 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0044 | hinglish | hinglish_roman | 4.0 | 9 | 11 | 66.67% | 4 | 0 | 2 | 0.00% | 31.37% | 0/46/0/0 | 100.00% | 0.14 | 0 | 2.4 | 0.596 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0044 | hinglish | hinglish_mixed_verbatim | 4.0 | 9 | 11 | 77.78% | 5 | 0 | 2 | 0.00% | 42.31% | 0/46/0/0 | 100.00% | 0.14 | 0 | 2.4 | 0.596 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0044 | hinglish | hinglish_script_normalized | 4.0 | 9 | 11 | 66.67% | 4 | 0 | 2 | 0.00% | 31.37% | 0/46/0/0 | 100.00% | 0.14 | 0 | 2.4 | 0.596 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0045 | hinglish | hinglish_roman | 6.0 | 15 | 17 | 106.67% | 14 | 0 | 2 | 0.00% | 73.77% | 0/71/0/0 | 100.00% | 0.48 | 0 | 2.6 | 0.439 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0045 | hinglish | hinglish_mixed_verbatim | 6.0 | 15 | 17 | 106.67% | 14 | 0 | 2 | 0.00% | 80.33% | 0/71/0/0 | 100.00% | 0.48 | 0 | 2.6 | 0.439 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0045 | hinglish | hinglish_script_normalized | 6.0 | 15 | 17 | 106.67% | 14 | 0 | 2 | 0.00% | 73.77% | 0/71/0/0 | 100.00% | 0.48 | 0 | 2.6 | 0.439 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0046 | hinglish | hinglish_roman | 7.0 | 17 | 13 | 88.24% | 11 | 4 | 0 | 23.53% | 65.06% | 0/54/0/0 | 100.00% | 0.38 | 0 | 2.1 | 0.298 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0046 | hinglish | hinglish_mixed_verbatim | 7.0 | 17 | 13 | 88.24% | 11 | 4 | 0 | 23.53% | 81.94% | 0/54/0/0 | 100.00% | 0.38 | 0 | 2.1 | 0.298 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0046 | hinglish | hinglish_script_normalized | 7.0 | 17 | 13 | 88.24% | 11 | 4 | 0 | 23.53% | 63.41% | 0/54/0/0 | 100.00% | 0.38 | 0 | 2.1 | 0.298 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0047 | hinglish | hinglish_roman | 6.0 | 11 | 8 | 90.91% | 7 | 3 | 0 | 27.27% | 32.73% | 0/45/0/0 | 100.00% | 0.14 | 0 | 3.1 | 0.524 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0047 | hinglish | hinglish_mixed_verbatim | 6.0 | 11 | 8 | 90.91% | 7 | 3 | 0 | 27.27% | 75.00% | 0/45/0/0 | 100.00% | 0.14 | 0 | 3.1 | 0.524 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0047 | hinglish | hinglish_script_normalized | 6.0 | 11 | 8 | 90.91% | 7 | 3 | 0 | 27.27% | 32.73% | 0/45/0/0 | 100.00% | 0.14 | 0 | 3.1 | 0.524 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0048 | hinglish | hinglish_roman | 7.0 | 13 | 9 | 53.85% | 3 | 4 | 0 | 30.77% | 20.34% | 0/59/0/0 | 100.00% | 0.00 | 0 | 2.8 | 0.401 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0048 | hinglish | hinglish_mixed_verbatim | 7.0 | 13 | 9 | 53.85% | 3 | 4 | 0 | 30.77% | 37.29% | 0/59/0/0 | 100.00% | 0.00 | 0 | 2.8 | 0.401 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0048 | hinglish | hinglish_script_normalized | 7.0 | 13 | 9 | 53.85% | 3 | 4 | 0 | 30.77% | 20.34% | 0/59/0/0 | 100.00% | 0.00 | 0 | 2.8 | 0.401 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0049 | hinglish | hinglish_roman | 5.0 | 12 | 11 | 91.67% | 8 | 2 | 1 | 16.67% | 62.00% | 0/38/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.382 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0049 | hinglish | hinglish_mixed_verbatim | 5.0 | 12 | 11 | 91.67% | 8 | 2 | 1 | 16.67% | 84.78% | 0/38/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.382 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0049 | hinglish | hinglish_script_normalized | 5.0 | 12 | 11 | 91.67% | 8 | 2 | 1 | 16.67% | 64.00% | 0/38/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.382 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0050 | hinglish | hinglish_roman | 4.0 | 6 | 10 | 166.67% | 6 | 0 | 4 | 0.00% | 100.00% | 0/43/0/0 | 100.00% | 0.05 | 0 | 2.4 | 0.605 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0050 | hinglish | hinglish_mixed_verbatim | 4.0 | 6 | 10 | 166.67% | 6 | 0 | 4 | 0.00% | 144.00% | 0/43/0/0 | 100.00% | 0.05 | 0 | 2.4 | 0.605 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0050 | hinglish | hinglish_script_normalized | 4.0 | 6 | 10 | 166.67% | 6 | 0 | 4 | 0.00% | 100.00% | 0/43/0/0 | 100.00% | 0.05 | 0 | 2.4 | 0.605 | silero | 1 | 0 | No |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 01_english_podcast [en] | english_latin | 1 | 13.56% | 13.56% | 6.36% | 7.22% | 100.00% | 0.259 | 26.1 | Yes |
+| 02_hindi [hi] | hindi_devanagari | 50 | 103.86% | 104.53% | 15.06% | 109.82% | 99.92% | 0.392 | 100.8 | No |
+| 03_hinglish [hinglish] | hinglish_roman | 50 | 94.96% | 92.54% | 23.05% | 60.45% | 99.76% | 0.495 | 144.4 | No |
+| 03_hinglish [hinglish] [hinglish_mixed_verbatim] | hinglish_mixed_verbatim | 50 | 97.37% | 95.11% | 22.45% | 79.86% | 100.00% | 0.495 | 144.4 | No |
+| 03_hinglish [hinglish] [hinglish_script_normalized] | hinglish_script_normalized | 50 | 94.89% | 92.52% | 22.91% | 59.88% | 100.00% | 0.495 | 144.4 | No |
+
+### Source Dataset Summaries
+| Source Dataset & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| npr_podcast [en] | english_latin | 1 | 13.56% | 13.56% | 6.36% | 7.22% | 100.00% | 0.259 | 26.1 | Yes |
+| common_voice_hindi [hi] | hindi_devanagari | 25 | 103.51% | 104.13% | 14.47% | 110.32% | 99.85% | 0.340 | 45.1 | No |
+| ai4bharat_kathbath_hindi [hi] | hindi_devanagari | 25 | 104.14% | 104.93% | 15.52% | 109.31% | 100.00% | 0.444 | 55.7 | No |
+| mucs_2021_hindi_english [hinglish] | hinglish_roman | 50 | 94.96% | 92.54% | 23.05% | 60.45% | 99.76% | 0.495 | 144.4 | No |
+| mucs_2021_hindi_english [hinglish] [hinglish_mixed_verbatim] | hinglish_mixed_verbatim | 50 | 97.37% | 95.11% | 22.45% | 79.86% | 100.00% | 0.495 | 144.4 | No |
+| mucs_2021_hindi_english [hinglish] [hinglish_script_normalized] | hinglish_script_normalized | 50 | 94.89% | 92.52% | 22.91% | 59.88% | 100.00% | 0.495 | 144.4 | No |
+
+
+## Run: p1_1_expB_tiny_rec_on (2026-10-30T08:36:51.764Z)
+
+| Config | Model: tiny | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EN_PODCAST_001 | en | english_latin | 101.0 | 236 | 224 | 13.56% | 14 | 15 | 3 | 6.36% | 7.22% | 0/1018/0/0 | 100.00% | 1.64 | 0 | 28.4 | 0.281 | silero | 4 | 0 | Yes |
+| HI_CV_0001 | hi | hindi_devanagari | 6.6 | 10 | 13 | 130.00% | 10 | 0 | 3 | 0.00% | 114.29% | 0/40/0/0 | 100.00% | 0.10 | 0 | 2.1 | 0.322 | silero | 1 | 0 | No |
+| HI_CV_0002 | hi | hindi_devanagari | 5.5 | 9 | 9 | 100.00% | 9 | 0 | 0 | 0.00% | 115.38% | 0/45/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.413 | silero | 1 | 0 | No |
+| HI_CV_0003 | hi | hindi_devanagari | 3.1 | 5 | 6 | 120.00% | 5 | 0 | 1 | 0.00% | 110.53% | 0/21/0/0 | 100.00% | 0.00 | 0 | 1.2 | 0.398 | silero | 1 | 0 | No |
+| HI_CV_0004 | hi | hindi_devanagari | 5.4 | 6 | 8 | 133.33% | 6 | 0 | 2 | 0.00% | 150.00% | 0/27/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.326 | silero | 1 | 0 | No |
+| HI_CV_0005 | hi | hindi_devanagari | 4.9 | 12 | 10 | 100.00% | 10 | 2 | 0 | 16.67% | 102.33% | 0/44/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.470 | silero | 1 | 0 | No |
+| HI_CV_0006 | hi | hindi_devanagari | 5.6 | 9 | 9 | 100.00% | 9 | 0 | 0 | 0.00% | 112.50% | 0/45/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.324 | silero | 1 | 0 | No |
+| HI_CV_0007 | hi | hindi_devanagari | 4.9 | 8 | 7 | 100.00% | 7 | 1 | 0 | 12.50% | 100.00% | 0/25/0/1 | 96.15% | 0.00 | 0 | 1.5 | 0.319 | silero | 1 | 0 | No |
+| HI_CV_0008 | hi | hindi_devanagari | 7.4 | 13 | 11 | 100.00% | 11 | 2 | 0 | 15.38% | 113.46% | 0/58/0/0 | 100.00% | 0.33 | 0 | 1.8 | 0.241 | silero | 1 | 0 | No |
+| HI_CV_0009 | hi | hindi_devanagari | 4.7 | 6 | 5 | 100.00% | 5 | 1 | 0 | 16.67% | 133.33% | 0/24/0/0 | 100.00% | 0.10 | 0 | 1.6 | 0.334 | silero | 1 | 0 | No |
+| HI_CV_0010 | hi | hindi_devanagari | 7.0 | 10 | 12 | 120.00% | 10 | 0 | 2 | 0.00% | 112.20% | 0/46/0/0 | 100.00% | 0.30 | 0 | 1.7 | 0.244 | silero | 1 | 0 | No |
+| HI_CV_0011 | hi | hindi_devanagari | 4.2 | 5 | 4 | 100.00% | 4 | 1 | 0 | 20.00% | 100.00% | 0/15/0/0 | 100.00% | 0.00 | 0 | 1.0 | 0.247 | silero | 1 | 0 | No |
+| HI_CV_0012 | hi | hindi_devanagari | 4.1 | 9 | 7 | 100.00% | 7 | 2 | 0 | 22.22% | 109.38% | 0/35/0/0 | 100.00% | 0.14 | 0 | 1.5 | 0.371 | silero | 1 | 0 | No |
+| HI_CV_0013 | hi | hindi_devanagari | 3.7 | 7 | 6 | 100.00% | 6 | 1 | 0 | 14.29% | 113.04% | 0/26/0/0 | 100.00% | 0.08 | 0 | 1.5 | 0.401 | silero | 1 | 0 | No |
+| HI_CV_0014 | hi | hindi_devanagari | 7.1 | 10 | 9 | 100.00% | 9 | 1 | 0 | 10.00% | 113.64% | 0/50/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.300 | silero | 1 | 0 | No |
+| HI_CV_0015 | hi | hindi_devanagari | 5.0 | 11 | 9 | 100.00% | 9 | 2 | 0 | 18.18% | 113.51% | 0/42/0/0 | 100.00% | 0.02 | 0 | 1.7 | 0.337 | silero | 1 | 0 | No |
+| HI_CV_0016 | hi | hindi_devanagari | 5.9 | 12 | 6 | 100.00% | 6 | 6 | 0 | 50.00% | 105.56% | 0/57/0/0 | 100.00% | 0.14 | 0 | 2.4 | 0.403 | silero | 1 | 0 | No |
+| HI_CV_0017 | hi | hindi_devanagari | 7.1 | 14 | 11 | 100.00% | 11 | 3 | 0 | 21.43% | 100.00% | 0/58/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.373 | silero | 1 | 0 | No |
+| HI_CV_0018 | hi | hindi_devanagari | 6.6 | 12 | 11 | 100.00% | 11 | 1 | 0 | 8.33% | 109.09% | 0/48/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.280 | silero | 1 | 0 | No |
+| HI_CV_0019 | hi | hindi_devanagari | 3.2 | 5 | 3 | 100.00% | 3 | 2 | 0 | 40.00% | 105.88% | 0/18/0/0 | 100.00% | 0.00 | 0 | 1.4 | 0.430 | silero | 1 | 0 | No |
+| HI_CV_0020 | hi | hindi_devanagari | 6.2 | 9 | 7 | 100.00% | 7 | 2 | 0 | 22.22% | 103.92% | 0/53/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.281 | silero | 1 | 0 | No |
+| HI_CV_0021 | hi | hindi_devanagari | 5.2 | 10 | 8 | 100.00% | 8 | 2 | 0 | 20.00% | 107.32% | 0/44/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.334 | silero | 1 | 0 | No |
+| HI_CV_0022 | hi | hindi_devanagari | 5.5 | 6 | 6 | 100.00% | 6 | 0 | 0 | 0.00% | 100.00% | 0/29/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.357 | silero | 1 | 0 | No |
+| HI_CV_0023 | hi | hindi_devanagari | 3.5 | 5 | 3 | 100.00% | 3 | 2 | 0 | 40.00% | 107.14% | 0/15/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.492 | silero | 1 | 0 | No |
+| HI_CV_0024 | hi | hindi_devanagari | 8.2 | 13 | 12 | 100.00% | 12 | 1 | 0 | 7.69% | 100.00% | 0/54/0/0 | 100.00% | 0.41 | 0 | 2.7 | 0.326 | silero | 1 | 0 | No |
+| HI_CV_0025 | hi | hindi_devanagari | 6.0 | 12 | 11 | 100.00% | 11 | 1 | 0 | 8.33% | 105.56% | 0/56/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.315 | silero | 1 | 0 | No |
+| HI_KB_0001 | hi | hindi_devanagari | 4.9 | 14 | 15 | 107.14% | 14 | 0 | 1 | 0.00% | 101.59% | 0/64/0/0 | 100.00% | 0.00 | 0 | 2.9 | 0.584 | silero | 1 | 0 | No |
+| HI_KB_0002 | hi | hindi_devanagari | 6.8 | 13 | 11 | 100.00% | 11 | 2 | 0 | 15.38% | 116.33% | 0/57/0/0 | 100.00% | 0.06 | 0 | 2.4 | 0.354 | silero | 1 | 0 | No |
+| HI_KB_0003 | hi | hindi_devanagari | 3.9 | 11 | 9 | 100.00% | 9 | 2 | 0 | 18.18% | 100.00% | 0/40/0/0 | 100.00% | 0.22 | 0 | 2.3 | 0.598 | silero | 1 | 0 | No |
+| HI_KB_0004 | hi | hindi_devanagari | 4.4 | 15 | 11 | 100.00% | 11 | 4 | 0 | 26.67% | 101.89% | 0/54/0/0 | 100.00% | 0.28 | 0 | 1.7 | 0.395 | silero | 1 | 0 | No |
+| HI_KB_0005 | hi | hindi_devanagari | 4.8 | 13 | 7 | 100.00% | 7 | 6 | 0 | 46.15% | 100.00% | 0/46/0/0 | 100.00% | 0.00 | 0 | 1.6 | 0.336 | silero | 1 | 0 | No |
+| HI_KB_0006 | hi | hindi_devanagari | 3.7 | 12 | 12 | 100.00% | 12 | 0 | 0 | 0.00% | 119.05% | 0/50/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.556 | silero | 1 | 0 | No |
+| HI_KB_0007 | hi | hindi_devanagari | 4.4 | 12 | 8 | 100.00% | 8 | 4 | 0 | 33.33% | 109.76% | 0/44/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.414 | silero | 1 | 0 | No |
+| HI_KB_0008 | hi | hindi_devanagari | 4.9 | 13 | 11 | 100.00% | 11 | 2 | 0 | 15.38% | 110.00% | 0/54/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.499 | silero | 1 | 0 | No |
+| HI_KB_0009 | hi | hindi_devanagari | 3.5 | 9 | 8 | 100.00% | 8 | 1 | 0 | 11.11% | 100.00% | 0/28/0/0 | 100.00% | 0.36 | 0 | 1.6 | 0.469 | silero | 1 | 0 | No |
+| HI_KB_0010 | hi | hindi_devanagari | 5.7 | 13 | 14 | 107.69% | 13 | 0 | 1 | 0.00% | 103.64% | 0/56/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.403 | silero | 1 | 0 | No |
+| HI_KB_0011 | hi | hindi_devanagari | 3.6 | 10 | 11 | 110.00% | 10 | 0 | 1 | 0.00% | 130.30% | 0/43/0/0 | 100.00% | 0.00 | 0 | 1.3 | 0.358 | silero | 1 | 0 | No |
+| HI_KB_0012 | hi | hindi_devanagari | 4.5 | 9 | 9 | 100.00% | 9 | 0 | 0 | 0.00% | 100.00% | 0/41/0/0 | 100.00% | 0.00 | 0 | 5.9 | 1.329 | silero | 1 | 1 | No |
+| HI_KB_0013 | hi | hindi_devanagari | 3.7 | 12 | 9 | 100.00% | 9 | 3 | 0 | 25.00% | 100.00% | 0/31/0/0 | 100.00% | 0.00 | 0 | 1.6 | 0.443 | silero | 1 | 0 | No |
+| HI_KB_0014 | hi | hindi_devanagari | 3.8 | 8 | 6 | 100.00% | 6 | 2 | 0 | 25.00% | 100.00% | 0/35/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.464 | silero | 1 | 0 | No |
+| HI_KB_0015 | hi | hindi_devanagari | 6.8 | 15 | 17 | 113.33% | 15 | 0 | 2 | 0.00% | 110.42% | 0/51/0/0 | 100.00% | 0.04 | 0 | 2.4 | 0.355 | silero | 1 | 0 | No |
+| HI_KB_0016 | hi | hindi_devanagari | 8.1 | 10 | 11 | 110.00% | 10 | 0 | 1 | 0.00% | 131.91% | 0/62/0/0 | 100.00% | 0.54 | 0 | 2.0 | 0.253 | silero | 1 | 0 | No |
+| HI_KB_0017 | hi | hindi_devanagari | 6.0 | 8 | 10 | 125.00% | 8 | 0 | 2 | 0.00% | 122.58% | 0/38/0/0 | 100.00% | 0.24 | 0 | 1.8 | 0.300 | silero | 1 | 0 | No |
+| HI_KB_0018 | hi | hindi_devanagari | 8.8 | 8 | 12 | 150.00% | 8 | 0 | 4 | 0.00% | 114.75% | 0/70/0/0 | 100.00% | 0.52 | 0 | 2.1 | 0.238 | silero | 1 | 0 | No |
+| HI_KB_0019 | hi | hindi_devanagari | 6.0 | 14 | 12 | 100.00% | 12 | 2 | 0 | 14.29% | 120.37% | 0/65/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.439 | silero | 1 | 0 | No |
+| HI_KB_0020 | hi | hindi_devanagari | 5.2 | 9 | 6 | 100.00% | 6 | 3 | 0 | 33.33% | 105.41% | 0/39/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.327 | silero | 1 | 0 | No |
+| HI_KB_0021 | hi | hindi_devanagari | 8.6 | 14 | 13 | 100.00% | 13 | 1 | 0 | 7.14% | 107.14% | 0/60/0/0 | 100.00% | 0.08 | 0 | 2.8 | 0.327 | silero | 1 | 0 | No |
+| HI_KB_0022 | hi | hindi_devanagari | 4.0 | 14 | 10 | 100.00% | 10 | 4 | 0 | 28.57% | 100.00% | 0/51/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.522 | silero | 1 | 0 | No |
+| HI_KB_0023 | hi | hindi_devanagari | 4.9 | 8 | 4 | 100.00% | 4 | 4 | 0 | 50.00% | 109.68% | 0/34/0/0 | 100.00% | 0.20 | 0 | 1.6 | 0.323 | silero | 1 | 0 | No |
+| HI_KB_0024 | hi | hindi_devanagari | 5.2 | 15 | 11 | 100.00% | 11 | 4 | 0 | 26.67% | 104.84% | 0/65/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.417 | silero | 1 | 0 | No |
+| HI_KB_0025 | hi | hindi_devanagari | 4.7 | 11 | 10 | 100.00% | 10 | 1 | 0 | 9.09% | 113.16% | 0/43/0/0 | 100.00% | 0.00 | 0 | 1.6 | 0.333 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0001 | hinglish | hinglish_roman | 6.0 | 13 | 14 | 100.00% | 12 | 0 | 1 | 0.00% | 82.76% | 0/53/0/0 | 100.00% | 0.22 | 0 | 2.7 | 0.443 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0001 | hinglish | hinglish_mixed_verbatim | 6.0 | 13 | 14 | 100.00% | 12 | 0 | 1 | 0.00% | 90.74% | 0/53/0/0 | 100.00% | 0.22 | 0 | 2.7 | 0.443 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0001 | hinglish | hinglish_script_normalized | 6.0 | 13 | 14 | 100.00% | 12 | 0 | 1 | 0.00% | 79.31% | 0/53/0/0 | 100.00% | 0.22 | 0 | 2.7 | 0.443 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0002 | hinglish | hinglish_roman | 9.0 | 25 | 27 | 96.00% | 20 | 1 | 3 | 4.00% | 48.12% | 0/104/0/0 | 100.00% | 0.35 | 0 | 4.2 | 0.472 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0002 | hinglish | hinglish_mixed_verbatim | 9.0 | 24 | 27 | 100.00% | 21 | 0 | 3 | 0.00% | 83.90% | 0/104/0/0 | 100.00% | 0.35 | 0 | 4.2 | 0.472 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0002 | hinglish | hinglish_script_normalized | 9.0 | 24 | 27 | 95.83% | 20 | 0 | 3 | 0.00% | 47.37% | 0/104/0/0 | 100.00% | 0.35 | 0 | 4.2 | 0.472 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0003 | hinglish | hinglish_roman | 5.0 | 19 | 8 | 100.00% | 8 | 11 | 0 | 57.89% | 81.69% | 0/29/0/0 | 100.00% | 0.46 | 0 | 2.1 | 0.418 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0003 | hinglish | hinglish_mixed_verbatim | 5.0 | 18 | 8 | 100.00% | 8 | 10 | 0 | 55.56% | 93.85% | 0/29/0/0 | 100.00% | 0.46 | 0 | 2.1 | 0.418 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0003 | hinglish | hinglish_script_normalized | 5.0 | 18 | 8 | 100.00% | 8 | 10 | 0 | 55.56% | 81.69% | 0/29/0/0 | 100.00% | 0.46 | 0 | 2.1 | 0.418 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0004 | hinglish | hinglish_roman | 5.0 | 14 | 6 | 92.86% | 5 | 8 | 0 | 57.14% | 71.93% | 0/28/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.546 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0004 | hinglish | hinglish_mixed_verbatim | 5.0 | 14 | 6 | 92.86% | 5 | 8 | 0 | 57.14% | 90.74% | 0/28/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.546 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0004 | hinglish | hinglish_script_normalized | 5.0 | 14 | 6 | 92.86% | 5 | 8 | 0 | 57.14% | 69.64% | 0/28/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.546 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0005 | hinglish | hinglish_roman | 7.0 | 13 | 8 | 100.00% | 8 | 5 | 0 | 38.46% | 78.95% | 1/29/0/0 | 96.67% | 0.00 | 0 | 5.8 | 0.835 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0005 | hinglish | hinglish_mixed_verbatim | 7.0 | 13 | 8 | 100.00% | 8 | 5 | 0 | 38.46% | 84.91% | 1/29/0/0 | 100.00% | 0.00 | 0 | 5.8 | 0.835 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0005 | hinglish | hinglish_script_normalized | 7.0 | 13 | 7 | 100.00% | 7 | 6 | 0 | 46.15% | 76.79% | 1/29/0/0 | 100.00% | 0.00 | 0 | 5.8 | 0.835 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0006 | hinglish | hinglish_roman | 4.0 | 10 | 5 | 90.00% | 4 | 5 | 0 | 50.00% | 68.18% | 0/18/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.419 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0006 | hinglish | hinglish_mixed_verbatim | 4.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 83.72% | 0/18/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.419 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0006 | hinglish | hinglish_script_normalized | 4.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 66.67% | 0/18/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.419 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0007 | hinglish | hinglish_roman | 11.0 | 21 | 13 | 100.00% | 13 | 8 | 0 | 38.10% | 75.96% | 0/42/0/0 | 100.00% | 0.00 | 0 | 3.7 | 0.335 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0007 | hinglish | hinglish_mixed_verbatim | 11.0 | 21 | 13 | 100.00% | 13 | 8 | 0 | 38.10% | 78.13% | 0/42/0/0 | 100.00% | 0.00 | 0 | 3.7 | 0.335 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0007 | hinglish | hinglish_script_normalized | 11.0 | 21 | 13 | 100.00% | 13 | 8 | 0 | 38.10% | 74.51% | 0/42/0/0 | 100.00% | 0.00 | 0 | 3.7 | 0.335 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0008 | hinglish | hinglish_roman | 4.0 | 7 | 7 | 85.71% | 6 | 0 | 0 | 0.00% | 44.83% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.513 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0008 | hinglish | hinglish_mixed_verbatim | 4.0 | 7 | 7 | 85.71% | 6 | 0 | 0 | 0.00% | 66.67% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.513 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0008 | hinglish | hinglish_script_normalized | 4.0 | 7 | 7 | 85.71% | 6 | 0 | 0 | 0.00% | 44.83% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.513 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0009 | hinglish | hinglish_roman | 6.0 | 16 | 10 | 75.00% | 6 | 6 | 0 | 37.50% | 41.54% | 0/51/0/0 | 100.00% | 0.00 | 0 | 2.9 | 0.475 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0009 | hinglish | hinglish_mixed_verbatim | 6.0 | 16 | 10 | 75.00% | 6 | 6 | 0 | 37.50% | 55.17% | 0/51/0/0 | 100.00% | 0.00 | 0 | 2.9 | 0.475 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0009 | hinglish | hinglish_script_normalized | 6.0 | 16 | 10 | 75.00% | 6 | 6 | 0 | 37.50% | 40.63% | 0/51/0/0 | 100.00% | 0.00 | 0 | 2.9 | 0.475 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0010 | hinglish | hinglish_roman | 5.0 | 12 | 10 | 91.67% | 7 | 3 | 1 | 25.00% | 67.31% | 0/34/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.494 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0010 | hinglish | hinglish_mixed_verbatim | 5.0 | 12 | 10 | 91.67% | 7 | 3 | 1 | 25.00% | 75.00% | 0/34/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.494 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0010 | hinglish | hinglish_script_normalized | 5.0 | 12 | 10 | 91.67% | 7 | 3 | 1 | 25.00% | 67.31% | 0/34/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.494 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0011 | hinglish | hinglish_roman | 6.0 | 13 | 6 | 84.62% | 4 | 7 | 0 | 53.85% | 61.54% | 0/32/0/0 | 100.00% | 0.00 | 0 | 3.3 | 0.552 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0011 | hinglish | hinglish_mixed_verbatim | 6.0 | 13 | 6 | 84.62% | 4 | 7 | 0 | 53.85% | 67.39% | 0/32/0/0 | 100.00% | 0.00 | 0 | 3.3 | 0.552 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0011 | hinglish | hinglish_script_normalized | 6.0 | 13 | 6 | 84.62% | 4 | 7 | 0 | 53.85% | 61.54% | 0/32/0/0 | 100.00% | 0.00 | 0 | 3.3 | 0.552 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0012 | hinglish | hinglish_roman | 4.0 | 5 | 7 | 100.00% | 3 | 0 | 2 | 0.00% | 45.45% | 0/27/0/0 | 100.00% | 0.36 | 0 | 2.6 | 0.650 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0012 | hinglish | hinglish_mixed_verbatim | 4.0 | 5 | 7 | 120.00% | 4 | 0 | 2 | 0.00% | 90.00% | 0/27/0/0 | 100.00% | 0.36 | 0 | 2.6 | 0.650 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0012 | hinglish | hinglish_script_normalized | 4.0 | 5 | 7 | 100.00% | 3 | 0 | 2 | 0.00% | 45.45% | 0/27/0/0 | 100.00% | 0.36 | 0 | 2.6 | 0.650 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0013 | hinglish | hinglish_roman | 6.0 | 13 | 16 | 123.08% | 13 | 0 | 3 | 0.00% | 85.96% | 0/56/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.361 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0013 | hinglish | hinglish_mixed_verbatim | 6.0 | 13 | 16 | 123.08% | 13 | 0 | 3 | 0.00% | 101.92% | 0/56/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.361 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0013 | hinglish | hinglish_script_normalized | 6.0 | 13 | 16 | 123.08% | 13 | 0 | 3 | 0.00% | 85.96% | 0/56/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.361 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0014 | hinglish | hinglish_roman | 5.0 | 11 | 9 | 90.91% | 8 | 2 | 0 | 18.18% | 43.14% | 0/44/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.444 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0014 | hinglish | hinglish_mixed_verbatim | 5.0 | 11 | 9 | 90.91% | 8 | 2 | 0 | 18.18% | 74.47% | 0/44/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.444 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0014 | hinglish | hinglish_script_normalized | 5.0 | 11 | 9 | 90.91% | 8 | 2 | 0 | 18.18% | 43.14% | 0/44/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.444 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0015 | hinglish | hinglish_roman | 5.0 | 7 | 7 | 57.14% | 4 | 0 | 0 | 0.00% | 29.41% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.452 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0015 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 7 | 57.14% | 4 | 0 | 0 | 0.00% | 32.26% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.452 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0015 | hinglish | hinglish_script_normalized | 5.0 | 7 | 7 | 57.14% | 4 | 0 | 0 | 0.00% | 29.41% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.452 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0016 | hinglish | hinglish_roman | 4.0 | 7 | 7 | 71.43% | 5 | 0 | 0 | 0.00% | 23.08% | 0/37/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.499 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0016 | hinglish | hinglish_mixed_verbatim | 4.0 | 7 | 7 | 71.43% | 5 | 0 | 0 | 0.00% | 55.26% | 0/37/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.499 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0016 | hinglish | hinglish_script_normalized | 4.0 | 7 | 7 | 71.43% | 5 | 0 | 0 | 0.00% | 15.79% | 0/37/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.499 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0017 | hinglish | hinglish_roman | 15.0 | 23 | 34 | 130.43% | 17 | 1 | 12 | 4.35% | 82.69% | 0/140/0/0 | 100.00% | 0.46 | 0 | 4.5 | 0.303 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0017 | hinglish | hinglish_mixed_verbatim | 15.0 | 23 | 34 | 130.43% | 17 | 1 | 12 | 4.35% | 109.47% | 0/140/0/0 | 100.00% | 0.46 | 0 | 4.5 | 0.303 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0017 | hinglish | hinglish_script_normalized | 15.0 | 23 | 34 | 130.43% | 17 | 1 | 12 | 4.35% | 81.37% | 0/140/0/0 | 100.00% | 0.46 | 0 | 4.5 | 0.303 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0018 | hinglish | hinglish_roman | 5.0 | 9 | 8 | 77.78% | 6 | 1 | 0 | 11.11% | 57.14% | 0/29/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.504 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0018 | hinglish | hinglish_mixed_verbatim | 5.0 | 9 | 8 | 88.89% | 7 | 1 | 0 | 11.11% | 65.63% | 0/29/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.504 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0018 | hinglish | hinglish_script_normalized | 5.0 | 9 | 8 | 77.78% | 6 | 1 | 0 | 11.11% | 57.14% | 0/29/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.504 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0019 | hinglish | hinglish_roman | 4.0 | 8 | 9 | 112.50% | 8 | 0 | 1 | 0.00% | 85.00% | 0/32/0/0 | 100.00% | 0.02 | 0 | 2.7 | 0.673 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0019 | hinglish | hinglish_mixed_verbatim | 4.0 | 8 | 9 | 112.50% | 8 | 0 | 1 | 0.00% | 94.44% | 0/32/0/0 | 100.00% | 0.02 | 0 | 2.7 | 0.673 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0019 | hinglish | hinglish_script_normalized | 4.0 | 8 | 9 | 112.50% | 8 | 0 | 1 | 0.00% | 85.00% | 0/32/0/0 | 100.00% | 0.02 | 0 | 2.7 | 0.673 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0020 | hinglish | hinglish_roman | 15.0 | 34 | 28 | 76.47% | 20 | 6 | 0 | 17.65% | 41.01% | 0/118/0/0 | 100.00% | 0.39 | 0 | 5.8 | 0.386 | silero | 2 | 0 | No |
+| HINGLISH_MUCS_0020 | hinglish | hinglish_mixed_verbatim | 15.0 | 32 | 28 | 75.00% | 20 | 4 | 0 | 12.50% | 67.67% | 0/118/0/0 | 100.00% | 0.39 | 0 | 5.8 | 0.386 | silero | 2 | 0 | No |
+| HINGLISH_MUCS_0020 | hinglish | hinglish_script_normalized | 15.0 | 32 | 28 | 75.00% | 20 | 4 | 0 | 12.50% | 40.46% | 0/118/0/0 | 100.00% | 0.39 | 0 | 5.8 | 0.386 | silero | 2 | 0 | No |
+| HINGLISH_MUCS_0021 | hinglish | hinglish_roman | 5.0 | 7 | 7 | 42.86% | 3 | 0 | 0 | 0.00% | 20.59% | 0/38/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.400 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0021 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 7 | 57.14% | 4 | 0 | 0 | 0.00% | 42.86% | 0/38/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.400 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0021 | hinglish | hinglish_script_normalized | 5.0 | 7 | 7 | 42.86% | 3 | 0 | 0 | 0.00% | 20.59% | 0/38/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.400 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0022 | hinglish | hinglish_roman | 8.0 | 15 | 7 | 93.33% | 6 | 8 | 0 | 53.33% | 77.22% | 1/29/0/0 | 96.67% | 0.00 | 0 | 7.3 | 0.917 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0022 | hinglish | hinglish_mixed_verbatim | 8.0 | 15 | 7 | 100.00% | 7 | 8 | 0 | 53.33% | 89.19% | 1/29/0/0 | 100.00% | 0.00 | 0 | 7.3 | 0.917 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0022 | hinglish | hinglish_script_normalized | 8.0 | 15 | 6 | 93.33% | 5 | 9 | 0 | 60.00% | 80.77% | 1/29/0/0 | 100.00% | 0.00 | 0 | 7.3 | 0.917 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0023 | hinglish | hinglish_roman | 5.0 | 9 | 7 | 88.89% | 6 | 2 | 0 | 22.22% | 33.33% | 0/38/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.493 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0023 | hinglish | hinglish_mixed_verbatim | 5.0 | 9 | 7 | 88.89% | 6 | 2 | 0 | 22.22% | 40.48% | 0/38/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.493 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0023 | hinglish | hinglish_script_normalized | 5.0 | 9 | 7 | 88.89% | 6 | 2 | 0 | 22.22% | 33.33% | 0/38/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.493 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0024 | hinglish | hinglish_roman | 5.0 | 7 | 0 | 100.00% | 0 | 7 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.360 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0024 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 0 | 100.00% | 0 | 7 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.360 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0024 | hinglish | hinglish_script_normalized | 5.0 | 7 | 0 | 100.00% | 0 | 7 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.360 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0025 | hinglish | hinglish_roman | 8.0 | 13 | 11 | 76.92% | 8 | 2 | 0 | 15.38% | 25.40% | 0/52/0/0 | 100.00% | 0.43 | 0 | 2.5 | 0.313 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0025 | hinglish | hinglish_mixed_verbatim | 8.0 | 13 | 11 | 84.62% | 9 | 2 | 0 | 15.38% | 55.17% | 0/52/0/0 | 100.00% | 0.43 | 0 | 2.5 | 0.313 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0025 | hinglish | hinglish_script_normalized | 8.0 | 13 | 11 | 69.23% | 7 | 2 | 0 | 15.38% | 23.81% | 0/52/0/0 | 100.00% | 0.43 | 0 | 2.5 | 0.313 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0026 | hinglish | hinglish_roman | 5.0 | 10 | 3 | 100.00% | 3 | 7 | 0 | 70.00% | 75.44% | 0/21/0/0 | 100.00% | 0.10 | 0 | 1.8 | 0.368 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0026 | hinglish | hinglish_mixed_verbatim | 5.0 | 10 | 3 | 100.00% | 3 | 7 | 0 | 70.00% | 88.46% | 0/21/0/0 | 100.00% | 0.10 | 0 | 1.8 | 0.368 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0026 | hinglish | hinglish_script_normalized | 5.0 | 10 | 3 | 100.00% | 3 | 7 | 0 | 70.00% | 75.44% | 0/21/0/0 | 100.00% | 0.10 | 0 | 1.8 | 0.368 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0027 | hinglish | hinglish_roman | 11.0 | 19 | 23 | 121.05% | 19 | 0 | 4 | 0.00% | 82.05% | 0/76/0/0 | 100.00% | 0.42 | 0 | 3.3 | 0.300 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0027 | hinglish | hinglish_mixed_verbatim | 11.0 | 18 | 23 | 127.78% | 18 | 0 | 5 | 0.00% | 114.06% | 0/76/0/0 | 100.00% | 0.42 | 0 | 3.3 | 0.300 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0027 | hinglish | hinglish_script_normalized | 11.0 | 18 | 23 | 127.78% | 18 | 0 | 5 | 0.00% | 79.49% | 0/76/0/0 | 100.00% | 0.42 | 0 | 3.3 | 0.300 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0028 | hinglish | hinglish_roman | 5.0 | 12 | 10 | 50.00% | 4 | 2 | 0 | 16.67% | 33.93% | 0/47/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.363 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0028 | hinglish | hinglish_mixed_verbatim | 5.0 | 12 | 10 | 58.33% | 5 | 2 | 0 | 16.67% | 57.69% | 0/47/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.363 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0028 | hinglish | hinglish_script_normalized | 5.0 | 12 | 10 | 50.00% | 4 | 2 | 0 | 16.67% | 35.71% | 0/47/0/0 | 100.00% | 0.00 | 0 | 1.8 | 0.363 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0029 | hinglish | hinglish_roman | 7.0 | 17 | 9 | 94.12% | 8 | 8 | 0 | 47.06% | 46.38% | 0/52/0/0 | 100.00% | 0.48 | 0 | 3.3 | 0.467 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0029 | hinglish | hinglish_mixed_verbatim | 7.0 | 17 | 9 | 94.12% | 8 | 8 | 0 | 47.06% | 77.59% | 0/52/0/0 | 100.00% | 0.48 | 0 | 3.3 | 0.467 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0029 | hinglish | hinglish_script_normalized | 7.0 | 17 | 9 | 94.12% | 8 | 8 | 0 | 47.06% | 45.59% | 0/52/0/0 | 100.00% | 0.48 | 0 | 3.3 | 0.467 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0030 | hinglish | hinglish_roman | 9.0 | 19 | 6 | 100.00% | 6 | 13 | 0 | 68.42% | 75.90% | 0/29/0/0 | 100.00% | 0.00 | 0 | 3.8 | 0.428 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0030 | hinglish | hinglish_mixed_verbatim | 9.0 | 19 | 6 | 100.00% | 6 | 13 | 0 | 68.42% | 90.00% | 0/29/0/0 | 100.00% | 0.00 | 0 | 3.8 | 0.428 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0030 | hinglish | hinglish_script_normalized | 9.0 | 19 | 6 | 100.00% | 6 | 13 | 0 | 68.42% | 75.90% | 0/29/0/0 | 100.00% | 0.00 | 0 | 3.8 | 0.428 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0031 | hinglish | hinglish_roman | 7.0 | 23 | 43 | 178.26% | 21 | 0 | 20 | 0.00% | 115.60% | 2/159/0/0 | 98.76% | 0.00 | 0 | 13.2 | 1.892 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0031 | hinglish | hinglish_mixed_verbatim | 7.0 | 22 | 43 | 195.45% | 22 | 0 | 21 | 0.00% | 145.00% | 2/159/0/0 | 100.00% | 0.00 | 0 | 13.2 | 1.892 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0031 | hinglish | hinglish_script_normalized | 7.0 | 22 | 41 | 177.27% | 20 | 0 | 19 | 0.00% | 109.17% | 2/159/0/0 | 100.00% | 0.00 | 0 | 13.2 | 1.892 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0032 | hinglish | hinglish_roman | 7.0 | 19 | 19 | 100.00% | 19 | 0 | 0 | 0.00% | 76.09% | 0/72/0/0 | 100.00% | 0.00 | 0 | 2.8 | 0.396 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0032 | hinglish | hinglish_mixed_verbatim | 7.0 | 18 | 19 | 105.56% | 18 | 0 | 1 | 0.00% | 94.05% | 0/72/0/0 | 100.00% | 0.00 | 0 | 2.8 | 0.396 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0032 | hinglish | hinglish_script_normalized | 7.0 | 18 | 19 | 105.56% | 18 | 0 | 1 | 0.00% | 76.09% | 0/72/0/0 | 100.00% | 0.00 | 0 | 2.8 | 0.396 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0033 | hinglish | hinglish_roman | 5.0 | 13 | 7 | 92.31% | 6 | 6 | 0 | 46.15% | 77.78% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.408 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0033 | hinglish | hinglish_mixed_verbatim | 5.0 | 13 | 7 | 100.00% | 7 | 6 | 0 | 46.15% | 91.49% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.408 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0033 | hinglish | hinglish_script_normalized | 5.0 | 13 | 7 | 92.31% | 6 | 6 | 0 | 46.15% | 77.78% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.408 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0034 | hinglish | hinglish_roman | 4.0 | 15 | 14 | 93.33% | 13 | 1 | 0 | 6.67% | 69.57% | 0/57/0/0 | 100.00% | 0.78 | 0 | 2.6 | 0.645 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0034 | hinglish | hinglish_mixed_verbatim | 4.0 | 15 | 14 | 93.33% | 13 | 1 | 0 | 6.67% | 81.36% | 0/57/0/0 | 100.00% | 0.78 | 0 | 2.6 | 0.645 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0034 | hinglish | hinglish_script_normalized | 4.0 | 15 | 14 | 93.33% | 13 | 1 | 0 | 6.67% | 68.57% | 0/57/0/0 | 100.00% | 0.78 | 0 | 2.6 | 0.645 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0035 | hinglish | hinglish_roman | 6.0 | 14 | 10 | 78.57% | 7 | 4 | 0 | 28.57% | 54.84% | 0/40/0/0 | 100.00% | 0.26 | 0 | 2.7 | 0.458 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0035 | hinglish | hinglish_mixed_verbatim | 6.0 | 14 | 10 | 78.57% | 7 | 4 | 0 | 28.57% | 66.07% | 0/40/0/0 | 100.00% | 0.26 | 0 | 2.7 | 0.458 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0035 | hinglish | hinglish_script_normalized | 6.0 | 14 | 10 | 78.57% | 7 | 4 | 0 | 28.57% | 54.84% | 0/40/0/0 | 100.00% | 0.26 | 0 | 2.7 | 0.458 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0036 | hinglish | hinglish_roman | 4.0 | 6 | 6 | 83.33% | 5 | 0 | 0 | 0.00% | 58.62% | 0/24/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.585 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0036 | hinglish | hinglish_mixed_verbatim | 4.0 | 6 | 6 | 83.33% | 5 | 0 | 0 | 0.00% | 62.96% | 0/24/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.585 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0036 | hinglish | hinglish_script_normalized | 4.0 | 6 | 6 | 83.33% | 5 | 0 | 0 | 0.00% | 58.62% | 0/24/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.585 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0037 | hinglish | hinglish_roman | 4.0 | 11 | 9 | 90.91% | 4 | 4 | 2 | 36.36% | 81.40% | 0/49/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.543 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0037 | hinglish | hinglish_mixed_verbatim | 4.0 | 11 | 9 | 90.91% | 4 | 4 | 2 | 36.36% | 107.69% | 0/49/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.543 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0037 | hinglish | hinglish_script_normalized | 4.0 | 11 | 9 | 90.91% | 4 | 4 | 2 | 36.36% | 79.07% | 0/49/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.543 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0038 | hinglish | hinglish_roman | 4.0 | 11 | 9 | 90.91% | 4 | 4 | 2 | 36.36% | 84.91% | 0/56/0/0 | 100.00% | 0.02 | 0 | 2.2 | 0.561 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0038 | hinglish | hinglish_mixed_verbatim | 4.0 | 11 | 9 | 90.91% | 4 | 4 | 2 | 36.36% | 113.04% | 0/56/0/0 | 100.00% | 0.02 | 0 | 2.2 | 0.561 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0038 | hinglish | hinglish_script_normalized | 4.0 | 11 | 9 | 90.91% | 4 | 4 | 2 | 36.36% | 86.79% | 0/56/0/0 | 100.00% | 0.02 | 0 | 2.2 | 0.561 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0039 | hinglish | hinglish_roman | 8.0 | 17 | 15 | 70.59% | 10 | 2 | 0 | 11.76% | 24.00% | 0/67/0/0 | 100.00% | 0.06 | 0 | 2.9 | 0.361 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0039 | hinglish | hinglish_mixed_verbatim | 8.0 | 16 | 15 | 81.25% | 12 | 1 | 0 | 6.25% | 69.01% | 0/67/0/0 | 100.00% | 0.06 | 0 | 2.9 | 0.361 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0039 | hinglish | hinglish_script_normalized | 8.0 | 16 | 15 | 68.75% | 10 | 1 | 0 | 6.25% | 25.00% | 0/67/0/0 | 100.00% | 0.06 | 0 | 2.9 | 0.361 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0040 | hinglish | hinglish_roman | 4.0 | 6 | 4 | 100.00% | 4 | 2 | 0 | 33.33% | 58.33% | 1/24/0/0 | 96.00% | 0.15 | 0 | 2.5 | 0.624 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0040 | hinglish | hinglish_mixed_verbatim | 4.0 | 6 | 4 | 100.00% | 4 | 2 | 0 | 33.33% | 77.14% | 1/24/0/0 | 100.00% | 0.15 | 0 | 2.5 | 0.624 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0040 | hinglish | hinglish_script_normalized | 4.0 | 6 | 3 | 100.00% | 3 | 3 | 0 | 50.00% | 63.89% | 1/24/0/0 | 100.00% | 0.15 | 0 | 2.5 | 0.624 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0041 | hinglish | hinglish_roman | 5.0 | 13 | 17 | 115.38% | 11 | 0 | 4 | 0.00% | 88.52% | 0/68/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.491 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0041 | hinglish | hinglish_mixed_verbatim | 5.0 | 13 | 17 | 115.38% | 11 | 0 | 4 | 0.00% | 101.75% | 0/68/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.491 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0041 | hinglish | hinglish_script_normalized | 5.0 | 13 | 17 | 115.38% | 11 | 0 | 4 | 0.00% | 86.89% | 0/68/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.491 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0042 | hinglish | hinglish_roman | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 33.33% | 0/29/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.331 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0042 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 42.11% | 0/29/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.331 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0042 | hinglish | hinglish_script_normalized | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 28.95% | 0/29/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.331 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0043 | hinglish | hinglish_roman | 4.0 | 9 | 9 | 88.89% | 8 | 0 | 0 | 0.00% | 28.26% | 0/46/0/0 | 100.00% | 0.30 | 0 | 2.1 | 0.521 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0043 | hinglish | hinglish_mixed_verbatim | 4.0 | 9 | 9 | 88.89% | 8 | 0 | 0 | 0.00% | 79.07% | 0/46/0/0 | 100.00% | 0.30 | 0 | 2.1 | 0.521 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0043 | hinglish | hinglish_script_normalized | 4.0 | 9 | 9 | 88.89% | 8 | 0 | 0 | 0.00% | 28.26% | 0/46/0/0 | 100.00% | 0.30 | 0 | 2.1 | 0.521 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0044 | hinglish | hinglish_roman | 4.0 | 9 | 11 | 66.67% | 4 | 0 | 2 | 0.00% | 31.37% | 0/46/0/0 | 100.00% | 0.14 | 0 | 2.0 | 0.492 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0044 | hinglish | hinglish_mixed_verbatim | 4.0 | 9 | 11 | 77.78% | 5 | 0 | 2 | 0.00% | 42.31% | 0/46/0/0 | 100.00% | 0.14 | 0 | 2.0 | 0.492 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0044 | hinglish | hinglish_script_normalized | 4.0 | 9 | 11 | 66.67% | 4 | 0 | 2 | 0.00% | 31.37% | 0/46/0/0 | 100.00% | 0.14 | 0 | 2.0 | 0.492 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0045 | hinglish | hinglish_roman | 6.0 | 15 | 17 | 106.67% | 14 | 0 | 2 | 0.00% | 73.77% | 0/71/0/0 | 100.00% | 0.48 | 0 | 2.2 | 0.365 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0045 | hinglish | hinglish_mixed_verbatim | 6.0 | 15 | 17 | 106.67% | 14 | 0 | 2 | 0.00% | 80.33% | 0/71/0/0 | 100.00% | 0.48 | 0 | 2.2 | 0.365 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0045 | hinglish | hinglish_script_normalized | 6.0 | 15 | 17 | 106.67% | 14 | 0 | 2 | 0.00% | 73.77% | 0/71/0/0 | 100.00% | 0.48 | 0 | 2.2 | 0.365 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0046 | hinglish | hinglish_roman | 7.0 | 17 | 13 | 88.24% | 11 | 4 | 0 | 23.53% | 65.06% | 0/54/0/0 | 100.00% | 0.38 | 0 | 2.1 | 0.299 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0046 | hinglish | hinglish_mixed_verbatim | 7.0 | 17 | 13 | 88.24% | 11 | 4 | 0 | 23.53% | 81.94% | 0/54/0/0 | 100.00% | 0.38 | 0 | 2.1 | 0.299 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0046 | hinglish | hinglish_script_normalized | 7.0 | 17 | 13 | 88.24% | 11 | 4 | 0 | 23.53% | 63.41% | 0/54/0/0 | 100.00% | 0.38 | 0 | 2.1 | 0.299 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0047 | hinglish | hinglish_roman | 6.0 | 11 | 8 | 90.91% | 7 | 3 | 0 | 27.27% | 32.73% | 0/45/0/0 | 100.00% | 0.14 | 0 | 2.4 | 0.400 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0047 | hinglish | hinglish_mixed_verbatim | 6.0 | 11 | 8 | 90.91% | 7 | 3 | 0 | 27.27% | 75.00% | 0/45/0/0 | 100.00% | 0.14 | 0 | 2.4 | 0.400 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0047 | hinglish | hinglish_script_normalized | 6.0 | 11 | 8 | 90.91% | 7 | 3 | 0 | 27.27% | 32.73% | 0/45/0/0 | 100.00% | 0.14 | 0 | 2.4 | 0.400 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0048 | hinglish | hinglish_roman | 7.0 | 13 | 9 | 53.85% | 3 | 4 | 0 | 30.77% | 20.34% | 0/59/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.304 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0048 | hinglish | hinglish_mixed_verbatim | 7.0 | 13 | 9 | 53.85% | 3 | 4 | 0 | 30.77% | 37.29% | 0/59/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.304 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0048 | hinglish | hinglish_script_normalized | 7.0 | 13 | 9 | 53.85% | 3 | 4 | 0 | 30.77% | 20.34% | 0/59/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.304 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0049 | hinglish | hinglish_roman | 5.0 | 12 | 11 | 91.67% | 8 | 2 | 1 | 16.67% | 62.00% | 0/38/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.386 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0049 | hinglish | hinglish_mixed_verbatim | 5.0 | 12 | 11 | 91.67% | 8 | 2 | 1 | 16.67% | 84.78% | 0/38/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.386 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0049 | hinglish | hinglish_script_normalized | 5.0 | 12 | 11 | 91.67% | 8 | 2 | 1 | 16.67% | 64.00% | 0/38/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.386 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0050 | hinglish | hinglish_roman | 4.0 | 6 | 10 | 166.67% | 6 | 0 | 4 | 0.00% | 100.00% | 0/43/0/0 | 100.00% | 0.05 | 0 | 2.3 | 0.563 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0050 | hinglish | hinglish_mixed_verbatim | 4.0 | 6 | 10 | 166.67% | 6 | 0 | 4 | 0.00% | 144.00% | 0/43/0/0 | 100.00% | 0.05 | 0 | 2.3 | 0.563 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0050 | hinglish | hinglish_script_normalized | 4.0 | 6 | 10 | 166.67% | 6 | 0 | 4 | 0.00% | 100.00% | 0/43/0/0 | 100.00% | 0.05 | 0 | 2.3 | 0.563 | silero | 1 | 0 | No |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 01_english_podcast [en] | english_latin | 1 | 13.56% | 13.56% | 6.36% | 7.22% | 100.00% | 0.281 | 28.4 | Yes |
+| 02_hindi [hi] | hindi_devanagari | 50 | 103.86% | 104.53% | 15.06% | 109.82% | 99.92% | 0.393 | 100.7 | No |
+| 03_hinglish [hinglish] | hinglish_roman | 50 | 94.96% | 92.54% | 23.05% | 60.45% | 99.76% | 0.496 | 147.3 | No |
+| 03_hinglish [hinglish] [hinglish_mixed_verbatim] | hinglish_mixed_verbatim | 50 | 97.37% | 95.11% | 22.45% | 79.86% | 100.00% | 0.496 | 147.3 | No |
+| 03_hinglish [hinglish] [hinglish_script_normalized] | hinglish_script_normalized | 50 | 94.89% | 92.52% | 22.91% | 59.88% | 100.00% | 0.496 | 147.3 | No |
+
+### Source Dataset Summaries
+| Source Dataset & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| npr_podcast [en] | english_latin | 1 | 13.56% | 13.56% | 6.36% | 7.22% | 100.00% | 0.281 | 28.4 | Yes |
+| common_voice_hindi [hi] | hindi_devanagari | 25 | 103.51% | 104.13% | 14.47% | 110.32% | 99.85% | 0.345 | 46.0 | No |
+| ai4bharat_kathbath_hindi [hi] | hindi_devanagari | 25 | 104.14% | 104.93% | 15.52% | 109.31% | 100.00% | 0.442 | 54.7 | No |
+| mucs_2021_hindi_english [hinglish] | hinglish_roman | 50 | 94.96% | 92.54% | 23.05% | 60.45% | 99.76% | 0.496 | 147.3 | No |
+| mucs_2021_hindi_english [hinglish] [hinglish_mixed_verbatim] | hinglish_mixed_verbatim | 50 | 97.37% | 95.11% | 22.45% | 79.86% | 100.00% | 0.496 | 147.3 | No |
+| mucs_2021_hindi_english [hinglish] [hinglish_script_normalized] | hinglish_script_normalized | 50 | 94.89% | 92.52% | 22.91% | 59.88% | 100.00% | 0.496 | 147.3 | No |
+
+
+## Run: p1_1_expC_base_rec_off (2026-10-30T08:43:17.868Z)
+
+| Config | Model: base | Device: webgpu | VAD: on | Retry: off | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EN_PODCAST_001 | en | english_latin | 101.0 | 236 | 183 | 30.51% | 13 | 56 | 3 | 23.73% | 23.89% | 0/841/0/0 | 100.00% | 17.70 | 0 | 25.2 | 0.249 | silero | 4 | 0 | Yes |
+| HI_CV_0001 | hi | hindi_devanagari | 6.6 | 10 | 9 | 100.00% | 9 | 1 | 0 | 10.00% | 111.43% | 0/38/0/1 | 97.44% | 0.00 | 0 | 2.4 | 0.356 | silero | 1 | 0 | No |
+| HI_CV_0002 | hi | hindi_devanagari | 5.5 | 9 | 0 | 100.00% | 0 | 9 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.480 | silero | 1 | 0 | No |
+| HI_CV_0003 | hi | hindi_devanagari | 3.1 | 5 | 5 | 100.00% | 5 | 0 | 0 | 0.00% | 115.79% | 0/22/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.554 | silero | 1 | 0 | No |
+| HI_CV_0004 | hi | hindi_devanagari | 5.4 | 6 | 0 | 100.00% | 0 | 6 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 1.7 | 0.324 | silero | 1 | 0 | No |
+| HI_CV_0005 | hi | hindi_devanagari | 4.9 | 12 | 11 | 100.00% | 11 | 1 | 0 | 8.33% | 104.65% | 0/45/0/0 | 100.00% | 0.16 | 0 | 2.2 | 0.455 | silero | 1 | 0 | No |
+| HI_CV_0006 | hi | hindi_devanagari | 5.6 | 9 | 8 | 100.00% | 8 | 1 | 0 | 11.11% | 107.50% | 0/43/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.377 | silero | 1 | 0 | No |
+| HI_CV_0007 | hi | hindi_devanagari | 4.9 | 8 | 7 | 100.00% | 7 | 1 | 0 | 12.50% | 103.85% | 0/27/0/0 | 100.00% | 0.46 | 0 | 2.1 | 0.439 | silero | 1 | 0 | No |
+| HI_CV_0008 | hi | hindi_devanagari | 7.4 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.9 | 0.522 | silero | 1 | 0 | No |
+| HI_CV_0009 | hi | hindi_devanagari | 4.7 | 6 | 5 | 100.00% | 5 | 1 | 0 | 16.67% | 105.56% | 0/19/0/0 | 100.00% | 0.00 | 0 | 1.6 | 0.332 | silero | 1 | 0 | No |
+| HI_CV_0010 | hi | hindi_devanagari | 7.0 | 10 | 10 | 100.00% | 10 | 0 | 0 | 0.00% | 112.20% | 0/46/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.338 | silero | 1 | 0 | No |
+| HI_CV_0011 | hi | hindi_devanagari | 4.2 | 5 | 2 | 100.00% | 2 | 3 | 0 | 60.00% | 100.00% | 0/8/0/0 | 100.00% | 0.26 | 0 | 1.7 | 0.405 | silero | 1 | 0 | No |
+| HI_CV_0012 | hi | hindi_devanagari | 4.1 | 9 | 0 | 100.00% | 0 | 9 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.592 | silero | 1 | 0 | No |
+| HI_CV_0013 | hi | hindi_devanagari | 3.7 | 7 | 1 | 85.71% | 0 | 6 | 0 | 85.71% | 86.96% | 3/0/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.532 | silero | 1 | 0 | No |
+| HI_CV_0014 | hi | hindi_devanagari | 7.1 | 10 | 0 | 100.00% | 0 | 10 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.2 | 0.448 | silero | 1 | 0 | No |
+| HI_CV_0015 | hi | hindi_devanagari | 5.0 | 11 | 0 | 100.00% | 0 | 11 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.9 | 0.584 | silero | 1 | 0 | No |
+| HI_CV_0016 | hi | hindi_devanagari | 5.9 | 12 | 0 | 100.00% | 0 | 12 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.4 | 0.570 | silero | 1 | 0 | No |
+| HI_CV_0017 | hi | hindi_devanagari | 7.1 | 14 | 13 | 100.00% | 13 | 1 | 0 | 7.14% | 113.43% | 0/76/0/0 | 100.00% | 0.66 | 0 | 3.1 | 0.439 | silero | 1 | 0 | No |
+| HI_CV_0018 | hi | hindi_devanagari | 6.6 | 12 | 1 | 100.00% | 1 | 11 | 0 | 91.67% | 100.00% | 0/5/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.400 | silero | 1 | 0 | No |
+| HI_CV_0019 | hi | hindi_devanagari | 3.2 | 5 | 3 | 100.00% | 3 | 2 | 0 | 40.00% | 111.76% | 0/19/0/0 | 100.00% | 0.00 | 0 | 1.5 | 0.477 | silero | 1 | 0 | No |
+| HI_CV_0020 | hi | hindi_devanagari | 6.2 | 9 | 0 | 100.00% | 0 | 9 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.8 | 0.611 | silero | 1 | 0 | No |
+| HI_CV_0021 | hi | hindi_devanagari | 5.2 | 10 | 0 | 100.00% | 0 | 10 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 4.0 | 0.777 | silero | 1 | 0 | No |
+| HI_CV_0022 | hi | hindi_devanagari | 5.5 | 6 | 0 | 100.00% | 0 | 6 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.0 | 0.545 | silero | 1 | 0 | No |
+| HI_CV_0023 | hi | hindi_devanagari | 3.5 | 5 | 0 | 100.00% | 0 | 5 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 1.6 | 0.455 | silero | 1 | 0 | No |
+| HI_CV_0024 | hi | hindi_devanagari | 8.2 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.7 | 0.447 | silero | 1 | 0 | No |
+| HI_CV_0025 | hi | hindi_devanagari | 6.0 | 12 | 12 | 100.00% | 12 | 0 | 0 | 0.00% | 111.11% | 0/58/0/0 | 100.00% | 0.18 | 0 | 2.7 | 0.443 | silero | 1 | 0 | No |
+| HI_KB_0001 | hi | hindi_devanagari | 4.9 | 14 | 0 | 100.00% | 0 | 14 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 4.2 | 0.855 | silero | 1 | 0 | No |
+| HI_KB_0002 | hi | hindi_devanagari | 6.8 | 13 | 11 | 100.00% | 11 | 2 | 0 | 15.38% | 110.20% | 0/54/0/0 | 100.00% | 0.00 | 0 | 6.9 | 1.019 | silero | 1 | 0 | No |
+| HI_KB_0003 | hi | hindi_devanagari | 3.9 | 11 | 11 | 100.00% | 11 | 0 | 0 | 0.00% | 107.14% | 0/45/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.692 | silero | 1 | 0 | No |
+| HI_KB_0004 | hi | hindi_devanagari | 4.4 | 15 | 13 | 100.00% | 13 | 2 | 0 | 13.33% | 107.55% | 0/57/0/0 | 100.00% | 0.18 | 0 | 3.8 | 0.873 | silero | 1 | 0 | No |
+| HI_KB_0005 | hi | hindi_devanagari | 4.8 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.2 | 0.666 | silero | 1 | 0 | No |
+| HI_KB_0006 | hi | hindi_devanagari | 3.7 | 12 | 0 | 100.00% | 0 | 12 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.692 | silero | 1 | 0 | No |
+| HI_KB_0007 | hi | hindi_devanagari | 4.4 | 12 | 12 | 100.00% | 12 | 0 | 0 | 0.00% | 119.51% | 0/49/0/0 | 100.00% | 0.08 | 0 | 2.7 | 0.610 | silero | 1 | 0 | No |
+| HI_KB_0008 | hi | hindi_devanagari | 4.9 | 13 | 12 | 100.00% | 12 | 1 | 0 | 7.69% | 106.00% | 0/53/0/0 | 100.00% | 0.44 | 0 | 2.8 | 0.569 | silero | 1 | 0 | No |
+| HI_KB_0009 | hi | hindi_devanagari | 3.5 | 9 | 7 | 100.00% | 7 | 2 | 0 | 22.22% | 106.90% | 0/31/0/0 | 100.00% | 0.36 | 0 | 1.8 | 0.525 | silero | 1 | 0 | No |
+| HI_KB_0010 | hi | hindi_devanagari | 5.7 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 4.0 | 0.698 | silero | 1 | 0 | No |
+| HI_KB_0011 | hi | hindi_devanagari | 3.6 | 10 | 11 | 110.00% | 10 | 0 | 1 | 0.00% | 115.15% | 0/37/0/0 | 100.00% | 0.00 | 0 | 9.4 | 2.571 | silero | 1 | 0 | No |
+| HI_KB_0012 | hi | hindi_devanagari | 4.5 | 9 | 9 | 100.00% | 9 | 0 | 0 | 0.00% | 100.00% | 0/41/0/0 | 100.00% | 0.46 | 0 | 3.4 | 0.755 | silero | 1 | 0 | No |
+| HI_KB_0013 | hi | hindi_devanagari | 3.7 | 12 | 6 | 75.00% | 3 | 6 | 0 | 50.00% | 54.76% | 26/0/0/0 | 100.00% | 0.00 | 0 | 3.0 | 0.810 | silero | 1 | 0 | No |
+| HI_KB_0014 | hi | hindi_devanagari | 3.8 | 8 | 6 | 100.00% | 6 | 2 | 0 | 25.00% | 100.00% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.706 | silero | 1 | 0 | No |
+| HI_KB_0015 | hi | hindi_devanagari | 6.8 | 15 | 0 | 100.00% | 0 | 15 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.9 | 0.570 | silero | 1 | 0 | No |
+| HI_KB_0016 | hi | hindi_devanagari | 8.1 | 10 | 0 | 100.00% | 0 | 10 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.9 | 0.489 | silero | 1 | 0 | No |
+| HI_KB_0017 | hi | hindi_devanagari | 6.0 | 8 | 0 | 100.00% | 0 | 8 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.391 | silero | 1 | 0 | No |
+| HI_KB_0018 | hi | hindi_devanagari | 8.8 | 8 | 10 | 125.00% | 8 | 0 | 2 | 0.00% | 104.92% | 0/64/0/0 | 100.00% | 0.14 | 0 | 3.2 | 0.367 | silero | 1 | 0 | No |
+| HI_KB_0019 | hi | hindi_devanagari | 6.0 | 14 | 1 | 100.00% | 1 | 13 | 0 | 92.86% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.4 | 0.574 | silero | 1 | 0 | No |
+| HI_KB_0020 | hi | hindi_devanagari | 5.2 | 9 | 7 | 100.00% | 7 | 2 | 0 | 22.22% | 108.11% | 0/40/0/0 | 100.00% | 0.08 | 0 | 2.1 | 0.406 | silero | 1 | 0 | No |
+| HI_KB_0021 | hi | hindi_devanagari | 8.6 | 14 | 0 | 100.00% | 0 | 14 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.4 | 0.400 | silero | 1 | 0 | No |
+| HI_KB_0022 | hi | hindi_devanagari | 4.0 | 14 | 0 | 100.00% | 0 | 14 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.0 | 0.738 | silero | 1 | 0 | No |
+| HI_KB_0023 | hi | hindi_devanagari | 4.9 | 8 | 8 | 62.50% | 5 | 0 | 0 | 0.00% | 32.26% | 28/0/0/0 | 100.00% | 0.00 | 0 | 3.5 | 0.722 | silero | 1 | 0 | No |
+| HI_KB_0024 | hi | hindi_devanagari | 5.2 | 15 | 0 | 100.00% | 0 | 15 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 4.0 | 0.779 | silero | 1 | 0 | No |
+| HI_KB_0025 | hi | hindi_devanagari | 4.7 | 11 | 0 | 100.00% | 0 | 11 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.582 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0001 | hinglish | hinglish_roman | 6.0 | 13 | 9 | 100.00% | 9 | 4 | 0 | 30.77% | 74.14% | 0/34/0/0 | 100.00% | 0.28 | 0 | 2.7 | 0.444 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0001 | hinglish | hinglish_mixed_verbatim | 6.0 | 13 | 9 | 100.00% | 9 | 4 | 0 | 30.77% | 79.63% | 0/34/0/0 | 100.00% | 0.28 | 0 | 2.7 | 0.444 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0001 | hinglish | hinglish_script_normalized | 6.0 | 13 | 9 | 100.00% | 9 | 4 | 0 | 30.77% | 72.41% | 0/34/0/0 | 100.00% | 0.28 | 0 | 2.7 | 0.444 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0002 | hinglish | hinglish_roman | 9.0 | 25 | 0 | 100.00% | 0 | 25 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 6.3 | 0.695 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0002 | hinglish | hinglish_mixed_verbatim | 9.0 | 24 | 0 | 100.00% | 0 | 24 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 6.3 | 0.695 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0002 | hinglish | hinglish_script_normalized | 9.0 | 24 | 0 | 100.00% | 0 | 24 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 6.3 | 0.695 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0003 | hinglish | hinglish_roman | 5.0 | 19 | 1 | 100.00% | 1 | 18 | 0 | 94.74% | 97.18% | 0/3/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.536 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0003 | hinglish | hinglish_mixed_verbatim | 5.0 | 18 | 1 | 100.00% | 1 | 17 | 0 | 94.44% | 100.00% | 0/3/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.536 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0003 | hinglish | hinglish_script_normalized | 5.0 | 18 | 1 | 100.00% | 1 | 17 | 0 | 94.44% | 97.18% | 0/3/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.536 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0004 | hinglish | hinglish_roman | 5.0 | 14 | 0 | 100.00% | 0 | 14 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 5.0 | 1.002 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0004 | hinglish | hinglish_mixed_verbatim | 5.0 | 14 | 0 | 100.00% | 0 | 14 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 5.0 | 1.002 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0004 | hinglish | hinglish_script_normalized | 5.0 | 14 | 0 | 100.00% | 0 | 14 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 5.0 | 1.002 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0005 | hinglish | hinglish_roman | 7.0 | 13 | 8 | 84.62% | 6 | 5 | 0 | 38.46% | 75.44% | 1/33/0/0 | 97.06% | 0.00 | 0 | 4.7 | 0.668 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0005 | hinglish | hinglish_mixed_verbatim | 7.0 | 13 | 8 | 100.00% | 8 | 5 | 0 | 38.46% | 84.91% | 1/33/0/0 | 100.00% | 0.00 | 0 | 4.7 | 0.668 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0005 | hinglish | hinglish_script_normalized | 7.0 | 13 | 8 | 84.62% | 6 | 5 | 0 | 38.46% | 76.79% | 1/33/0/0 | 100.00% | 0.00 | 0 | 4.7 | 0.668 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0006 | hinglish | hinglish_roman | 4.0 | 10 | 5 | 90.00% | 4 | 5 | 0 | 50.00% | 70.45% | 0/19/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.591 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0006 | hinglish | hinglish_mixed_verbatim | 4.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 81.40% | 0/19/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.591 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0006 | hinglish | hinglish_script_normalized | 4.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 66.67% | 0/19/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.591 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0007 | hinglish | hinglish_roman | 11.0 | 21 | 18 | 90.48% | 16 | 3 | 0 | 14.29% | 62.50% | 0/77/0/0 | 100.00% | 0.00 | 0 | 3.5 | 0.315 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0007 | hinglish | hinglish_mixed_verbatim | 11.0 | 21 | 18 | 90.48% | 16 | 3 | 0 | 14.29% | 61.46% | 0/77/0/0 | 100.00% | 0.00 | 0 | 3.5 | 0.315 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0007 | hinglish | hinglish_script_normalized | 11.0 | 21 | 18 | 90.48% | 16 | 3 | 0 | 14.29% | 58.82% | 0/77/0/0 | 100.00% | 0.00 | 0 | 3.5 | 0.315 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0008 | hinglish | hinglish_roman | 4.0 | 7 | 7 | 85.71% | 6 | 0 | 0 | 0.00% | 41.38% | 0/24/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.635 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0008 | hinglish | hinglish_mixed_verbatim | 4.0 | 7 | 7 | 85.71% | 6 | 0 | 0 | 0.00% | 44.44% | 0/24/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.635 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0008 | hinglish | hinglish_script_normalized | 4.0 | 7 | 7 | 85.71% | 6 | 0 | 0 | 0.00% | 41.38% | 0/24/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.635 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0009 | hinglish | hinglish_roman | 6.0 | 16 | 10 | 81.25% | 7 | 6 | 0 | 37.50% | 35.38% | 0/50/0/0 | 100.00% | 0.00 | 0 | 3.1 | 0.508 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0009 | hinglish | hinglish_mixed_verbatim | 6.0 | 16 | 10 | 81.25% | 7 | 6 | 0 | 37.50% | 50.00% | 0/50/0/0 | 100.00% | 0.00 | 0 | 3.1 | 0.508 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0009 | hinglish | hinglish_script_normalized | 6.0 | 16 | 10 | 81.25% | 7 | 6 | 0 | 37.50% | 34.38% | 0/50/0/0 | 100.00% | 0.00 | 0 | 3.1 | 0.508 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0010 | hinglish | hinglish_roman | 5.0 | 12 | 10 | 100.00% | 10 | 2 | 0 | 16.67% | 73.08% | 0/32/0/0 | 100.00% | 0.00 | 0 | 3.0 | 0.606 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0010 | hinglish | hinglish_mixed_verbatim | 5.0 | 12 | 10 | 100.00% | 10 | 2 | 0 | 16.67% | 81.82% | 0/32/0/0 | 100.00% | 0.00 | 0 | 3.0 | 0.606 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0010 | hinglish | hinglish_script_normalized | 5.0 | 12 | 10 | 100.00% | 10 | 2 | 0 | 16.67% | 73.08% | 0/32/0/0 | 100.00% | 0.00 | 0 | 3.0 | 0.606 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0011 | hinglish | hinglish_roman | 6.0 | 13 | 13 | 100.00% | 13 | 0 | 0 | 0.00% | 73.08% | 0/55/0/0 | 100.00% | 0.31 | 0 | 3.9 | 0.655 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0011 | hinglish | hinglish_mixed_verbatim | 6.0 | 13 | 13 | 100.00% | 13 | 0 | 0 | 0.00% | 104.35% | 0/55/0/0 | 100.00% | 0.31 | 0 | 3.9 | 0.655 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0011 | hinglish | hinglish_script_normalized | 6.0 | 13 | 13 | 100.00% | 13 | 0 | 0 | 0.00% | 73.08% | 0/55/0/0 | 100.00% | 0.31 | 0 | 3.9 | 0.655 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0012 | hinglish | hinglish_roman | 4.0 | 5 | 2 | 100.00% | 2 | 3 | 0 | 60.00% | 90.91% | 0/2/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.524 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0012 | hinglish | hinglish_mixed_verbatim | 4.0 | 5 | 2 | 100.00% | 2 | 3 | 0 | 60.00% | 90.00% | 0/2/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.524 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0012 | hinglish | hinglish_script_normalized | 4.0 | 5 | 2 | 100.00% | 2 | 3 | 0 | 60.00% | 90.91% | 0/2/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.524 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0013 | hinglish | hinglish_roman | 6.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 4.9 | 0.823 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0013 | hinglish | hinglish_mixed_verbatim | 6.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 4.9 | 0.823 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0013 | hinglish | hinglish_script_normalized | 6.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 4.9 | 0.823 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0014 | hinglish | hinglish_roman | 5.0 | 11 | 7 | 90.91% | 6 | 4 | 0 | 36.36% | 52.94% | 0/30/0/0 | 100.00% | 0.48 | 0 | 2.6 | 0.530 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0014 | hinglish | hinglish_mixed_verbatim | 5.0 | 11 | 7 | 90.91% | 6 | 4 | 0 | 36.36% | 78.72% | 0/30/0/0 | 100.00% | 0.48 | 0 | 2.6 | 0.530 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0014 | hinglish | hinglish_script_normalized | 5.0 | 11 | 7 | 90.91% | 6 | 4 | 0 | 36.36% | 52.94% | 0/30/0/0 | 100.00% | 0.48 | 0 | 2.6 | 0.530 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0015 | hinglish | hinglish_roman | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 29.41% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.437 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0015 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 25.81% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.437 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0015 | hinglish | hinglish_script_normalized | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 29.41% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.437 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0016 | hinglish | hinglish_roman | 4.0 | 7 | 6 | 57.14% | 3 | 1 | 0 | 14.29% | 33.33% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.599 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0016 | hinglish | hinglish_mixed_verbatim | 4.0 | 7 | 6 | 57.14% | 3 | 1 | 0 | 14.29% | 52.63% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.599 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0016 | hinglish | hinglish_script_normalized | 4.0 | 7 | 6 | 57.14% | 3 | 1 | 0 | 14.29% | 26.32% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.599 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0017 | hinglish | hinglish_roman | 15.0 | 23 | 0 | 100.00% | 0 | 23 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 9.4 | 0.624 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0017 | hinglish | hinglish_mixed_verbatim | 15.0 | 23 | 0 | 100.00% | 0 | 23 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 9.4 | 0.624 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0017 | hinglish | hinglish_script_normalized | 15.0 | 23 | 0 | 100.00% | 0 | 23 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 9.4 | 0.624 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0018 | hinglish | hinglish_roman | 5.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 54.29% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.538 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0018 | hinglish | hinglish_mixed_verbatim | 5.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 65.63% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.538 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0018 | hinglish | hinglish_script_normalized | 5.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 51.43% | 0/33/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.538 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0019 | hinglish | hinglish_roman | 4.0 | 8 | 6 | 100.00% | 6 | 2 | 0 | 25.00% | 77.50% | 0/26/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.668 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0019 | hinglish | hinglish_mixed_verbatim | 4.0 | 8 | 6 | 100.00% | 6 | 2 | 0 | 25.00% | 91.67% | 0/26/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.668 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0019 | hinglish | hinglish_script_normalized | 4.0 | 8 | 6 | 100.00% | 6 | 2 | 0 | 25.00% | 77.50% | 0/26/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.668 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0020 | hinglish | hinglish_roman | 15.0 | 34 | 24 | 85.29% | 19 | 10 | 0 | 29.41% | 54.68% | 0/96/0/0 | 100.00% | 0.00 | 0 | 7.5 | 0.503 | silero | 2 | 0 | No |
+| HINGLISH_MUCS_0020 | hinglish | hinglish_mixed_verbatim | 15.0 | 32 | 24 | 84.38% | 19 | 8 | 0 | 25.00% | 70.68% | 0/96/0/0 | 100.00% | 0.00 | 0 | 7.5 | 0.503 | silero | 2 | 0 | No |
+| HINGLISH_MUCS_0020 | hinglish | hinglish_script_normalized | 15.0 | 32 | 24 | 84.38% | 19 | 8 | 0 | 25.00% | 55.73% | 0/96/0/0 | 100.00% | 0.00 | 0 | 7.5 | 0.503 | silero | 2 | 0 | No |
+| HINGLISH_MUCS_0021 | hinglish | hinglish_roman | 5.0 | 7 | 1 | 100.00% | 1 | 6 | 0 | 85.71% | 97.06% | 0/1/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.457 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0021 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 1 | 100.00% | 1 | 6 | 0 | 85.71% | 97.14% | 0/1/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.457 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0021 | hinglish | hinglish_script_normalized | 5.0 | 7 | 1 | 100.00% | 1 | 6 | 0 | 85.71% | 97.06% | 0/1/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.457 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0022 | hinglish | hinglish_roman | 8.0 | 15 | 12 | 60.00% | 6 | 3 | 0 | 20.00% | 45.57% | 0/63/0/0 | 100.00% | 0.00 | 0 | 3.4 | 0.425 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0022 | hinglish | hinglish_mixed_verbatim | 8.0 | 15 | 12 | 80.00% | 9 | 3 | 0 | 20.00% | 54.05% | 0/63/0/0 | 100.00% | 0.00 | 0 | 3.4 | 0.425 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0022 | hinglish | hinglish_script_normalized | 8.0 | 15 | 12 | 60.00% | 6 | 3 | 0 | 20.00% | 43.59% | 0/63/0/0 | 100.00% | 0.00 | 0 | 3.4 | 0.425 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0023 | hinglish | hinglish_roman | 5.0 | 9 | 6 | 55.56% | 2 | 3 | 0 | 33.33% | 28.89% | 0/37/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.505 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0023 | hinglish | hinglish_mixed_verbatim | 5.0 | 9 | 6 | 55.56% | 2 | 3 | 0 | 33.33% | 33.33% | 0/37/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.505 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0023 | hinglish | hinglish_script_normalized | 5.0 | 9 | 6 | 55.56% | 2 | 3 | 0 | 33.33% | 28.89% | 0/37/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.505 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0024 | hinglish | hinglish_roman | 5.0 | 7 | 3 | 71.43% | 1 | 4 | 0 | 57.14% | 56.41% | 0/21/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.417 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0024 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 3 | 71.43% | 1 | 4 | 0 | 57.14% | 57.14% | 0/21/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.417 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0024 | hinglish | hinglish_script_normalized | 5.0 | 7 | 3 | 71.43% | 1 | 4 | 0 | 57.14% | 55.26% | 0/21/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.417 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0025 | hinglish | hinglish_roman | 8.0 | 13 | 7 | 76.92% | 4 | 6 | 0 | 46.15% | 53.97% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.9 | 0.369 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0025 | hinglish | hinglish_mixed_verbatim | 8.0 | 13 | 7 | 84.62% | 5 | 6 | 0 | 46.15% | 72.41% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.9 | 0.369 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0025 | hinglish | hinglish_script_normalized | 8.0 | 13 | 7 | 69.23% | 3 | 6 | 0 | 46.15% | 52.38% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.9 | 0.369 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0026 | hinglish | hinglish_roman | 5.0 | 10 | 5 | 100.00% | 5 | 5 | 0 | 50.00% | 75.44% | 0/24/0/0 | 100.00% | 0.20 | 0 | 2.5 | 0.500 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0026 | hinglish | hinglish_mixed_verbatim | 5.0 | 10 | 5 | 100.00% | 5 | 5 | 0 | 50.00% | 88.46% | 0/24/0/0 | 100.00% | 0.20 | 0 | 2.5 | 0.500 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0026 | hinglish | hinglish_script_normalized | 5.0 | 10 | 5 | 100.00% | 5 | 5 | 0 | 50.00% | 75.44% | 0/24/0/0 | 100.00% | 0.20 | 0 | 2.5 | 0.500 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0027 | hinglish | hinglish_roman | 11.0 | 19 | 23 | 110.53% | 17 | 0 | 4 | 0.00% | 34.62% | 0/65/0/0 | 100.00% | 0.00 | 0 | 5.2 | 0.472 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0027 | hinglish | hinglish_mixed_verbatim | 11.0 | 18 | 23 | 122.22% | 17 | 0 | 5 | 0.00% | 101.56% | 0/65/0/0 | 100.00% | 0.00 | 0 | 5.2 | 0.472 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0027 | hinglish | hinglish_script_normalized | 11.0 | 18 | 23 | 105.56% | 14 | 0 | 5 | 0.00% | 33.33% | 0/65/0/0 | 100.00% | 0.00 | 0 | 5.2 | 0.472 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0028 | hinglish | hinglish_roman | 5.0 | 12 | 9 | 83.33% | 5 | 4 | 1 | 33.33% | 80.36% | 0/43/0/0 | 100.00% | 0.14 | 0 | 2.8 | 0.554 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0028 | hinglish | hinglish_mixed_verbatim | 5.0 | 12 | 9 | 83.33% | 5 | 4 | 1 | 33.33% | 82.69% | 0/43/0/0 | 100.00% | 0.14 | 0 | 2.8 | 0.554 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0028 | hinglish | hinglish_script_normalized | 5.0 | 12 | 9 | 83.33% | 5 | 4 | 1 | 33.33% | 80.36% | 0/43/0/0 | 100.00% | 0.14 | 0 | 2.8 | 0.554 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0029 | hinglish | hinglish_roman | 7.0 | 17 | 10 | 94.12% | 9 | 7 | 0 | 41.18% | 76.81% | 0/42/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.376 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0029 | hinglish | hinglish_mixed_verbatim | 7.0 | 17 | 10 | 94.12% | 9 | 7 | 0 | 41.18% | 82.76% | 0/42/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.376 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0029 | hinglish | hinglish_script_normalized | 7.0 | 17 | 10 | 94.12% | 9 | 7 | 0 | 41.18% | 76.47% | 0/42/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.376 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0030 | hinglish | hinglish_roman | 9.0 | 19 | 11 | 89.47% | 9 | 8 | 0 | 42.11% | 53.01% | 0/52/0/0 | 100.00% | 0.00 | 0 | 4.0 | 0.440 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0030 | hinglish | hinglish_mixed_verbatim | 9.0 | 19 | 11 | 89.47% | 9 | 8 | 0 | 42.11% | 72.50% | 0/52/0/0 | 100.00% | 0.00 | 0 | 4.0 | 0.440 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0030 | hinglish | hinglish_script_normalized | 9.0 | 19 | 11 | 89.47% | 9 | 8 | 0 | 42.11% | 51.81% | 0/52/0/0 | 100.00% | 0.00 | 0 | 4.0 | 0.440 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0031 | hinglish | hinglish_roman | 7.0 | 23 | 0 | 100.00% | 0 | 23 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.356 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0031 | hinglish | hinglish_mixed_verbatim | 7.0 | 22 | 0 | 100.00% | 0 | 22 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.356 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0031 | hinglish | hinglish_script_normalized | 7.0 | 22 | 0 | 100.00% | 0 | 22 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.356 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0032 | hinglish | hinglish_roman | 7.0 | 19 | 18 | 89.47% | 16 | 1 | 0 | 5.26% | 29.35% | 0/80/0/0 | 100.00% | 0.36 | 0 | 5.3 | 0.753 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0032 | hinglish | hinglish_mixed_verbatim | 7.0 | 18 | 18 | 100.00% | 18 | 0 | 0 | 0.00% | 89.29% | 0/80/0/0 | 100.00% | 0.36 | 0 | 5.3 | 0.753 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0032 | hinglish | hinglish_script_normalized | 7.0 | 18 | 18 | 88.89% | 16 | 0 | 0 | 0.00% | 29.35% | 0/80/0/0 | 100.00% | 0.36 | 0 | 5.3 | 0.753 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0033 | hinglish | hinglish_roman | 5.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 4.6 | 0.912 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0033 | hinglish | hinglish_mixed_verbatim | 5.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 4.6 | 0.912 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0033 | hinglish | hinglish_script_normalized | 5.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 4.6 | 0.912 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0034 | hinglish | hinglish_roman | 4.0 | 15 | 7 | 93.33% | 6 | 8 | 0 | 53.33% | 76.81% | 1/29/0/0 | 96.67% | 0.00 | 0 | 5.6 | 1.410 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0034 | hinglish | hinglish_mixed_verbatim | 4.0 | 15 | 7 | 100.00% | 7 | 8 | 0 | 53.33% | 91.53% | 1/29/0/0 | 100.00% | 0.00 | 0 | 5.6 | 1.410 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0034 | hinglish | hinglish_script_normalized | 4.0 | 15 | 7 | 93.33% | 6 | 8 | 0 | 53.33% | 75.71% | 1/29/0/0 | 100.00% | 0.00 | 0 | 5.6 | 1.410 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0035 | hinglish | hinglish_roman | 6.0 | 14 | 11 | 78.57% | 8 | 3 | 0 | 21.43% | 48.39% | 0/45/0/0 | 100.00% | 0.52 | 0 | 4.5 | 0.747 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0035 | hinglish | hinglish_mixed_verbatim | 6.0 | 14 | 11 | 85.71% | 9 | 3 | 0 | 21.43% | 67.86% | 0/45/0/0 | 100.00% | 0.52 | 0 | 4.5 | 0.747 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0035 | hinglish | hinglish_script_normalized | 6.0 | 14 | 11 | 78.57% | 8 | 3 | 0 | 21.43% | 46.77% | 0/45/0/0 | 100.00% | 0.52 | 0 | 4.5 | 0.747 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0036 | hinglish | hinglish_roman | 4.0 | 6 | 5 | 100.00% | 5 | 1 | 0 | 16.67% | 72.41% | 0/23/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.651 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0036 | hinglish | hinglish_mixed_verbatim | 4.0 | 6 | 5 | 100.00% | 5 | 1 | 0 | 16.67% | 77.78% | 0/23/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.651 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0036 | hinglish | hinglish_script_normalized | 4.0 | 6 | 5 | 100.00% | 5 | 1 | 0 | 16.67% | 68.97% | 0/23/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.651 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0037 | hinglish | hinglish_roman | 4.0 | 11 | 6 | 100.00% | 6 | 5 | 0 | 45.45% | 81.40% | 0/31/0/0 | 100.00% | 0.32 | 0 | 2.6 | 0.639 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0037 | hinglish | hinglish_mixed_verbatim | 4.0 | 11 | 6 | 100.00% | 6 | 5 | 0 | 45.45% | 87.18% | 0/31/0/0 | 100.00% | 0.32 | 0 | 2.6 | 0.639 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0037 | hinglish | hinglish_script_normalized | 4.0 | 11 | 6 | 100.00% | 6 | 5 | 0 | 45.45% | 81.40% | 0/31/0/0 | 100.00% | 0.32 | 0 | 2.6 | 0.639 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0038 | hinglish | hinglish_roman | 4.0 | 11 | 0 | 100.00% | 0 | 11 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 9.3 | 2.337 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0038 | hinglish | hinglish_mixed_verbatim | 4.0 | 11 | 0 | 100.00% | 0 | 11 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 9.3 | 2.337 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0038 | hinglish | hinglish_script_normalized | 4.0 | 11 | 0 | 100.00% | 0 | 11 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 9.3 | 2.337 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0039 | hinglish | hinglish_roman | 8.0 | 17 | 17 | 70.59% | 10 | 1 | 1 | 5.88% | 20.00% | 0/72/0/0 | 100.00% | 0.28 | 0 | 4.3 | 0.533 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0039 | hinglish | hinglish_mixed_verbatim | 8.0 | 16 | 17 | 87.50% | 13 | 0 | 1 | 0.00% | 67.61% | 0/72/0/0 | 100.00% | 0.28 | 0 | 4.3 | 0.533 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0039 | hinglish | hinglish_script_normalized | 8.0 | 16 | 17 | 68.75% | 10 | 0 | 1 | 0.00% | 19.74% | 0/72/0/0 | 100.00% | 0.28 | 0 | 4.3 | 0.533 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0040 | hinglish | hinglish_roman | 4.0 | 6 | 4 | 100.00% | 4 | 2 | 0 | 33.33% | 52.78% | 0/21/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.617 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0040 | hinglish | hinglish_mixed_verbatim | 4.0 | 6 | 4 | 100.00% | 4 | 2 | 0 | 33.33% | 65.71% | 0/21/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.617 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0040 | hinglish | hinglish_script_normalized | 4.0 | 6 | 4 | 100.00% | 4 | 2 | 0 | 33.33% | 50.00% | 0/21/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.617 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0041 | hinglish | hinglish_roman | 5.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.519 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0041 | hinglish | hinglish_mixed_verbatim | 5.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.519 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0041 | hinglish | hinglish_script_normalized | 5.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.519 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0042 | hinglish | hinglish_roman | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 35.90% | 0/30/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.469 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0042 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 42.11% | 0/30/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.469 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0042 | hinglish | hinglish_script_normalized | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 31.58% | 0/30/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.469 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0043 | hinglish | hinglish_roman | 4.0 | 9 | 8 | 88.89% | 7 | 1 | 0 | 11.11% | 58.70% | 0/35/0/0 | 100.00% | 0.00 | 0 | 3.4 | 0.855 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0043 | hinglish | hinglish_mixed_verbatim | 4.0 | 9 | 8 | 88.89% | 7 | 1 | 0 | 11.11% | 72.09% | 0/35/0/0 | 100.00% | 0.00 | 0 | 3.4 | 0.855 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0043 | hinglish | hinglish_script_normalized | 4.0 | 9 | 8 | 88.89% | 7 | 1 | 0 | 11.11% | 56.52% | 0/35/0/0 | 100.00% | 0.00 | 0 | 3.4 | 0.855 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0044 | hinglish | hinglish_roman | 4.0 | 9 | 11 | 88.89% | 6 | 0 | 2 | 0.00% | 33.33% | 0/47/0/0 | 100.00% | 0.40 | 0 | 3.3 | 0.815 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0044 | hinglish | hinglish_mixed_verbatim | 4.0 | 9 | 11 | 88.89% | 6 | 0 | 2 | 0.00% | 38.46% | 0/47/0/0 | 100.00% | 0.40 | 0 | 3.3 | 0.815 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0044 | hinglish | hinglish_script_normalized | 4.0 | 9 | 11 | 88.89% | 6 | 0 | 2 | 0.00% | 33.33% | 0/47/0/0 | 100.00% | 0.40 | 0 | 3.3 | 0.815 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0045 | hinglish | hinglish_roman | 6.0 | 15 | 15 | 53.33% | 8 | 0 | 0 | 0.00% | 21.31% | 0/64/0/0 | 100.00% | 0.24 | 0 | 4.0 | 0.671 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0045 | hinglish | hinglish_mixed_verbatim | 6.0 | 15 | 15 | 80.00% | 12 | 0 | 0 | 0.00% | 67.21% | 0/64/0/0 | 100.00% | 0.24 | 0 | 4.0 | 0.671 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0045 | hinglish | hinglish_script_normalized | 6.0 | 15 | 15 | 53.33% | 8 | 0 | 0 | 0.00% | 21.31% | 0/64/0/0 | 100.00% | 0.24 | 0 | 4.0 | 0.671 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0046 | hinglish | hinglish_roman | 7.0 | 17 | 10 | 76.47% | 6 | 7 | 0 | 41.18% | 61.45% | 0/49/0/0 | 100.00% | 0.52 | 0 | 3.6 | 0.517 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0046 | hinglish | hinglish_mixed_verbatim | 7.0 | 17 | 10 | 82.35% | 7 | 7 | 0 | 41.18% | 80.56% | 0/49/0/0 | 100.00% | 0.52 | 0 | 3.6 | 0.517 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0046 | hinglish | hinglish_script_normalized | 7.0 | 17 | 10 | 76.47% | 6 | 7 | 0 | 41.18% | 62.20% | 0/49/0/0 | 100.00% | 0.52 | 0 | 3.6 | 0.517 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0047 | hinglish | hinglish_roman | 6.0 | 11 | 8 | 100.00% | 8 | 3 | 0 | 27.27% | 69.09% | 0/32/0/0 | 100.00% | 0.28 | 0 | 3.7 | 0.618 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0047 | hinglish | hinglish_mixed_verbatim | 6.0 | 11 | 8 | 100.00% | 8 | 3 | 0 | 27.27% | 92.31% | 0/32/0/0 | 100.00% | 0.28 | 0 | 3.7 | 0.618 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0047 | hinglish | hinglish_script_normalized | 6.0 | 11 | 8 | 100.00% | 8 | 3 | 0 | 27.27% | 69.09% | 0/32/0/0 | 100.00% | 0.28 | 0 | 3.7 | 0.618 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0048 | hinglish | hinglish_roman | 7.0 | 13 | 5 | 61.54% | 0 | 8 | 0 | 61.54% | 49.15% | 0/30/0/0 | 100.00% | 0.00 | 0 | 3.7 | 0.533 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0048 | hinglish | hinglish_mixed_verbatim | 7.0 | 13 | 5 | 61.54% | 0 | 8 | 0 | 61.54% | 49.15% | 0/30/0/0 | 100.00% | 0.00 | 0 | 3.7 | 0.533 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0048 | hinglish | hinglish_script_normalized | 7.0 | 13 | 5 | 61.54% | 0 | 8 | 0 | 61.54% | 49.15% | 0/30/0/0 | 100.00% | 0.00 | 0 | 3.7 | 0.533 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0049 | hinglish | hinglish_roman | 5.0 | 12 | 7 | 100.00% | 7 | 5 | 0 | 41.67% | 80.00% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.463 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0049 | hinglish | hinglish_mixed_verbatim | 5.0 | 12 | 7 | 100.00% | 7 | 5 | 0 | 41.67% | 91.30% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.463 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0049 | hinglish | hinglish_script_normalized | 5.0 | 12 | 7 | 100.00% | 7 | 5 | 0 | 41.67% | 80.00% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.463 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0050 | hinglish | hinglish_roman | 4.0 | 6 | 0 | 100.00% | 0 | 6 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.4 | 0.862 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0050 | hinglish | hinglish_mixed_verbatim | 4.0 | 6 | 0 | 100.00% | 0 | 6 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.4 | 0.862 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0050 | hinglish | hinglish_script_normalized | 4.0 | 6 | 0 | 100.00% | 0 | 6 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 3.4 | 0.862 | silero | 1 | 0 | No |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 01_english_podcast [en] | english_latin | 1 | 30.51% | 30.51% | 23.73% | 23.89% | 100.00% | 0.249 | 25.2 | Yes |
+| 02_hindi [hi] | hindi_devanagari | 50 | 99.23% | 99.16% | 59.85% | 101.13% | 99.95% | 0.599 | 153.0 | No |
+| 03_hinglish [hinglish] | hinglish_roman | 50 | 89.01% | 88.22% | 46.26% | 65.76% | 99.87% | 0.634 | 182.7 | No |
+| 03_hinglish [hinglish] [hinglish_mixed_verbatim] | hinglish_mixed_verbatim | 50 | 91.95% | 90.75% | 45.67% | 77.71% | 100.00% | 0.634 | 182.7 | No |
+| 03_hinglish [hinglish] [hinglish_script_normalized] | hinglish_script_normalized | 50 | 88.54% | 87.88% | 45.67% | 64.95% | 100.00% | 0.634 | 182.7 | No |
+
+### Source Dataset Summaries
+| Source Dataset & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| npr_podcast [en] | english_latin | 1 | 30.51% | 30.51% | 23.73% | 23.89% | 100.00% | 0.249 | 25.2 | Yes |
+| common_voice_hindi [hi] | hindi_devanagari | 25 | 99.56% | 99.43% | 61.84% | 103.37% | 99.90% | 0.476 | 64.4 | No |
+| ai4bharat_kathbath_hindi [hi] | hindi_devanagari | 25 | 98.97% | 98.90% | 58.28% | 98.90% | 100.00% | 0.722 | 88.7 | No |
+| mucs_2021_hindi_english [hinglish] | hinglish_roman | 50 | 89.01% | 88.22% | 46.26% | 65.76% | 99.87% | 0.634 | 182.7 | No |
+| mucs_2021_hindi_english [hinglish] [hinglish_mixed_verbatim] | hinglish_mixed_verbatim | 50 | 91.95% | 90.75% | 45.67% | 77.71% | 100.00% | 0.634 | 182.7 | No |
+| mucs_2021_hindi_english [hinglish] [hinglish_script_normalized] | hinglish_script_normalized | 50 | 88.54% | 87.88% | 45.67% | 64.95% | 100.00% | 0.634 | 182.7 | No |
+
+
+## Run: p1_1_expD_base_rec_on (2026-10-30T08:56:35.430Z)
+
+| Config | Model: base | Device: webgpu | VAD: on | Retry: on | Cond: legacy | Set: short | Runs: 1 | Schema: 2.0.0 | Methodology: 2.0.0 |
+|---|---|---|---|---|---|---|---|
+
+| Sample ID | Lang | Profile | Dur (s) | Ref Words | Hyp Words | WER | S | D | I | Del Rate | CER | Script (D/L/A/O) | Match % | Max Gap (s) | Sil Words | Wall (s) | RTF | VAD | Win | Retry | Ver |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EN_PODCAST_001 | en | english_latin | 101.0 | 236 | 183 | 30.51% | 13 | 56 | 3 | 23.73% | 23.89% | 0/841/0/0 | 100.00% | 17.70 | 0 | 32.7 | 0.324 | silero | 4 | 0 | Yes |
+| HI_CV_0001 | hi | hindi_devanagari | 6.6 | 10 | 9 | 100.00% | 9 | 1 | 0 | 10.00% | 111.43% | 0/38/0/1 | 97.44% | 0.00 | 0 | 3.0 | 0.450 | silero | 1 | 0 | No |
+| HI_CV_0002 | hi | hindi_devanagari | 5.5 | 9 | 0 | 100.00% | 0 | 9 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 11.8 | 2.122 | silero | 1 | 0 | No |
+| HI_CV_0003 | hi | hindi_devanagari | 3.1 | 5 | 5 | 100.00% | 5 | 0 | 0 | 0.00% | 115.79% | 0/22/0/0 | 100.00% | 0.00 | 0 | 1.9 | 0.622 | silero | 1 | 0 | No |
+| HI_CV_0004 | hi | hindi_devanagari | 5.4 | 6 | 6 | 100.00% | 6 | 0 | 0 | 0.00% | 111.11% | 0/20/0/0 | 100.00% | 0.00 | 0 | 6.1 | 1.145 | silero | 1 | 1 | No |
+| HI_CV_0005 | hi | hindi_devanagari | 4.9 | 12 | 11 | 100.00% | 11 | 1 | 0 | 8.33% | 104.65% | 0/45/0/0 | 100.00% | 0.16 | 0 | 2.4 | 0.492 | silero | 1 | 0 | No |
+| HI_CV_0006 | hi | hindi_devanagari | 5.6 | 9 | 8 | 100.00% | 8 | 1 | 0 | 11.11% | 107.50% | 0/43/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.397 | silero | 1 | 0 | No |
+| HI_CV_0007 | hi | hindi_devanagari | 4.9 | 8 | 7 | 100.00% | 7 | 1 | 0 | 12.50% | 103.85% | 0/27/0/0 | 100.00% | 0.46 | 0 | 2.2 | 0.451 | silero | 1 | 0 | No |
+| HI_CV_0008 | hi | hindi_devanagari | 7.4 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 15.5 | 2.101 | silero | 1 | 0 | No |
+| HI_CV_0009 | hi | hindi_devanagari | 4.7 | 6 | 5 | 100.00% | 5 | 1 | 0 | 16.67% | 105.56% | 0/19/0/0 | 100.00% | 0.00 | 0 | 1.6 | 0.338 | silero | 1 | 0 | No |
+| HI_CV_0010 | hi | hindi_devanagari | 7.0 | 10 | 10 | 100.00% | 10 | 0 | 0 | 0.00% | 112.20% | 0/46/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.356 | silero | 1 | 0 | No |
+| HI_CV_0011 | hi | hindi_devanagari | 4.2 | 5 | 2 | 100.00% | 2 | 3 | 0 | 60.00% | 100.00% | 0/8/0/0 | 100.00% | 0.26 | 0 | 8.2 | 1.960 | silero | 1 | 0 | No |
+| HI_CV_0012 | hi | hindi_devanagari | 4.1 | 9 | 0 | 100.00% | 0 | 9 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 10.5 | 2.556 | silero | 1 | 0 | No |
+| HI_CV_0013 | hi | hindi_devanagari | 3.7 | 7 | 1 | 85.71% | 0 | 6 | 0 | 85.71% | 86.96% | 3/0/0/0 | 100.00% | 0.00 | 0 | 9.1 | 2.447 | silero | 1 | 0 | No |
+| HI_CV_0014 | hi | hindi_devanagari | 7.1 | 10 | 0 | 100.00% | 0 | 10 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 13.8 | 1.962 | silero | 1 | 0 | No |
+| HI_CV_0015 | hi | hindi_devanagari | 5.0 | 11 | 0 | 100.00% | 0 | 11 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 18.4 | 3.710 | silero | 1 | 0 | No |
+| HI_CV_0016 | hi | hindi_devanagari | 5.9 | 12 | 0 | 100.00% | 0 | 12 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 16.8 | 2.852 | silero | 1 | 0 | No |
+| HI_CV_0017 | hi | hindi_devanagari | 7.1 | 14 | 13 | 100.00% | 13 | 1 | 0 | 7.14% | 113.43% | 0/76/0/0 | 100.00% | 0.66 | 0 | 4.1 | 0.569 | silero | 1 | 0 | No |
+| HI_CV_0018 | hi | hindi_devanagari | 6.6 | 12 | 1 | 100.00% | 1 | 11 | 0 | 91.67% | 100.00% | 0/5/0/0 | 100.00% | 0.00 | 0 | 13.7 | 2.081 | silero | 1 | 0 | No |
+| HI_CV_0019 | hi | hindi_devanagari | 3.2 | 5 | 3 | 100.00% | 3 | 2 | 0 | 40.00% | 111.76% | 0/19/0/0 | 100.00% | 0.00 | 0 | 1.5 | 0.483 | silero | 1 | 0 | No |
+| HI_CV_0020 | hi | hindi_devanagari | 6.2 | 9 | 0 | 100.00% | 0 | 9 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 12.5 | 2.015 | silero | 1 | 0 | No |
+| HI_CV_0021 | hi | hindi_devanagari | 5.2 | 10 | 0 | 100.00% | 0 | 10 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 13.1 | 2.520 | silero | 1 | 0 | No |
+| HI_CV_0022 | hi | hindi_devanagari | 5.5 | 6 | 0 | 100.00% | 0 | 6 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 14.7 | 2.666 | silero | 1 | 0 | No |
+| HI_CV_0023 | hi | hindi_devanagari | 3.5 | 5 | 0 | 100.00% | 0 | 5 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 9.6 | 2.708 | silero | 1 | 0 | No |
+| HI_CV_0024 | hi | hindi_devanagari | 8.2 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 18.8 | 2.296 | silero | 1 | 0 | No |
+| HI_CV_0025 | hi | hindi_devanagari | 6.0 | 12 | 12 | 100.00% | 12 | 0 | 0 | 0.00% | 111.11% | 0/58/0/0 | 100.00% | 0.18 | 0 | 2.4 | 0.392 | silero | 1 | 0 | No |
+| HI_KB_0001 | hi | hindi_devanagari | 4.9 | 14 | 0 | 100.00% | 0 | 14 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 16.8 | 3.429 | silero | 1 | 0 | No |
+| HI_KB_0002 | hi | hindi_devanagari | 6.8 | 13 | 11 | 100.00% | 11 | 2 | 0 | 15.38% | 110.20% | 0/54/0/0 | 100.00% | 0.00 | 0 | 2.7 | 0.395 | silero | 1 | 0 | No |
+| HI_KB_0003 | hi | hindi_devanagari | 3.9 | 11 | 11 | 100.00% | 11 | 0 | 0 | 0.00% | 107.14% | 0/45/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.531 | silero | 1 | 0 | No |
+| HI_KB_0004 | hi | hindi_devanagari | 4.4 | 15 | 12 | 86.67% | 10 | 3 | 0 | 20.00% | 86.79% | 24/31/0/0 | 100.00% | 0.00 | 0 | 10.8 | 2.468 | silero | 1 | 1 | No |
+| HI_KB_0005 | hi | hindi_devanagari | 4.8 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 11.5 | 2.396 | silero | 1 | 0 | No |
+| HI_KB_0006 | hi | hindi_devanagari | 3.7 | 12 | 0 | 100.00% | 0 | 12 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 11.6 | 3.100 | silero | 1 | 0 | No |
+| HI_KB_0007 | hi | hindi_devanagari | 4.4 | 12 | 12 | 100.00% | 12 | 0 | 0 | 0.00% | 119.51% | 0/49/0/0 | 100.00% | 0.08 | 0 | 2.3 | 0.527 | silero | 1 | 0 | No |
+| HI_KB_0008 | hi | hindi_devanagari | 4.9 | 13 | 10 | 100.00% | 10 | 3 | 0 | 23.08% | 100.00% | 0/35/0/0 | 100.00% | 2.10 | 0 | 9.0 | 1.833 | silero | 1 | 1 | No |
+| HI_KB_0009 | hi | hindi_devanagari | 3.5 | 9 | 7 | 100.00% | 7 | 2 | 0 | 22.22% | 106.90% | 0/31/0/0 | 100.00% | 0.36 | 0 | 1.9 | 0.530 | silero | 1 | 0 | No |
+| HI_KB_0010 | hi | hindi_devanagari | 5.7 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 13.0 | 2.288 | silero | 1 | 0 | No |
+| HI_KB_0011 | hi | hindi_devanagari | 3.6 | 10 | 11 | 110.00% | 10 | 0 | 1 | 0.00% | 115.15% | 0/37/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.541 | silero | 1 | 0 | No |
+| HI_KB_0012 | hi | hindi_devanagari | 4.5 | 9 | 9 | 100.00% | 9 | 0 | 0 | 0.00% | 100.00% | 0/41/0/0 | 100.00% | 0.46 | 0 | 9.4 | 2.101 | silero | 1 | 0 | No |
+| HI_KB_0013 | hi | hindi_devanagari | 3.7 | 12 | 6 | 75.00% | 3 | 6 | 0 | 50.00% | 54.76% | 26/0/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.697 | silero | 1 | 0 | No |
+| HI_KB_0014 | hi | hindi_devanagari | 3.8 | 8 | 6 | 100.00% | 6 | 2 | 0 | 25.00% | 100.00% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.551 | silero | 1 | 0 | No |
+| HI_KB_0015 | hi | hindi_devanagari | 6.8 | 15 | 0 | 100.00% | 0 | 15 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 13.1 | 1.928 | silero | 1 | 0 | No |
+| HI_KB_0016 | hi | hindi_devanagari | 8.1 | 10 | 0 | 100.00% | 0 | 10 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 13.8 | 1.708 | silero | 1 | 0 | No |
+| HI_KB_0017 | hi | hindi_devanagari | 6.0 | 8 | 0 | 100.00% | 0 | 8 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 8.9 | 1.476 | silero | 1 | 0 | No |
+| HI_KB_0018 | hi | hindi_devanagari | 8.8 | 8 | 10 | 125.00% | 8 | 0 | 2 | 0.00% | 104.92% | 0/64/0/0 | 100.00% | 0.14 | 0 | 5.7 | 0.641 | silero | 1 | 1 | No |
+| HI_KB_0019 | hi | hindi_devanagari | 6.0 | 14 | 1 | 100.00% | 1 | 13 | 0 | 92.86% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 14.5 | 2.415 | silero | 1 | 0 | No |
+| HI_KB_0020 | hi | hindi_devanagari | 5.2 | 9 | 7 | 100.00% | 7 | 2 | 0 | 22.22% | 108.11% | 0/40/0/0 | 100.00% | 0.08 | 0 | 2.6 | 0.489 | silero | 1 | 0 | No |
+| HI_KB_0021 | hi | hindi_devanagari | 8.6 | 14 | 0 | 100.00% | 0 | 14 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 14.4 | 1.678 | silero | 1 | 0 | No |
+| HI_KB_0022 | hi | hindi_devanagari | 4.0 | 14 | 12 | 100.00% | 12 | 2 | 0 | 14.29% | 100.00% | 0/51/0/0 | 100.00% | 0.55 | 0 | 21.3 | 5.302 | silero | 1 | 1 | No |
+| HI_KB_0023 | hi | hindi_devanagari | 4.9 | 8 | 8 | 62.50% | 5 | 0 | 0 | 0.00% | 32.26% | 28/0/0/0 | 100.00% | 0.00 | 0 | 3.6 | 0.743 | silero | 1 | 0 | No |
+| HI_KB_0024 | hi | hindi_devanagari | 5.2 | 15 | 0 | 100.00% | 0 | 15 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 17.4 | 3.363 | silero | 1 | 0 | No |
+| HI_KB_0025 | hi | hindi_devanagari | 4.7 | 11 | 10 | 90.91% | 9 | 1 | 0 | 9.09% | 84.21% | 51/0/0/0 | 100.00% | 0.05 | 0 | 12.1 | 2.580 | silero | 1 | 1 | No |
+| HINGLISH_MUCS_0001 | hinglish | hinglish_roman | 6.0 | 13 | 9 | 100.00% | 9 | 4 | 0 | 30.77% | 74.14% | 0/34/0/0 | 100.00% | 0.28 | 0 | 4.2 | 0.700 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0001 | hinglish | hinglish_mixed_verbatim | 6.0 | 13 | 9 | 100.00% | 9 | 4 | 0 | 30.77% | 79.63% | 0/34/0/0 | 100.00% | 0.28 | 0 | 4.2 | 0.700 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0001 | hinglish | hinglish_script_normalized | 6.0 | 13 | 9 | 100.00% | 9 | 4 | 0 | 30.77% | 72.41% | 0/34/0/0 | 100.00% | 0.28 | 0 | 4.2 | 0.700 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0002 | hinglish | hinglish_roman | 9.0 | 25 | 0 | 100.00% | 0 | 25 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 20.7 | 2.303 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0002 | hinglish | hinglish_mixed_verbatim | 9.0 | 24 | 0 | 100.00% | 0 | 24 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 20.7 | 2.303 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0002 | hinglish | hinglish_script_normalized | 9.0 | 24 | 0 | 100.00% | 0 | 24 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 20.7 | 2.303 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0003 | hinglish | hinglish_roman | 5.0 | 19 | 1 | 100.00% | 1 | 18 | 0 | 94.74% | 97.18% | 0/3/0/0 | 100.00% | 0.00 | 0 | 3.1 | 0.619 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0003 | hinglish | hinglish_mixed_verbatim | 5.0 | 18 | 1 | 100.00% | 1 | 17 | 0 | 94.44% | 100.00% | 0/3/0/0 | 100.00% | 0.00 | 0 | 3.1 | 0.619 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0003 | hinglish | hinglish_script_normalized | 5.0 | 18 | 1 | 100.00% | 1 | 17 | 0 | 94.44% | 97.18% | 0/3/0/0 | 100.00% | 0.00 | 0 | 3.1 | 0.619 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0004 | hinglish | hinglish_roman | 5.0 | 14 | 0 | 100.00% | 0 | 14 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 18.6 | 3.724 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0004 | hinglish | hinglish_mixed_verbatim | 5.0 | 14 | 0 | 100.00% | 0 | 14 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 18.6 | 3.724 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0004 | hinglish | hinglish_script_normalized | 5.0 | 14 | 0 | 100.00% | 0 | 14 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 18.6 | 3.724 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0005 | hinglish | hinglish_roman | 7.0 | 13 | 8 | 84.62% | 6 | 5 | 0 | 38.46% | 75.44% | 1/33/0/0 | 97.06% | 0.00 | 0 | 6.3 | 0.900 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0005 | hinglish | hinglish_mixed_verbatim | 7.0 | 13 | 8 | 100.00% | 8 | 5 | 0 | 38.46% | 84.91% | 1/33/0/0 | 100.00% | 0.00 | 0 | 6.3 | 0.900 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0005 | hinglish | hinglish_script_normalized | 7.0 | 13 | 8 | 84.62% | 6 | 5 | 0 | 38.46% | 76.79% | 1/33/0/0 | 100.00% | 0.00 | 0 | 6.3 | 0.900 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0006 | hinglish | hinglish_roman | 4.0 | 10 | 5 | 90.00% | 4 | 5 | 0 | 50.00% | 70.45% | 0/19/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.555 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0006 | hinglish | hinglish_mixed_verbatim | 4.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 81.40% | 0/19/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.555 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0006 | hinglish | hinglish_script_normalized | 4.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 66.67% | 0/19/0/0 | 100.00% | 0.00 | 0 | 2.2 | 0.555 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0007 | hinglish | hinglish_roman | 11.0 | 21 | 18 | 90.48% | 16 | 3 | 0 | 14.29% | 62.50% | 0/77/0/0 | 100.00% | 0.00 | 0 | 5.1 | 0.460 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0007 | hinglish | hinglish_mixed_verbatim | 11.0 | 21 | 18 | 90.48% | 16 | 3 | 0 | 14.29% | 61.46% | 0/77/0/0 | 100.00% | 0.00 | 0 | 5.1 | 0.460 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0007 | hinglish | hinglish_script_normalized | 11.0 | 21 | 18 | 90.48% | 16 | 3 | 0 | 14.29% | 58.82% | 0/77/0/0 | 100.00% | 0.00 | 0 | 5.1 | 0.460 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0008 | hinglish | hinglish_roman | 4.0 | 7 | 7 | 85.71% | 6 | 0 | 0 | 0.00% | 41.38% | 0/24/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.624 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0008 | hinglish | hinglish_mixed_verbatim | 4.0 | 7 | 7 | 85.71% | 6 | 0 | 0 | 0.00% | 44.44% | 0/24/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.624 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0008 | hinglish | hinglish_script_normalized | 4.0 | 7 | 7 | 85.71% | 6 | 0 | 0 | 0.00% | 41.38% | 0/24/0/0 | 100.00% | 0.00 | 0 | 2.5 | 0.624 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0009 | hinglish | hinglish_roman | 6.0 | 16 | 10 | 81.25% | 7 | 6 | 0 | 37.50% | 35.38% | 0/50/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.426 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0009 | hinglish | hinglish_mixed_verbatim | 6.0 | 16 | 10 | 81.25% | 7 | 6 | 0 | 37.50% | 50.00% | 0/50/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.426 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0009 | hinglish | hinglish_script_normalized | 6.0 | 16 | 10 | 81.25% | 7 | 6 | 0 | 37.50% | 34.38% | 0/50/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.426 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0010 | hinglish | hinglish_roman | 5.0 | 12 | 10 | 100.00% | 10 | 2 | 0 | 16.67% | 73.08% | 0/32/0/0 | 100.00% | 0.00 | 0 | 3.6 | 0.724 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0010 | hinglish | hinglish_mixed_verbatim | 5.0 | 12 | 10 | 100.00% | 10 | 2 | 0 | 16.67% | 81.82% | 0/32/0/0 | 100.00% | 0.00 | 0 | 3.6 | 0.724 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0010 | hinglish | hinglish_script_normalized | 5.0 | 12 | 10 | 100.00% | 10 | 2 | 0 | 16.67% | 73.08% | 0/32/0/0 | 100.00% | 0.00 | 0 | 3.6 | 0.724 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0011 | hinglish | hinglish_roman | 6.0 | 13 | 13 | 100.00% | 13 | 0 | 0 | 0.00% | 73.08% | 0/55/0/0 | 100.00% | 0.31 | 0 | 3.2 | 0.534 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0011 | hinglish | hinglish_mixed_verbatim | 6.0 | 13 | 13 | 100.00% | 13 | 0 | 0 | 0.00% | 104.35% | 0/55/0/0 | 100.00% | 0.31 | 0 | 3.2 | 0.534 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0011 | hinglish | hinglish_script_normalized | 6.0 | 13 | 13 | 100.00% | 13 | 0 | 0 | 0.00% | 73.08% | 0/55/0/0 | 100.00% | 0.31 | 0 | 3.2 | 0.534 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0012 | hinglish | hinglish_roman | 4.0 | 5 | 2 | 100.00% | 2 | 3 | 0 | 60.00% | 90.91% | 0/2/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.493 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0012 | hinglish | hinglish_mixed_verbatim | 4.0 | 5 | 2 | 100.00% | 2 | 3 | 0 | 60.00% | 90.00% | 0/2/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.493 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0012 | hinglish | hinglish_script_normalized | 4.0 | 5 | 2 | 100.00% | 2 | 3 | 0 | 60.00% | 90.91% | 0/2/0/0 | 100.00% | 0.00 | 0 | 2.0 | 0.493 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0013 | hinglish | hinglish_roman | 6.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 15.2 | 2.535 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0013 | hinglish | hinglish_mixed_verbatim | 6.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 15.2 | 2.535 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0013 | hinglish | hinglish_script_normalized | 6.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 15.2 | 2.535 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0014 | hinglish | hinglish_roman | 5.0 | 11 | 7 | 90.91% | 6 | 4 | 0 | 36.36% | 52.94% | 0/30/0/0 | 100.00% | 0.48 | 0 | 2.6 | 0.511 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0014 | hinglish | hinglish_mixed_verbatim | 5.0 | 11 | 7 | 90.91% | 6 | 4 | 0 | 36.36% | 78.72% | 0/30/0/0 | 100.00% | 0.48 | 0 | 2.6 | 0.511 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0014 | hinglish | hinglish_script_normalized | 5.0 | 11 | 7 | 90.91% | 6 | 4 | 0 | 36.36% | 52.94% | 0/30/0/0 | 100.00% | 0.48 | 0 | 2.6 | 0.511 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0015 | hinglish | hinglish_roman | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 29.41% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.414 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0015 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 25.81% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.414 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0015 | hinglish | hinglish_script_normalized | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 29.41% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.414 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0016 | hinglish | hinglish_roman | 4.0 | 7 | 6 | 57.14% | 3 | 1 | 0 | 14.29% | 33.33% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.529 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0016 | hinglish | hinglish_mixed_verbatim | 4.0 | 7 | 6 | 57.14% | 3 | 1 | 0 | 14.29% | 52.63% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.529 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0016 | hinglish | hinglish_script_normalized | 4.0 | 7 | 6 | 57.14% | 3 | 1 | 0 | 14.29% | 26.32% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.529 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0017 | hinglish | hinglish_roman | 15.0 | 23 | 0 | 100.00% | 0 | 23 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 28.8 | 1.923 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0017 | hinglish | hinglish_mixed_verbatim | 15.0 | 23 | 0 | 100.00% | 0 | 23 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 28.8 | 1.923 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0017 | hinglish | hinglish_script_normalized | 15.0 | 23 | 0 | 100.00% | 0 | 23 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 28.8 | 1.923 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0018 | hinglish | hinglish_roman | 5.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 54.29% | 0/33/0/0 | 100.00% | 0.00 | 0 | 3.9 | 0.771 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0018 | hinglish | hinglish_mixed_verbatim | 5.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 65.63% | 0/33/0/0 | 100.00% | 0.00 | 0 | 3.9 | 0.771 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0018 | hinglish | hinglish_script_normalized | 5.0 | 9 | 5 | 88.89% | 4 | 4 | 0 | 44.44% | 51.43% | 0/33/0/0 | 100.00% | 0.00 | 0 | 3.9 | 0.771 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0019 | hinglish | hinglish_roman | 4.0 | 8 | 6 | 100.00% | 6 | 2 | 0 | 25.00% | 77.50% | 0/26/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.643 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0019 | hinglish | hinglish_mixed_verbatim | 4.0 | 8 | 6 | 100.00% | 6 | 2 | 0 | 25.00% | 91.67% | 0/26/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.643 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0019 | hinglish | hinglish_script_normalized | 4.0 | 8 | 6 | 100.00% | 6 | 2 | 0 | 25.00% | 77.50% | 0/26/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.643 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0020 | hinglish | hinglish_roman | 15.0 | 34 | 24 | 85.29% | 19 | 10 | 0 | 29.41% | 54.68% | 0/96/0/0 | 100.00% | 0.00 | 0 | 8.0 | 0.532 | silero | 2 | 0 | No |
+| HINGLISH_MUCS_0020 | hinglish | hinglish_mixed_verbatim | 15.0 | 32 | 24 | 84.38% | 19 | 8 | 0 | 25.00% | 70.68% | 0/96/0/0 | 100.00% | 0.00 | 0 | 8.0 | 0.532 | silero | 2 | 0 | No |
+| HINGLISH_MUCS_0020 | hinglish | hinglish_script_normalized | 15.0 | 32 | 24 | 84.38% | 19 | 8 | 0 | 25.00% | 55.73% | 0/96/0/0 | 100.00% | 0.00 | 0 | 8.0 | 0.532 | silero | 2 | 0 | No |
+| HINGLISH_MUCS_0021 | hinglish | hinglish_roman | 5.0 | 7 | 1 | 100.00% | 1 | 6 | 0 | 85.71% | 97.06% | 0/1/0/0 | 100.00% | 0.00 | 0 | 2.9 | 0.584 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0021 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 1 | 100.00% | 1 | 6 | 0 | 85.71% | 97.14% | 0/1/0/0 | 100.00% | 0.00 | 0 | 2.9 | 0.584 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0021 | hinglish | hinglish_script_normalized | 5.0 | 7 | 1 | 100.00% | 1 | 6 | 0 | 85.71% | 97.06% | 0/1/0/0 | 100.00% | 0.00 | 0 | 2.9 | 0.584 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0022 | hinglish | hinglish_roman | 8.0 | 15 | 12 | 60.00% | 6 | 3 | 0 | 20.00% | 45.57% | 0/63/0/0 | 100.00% | 0.00 | 0 | 4.6 | 0.576 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0022 | hinglish | hinglish_mixed_verbatim | 8.0 | 15 | 12 | 80.00% | 9 | 3 | 0 | 20.00% | 54.05% | 0/63/0/0 | 100.00% | 0.00 | 0 | 4.6 | 0.576 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0022 | hinglish | hinglish_script_normalized | 8.0 | 15 | 12 | 60.00% | 6 | 3 | 0 | 20.00% | 43.59% | 0/63/0/0 | 100.00% | 0.00 | 0 | 4.6 | 0.576 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0023 | hinglish | hinglish_roman | 5.0 | 9 | 6 | 55.56% | 2 | 3 | 0 | 33.33% | 28.89% | 0/37/0/0 | 100.00% | 0.00 | 0 | 3.5 | 0.707 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0023 | hinglish | hinglish_mixed_verbatim | 5.0 | 9 | 6 | 55.56% | 2 | 3 | 0 | 33.33% | 33.33% | 0/37/0/0 | 100.00% | 0.00 | 0 | 3.5 | 0.707 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0023 | hinglish | hinglish_script_normalized | 5.0 | 9 | 6 | 55.56% | 2 | 3 | 0 | 33.33% | 28.89% | 0/37/0/0 | 100.00% | 0.00 | 0 | 3.5 | 0.707 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0024 | hinglish | hinglish_roman | 5.0 | 7 | 3 | 71.43% | 1 | 4 | 0 | 57.14% | 56.41% | 0/21/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.428 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0024 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 3 | 71.43% | 1 | 4 | 0 | 57.14% | 57.14% | 0/21/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.428 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0024 | hinglish | hinglish_script_normalized | 5.0 | 7 | 3 | 71.43% | 1 | 4 | 0 | 57.14% | 55.26% | 0/21/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.428 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0025 | hinglish | hinglish_roman | 8.0 | 13 | 7 | 76.92% | 4 | 6 | 0 | 46.15% | 53.97% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.320 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0025 | hinglish | hinglish_mixed_verbatim | 8.0 | 13 | 7 | 84.62% | 5 | 6 | 0 | 46.15% | 72.41% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.320 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0025 | hinglish | hinglish_script_normalized | 8.0 | 13 | 7 | 69.23% | 3 | 6 | 0 | 46.15% | 52.38% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.6 | 0.320 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0026 | hinglish | hinglish_roman | 5.0 | 10 | 5 | 100.00% | 5 | 5 | 0 | 50.00% | 75.44% | 0/24/0/0 | 100.00% | 0.20 | 0 | 1.9 | 0.387 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0026 | hinglish | hinglish_mixed_verbatim | 5.0 | 10 | 5 | 100.00% | 5 | 5 | 0 | 50.00% | 88.46% | 0/24/0/0 | 100.00% | 0.20 | 0 | 1.9 | 0.387 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0026 | hinglish | hinglish_script_normalized | 5.0 | 10 | 5 | 100.00% | 5 | 5 | 0 | 50.00% | 75.44% | 0/24/0/0 | 100.00% | 0.20 | 0 | 1.9 | 0.387 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0027 | hinglish | hinglish_roman | 11.0 | 19 | 23 | 110.53% | 17 | 0 | 4 | 0.00% | 34.62% | 0/65/0/0 | 100.00% | 0.00 | 0 | 7.5 | 0.682 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0027 | hinglish | hinglish_mixed_verbatim | 11.0 | 18 | 23 | 122.22% | 17 | 0 | 5 | 0.00% | 101.56% | 0/65/0/0 | 100.00% | 0.00 | 0 | 7.5 | 0.682 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0027 | hinglish | hinglish_script_normalized | 11.0 | 18 | 23 | 105.56% | 14 | 0 | 5 | 0.00% | 33.33% | 0/65/0/0 | 100.00% | 0.00 | 0 | 7.5 | 0.682 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0028 | hinglish | hinglish_roman | 5.0 | 12 | 9 | 83.33% | 5 | 4 | 1 | 33.33% | 80.36% | 0/43/0/0 | 100.00% | 0.14 | 0 | 2.6 | 0.521 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0028 | hinglish | hinglish_mixed_verbatim | 5.0 | 12 | 9 | 83.33% | 5 | 4 | 1 | 33.33% | 82.69% | 0/43/0/0 | 100.00% | 0.14 | 0 | 2.6 | 0.521 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0028 | hinglish | hinglish_script_normalized | 5.0 | 12 | 9 | 83.33% | 5 | 4 | 1 | 33.33% | 80.36% | 0/43/0/0 | 100.00% | 0.14 | 0 | 2.6 | 0.521 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0029 | hinglish | hinglish_roman | 7.0 | 17 | 10 | 94.12% | 9 | 7 | 0 | 41.18% | 76.81% | 0/42/0/0 | 100.00% | 0.00 | 0 | 4.1 | 0.587 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0029 | hinglish | hinglish_mixed_verbatim | 7.0 | 17 | 10 | 94.12% | 9 | 7 | 0 | 41.18% | 82.76% | 0/42/0/0 | 100.00% | 0.00 | 0 | 4.1 | 0.587 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0029 | hinglish | hinglish_script_normalized | 7.0 | 17 | 10 | 94.12% | 9 | 7 | 0 | 41.18% | 76.47% | 0/42/0/0 | 100.00% | 0.00 | 0 | 4.1 | 0.587 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0030 | hinglish | hinglish_roman | 9.0 | 19 | 11 | 89.47% | 9 | 8 | 0 | 42.11% | 53.01% | 0/52/0/0 | 100.00% | 0.00 | 0 | 5.6 | 0.619 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0030 | hinglish | hinglish_mixed_verbatim | 9.0 | 19 | 11 | 89.47% | 9 | 8 | 0 | 42.11% | 72.50% | 0/52/0/0 | 100.00% | 0.00 | 0 | 5.6 | 0.619 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0030 | hinglish | hinglish_script_normalized | 9.0 | 19 | 11 | 89.47% | 9 | 8 | 0 | 42.11% | 51.81% | 0/52/0/0 | 100.00% | 0.00 | 0 | 5.6 | 0.619 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0031 | hinglish | hinglish_roman | 7.0 | 23 | 9 | 100.00% | 9 | 14 | 0 | 60.87% | 74.31% | 0/45/0/0 | 100.00% | 0.00 | 0 | 3.9 | 0.552 | silero | 1 | 1 | No |
+| HINGLISH_MUCS_0031 | hinglish | hinglish_mixed_verbatim | 7.0 | 22 | 9 | 100.00% | 9 | 13 | 0 | 59.09% | 76.00% | 0/45/0/0 | 100.00% | 0.00 | 0 | 3.9 | 0.552 | silero | 1 | 1 | No |
+| HINGLISH_MUCS_0031 | hinglish | hinglish_script_normalized | 7.0 | 22 | 9 | 100.00% | 9 | 13 | 0 | 59.09% | 74.31% | 0/45/0/0 | 100.00% | 0.00 | 0 | 3.9 | 0.552 | silero | 1 | 1 | No |
+| HINGLISH_MUCS_0032 | hinglish | hinglish_roman | 7.0 | 19 | 18 | 89.47% | 16 | 1 | 0 | 5.26% | 29.35% | 0/80/0/0 | 100.00% | 0.36 | 0 | 18.1 | 2.587 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0032 | hinglish | hinglish_mixed_verbatim | 7.0 | 18 | 18 | 100.00% | 18 | 0 | 0 | 0.00% | 89.29% | 0/80/0/0 | 100.00% | 0.36 | 0 | 18.1 | 2.587 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0032 | hinglish | hinglish_script_normalized | 7.0 | 18 | 18 | 88.89% | 16 | 0 | 0 | 0.00% | 29.35% | 0/80/0/0 | 100.00% | 0.36 | 0 | 18.1 | 2.587 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0033 | hinglish | hinglish_roman | 5.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 13.4 | 2.682 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0033 | hinglish | hinglish_mixed_verbatim | 5.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 13.4 | 2.682 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0033 | hinglish | hinglish_script_normalized | 5.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 13.4 | 2.682 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0034 | hinglish | hinglish_roman | 4.0 | 15 | 7 | 93.33% | 6 | 8 | 0 | 53.33% | 76.81% | 1/29/0/0 | 96.67% | 0.00 | 0 | 3.6 | 0.896 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0034 | hinglish | hinglish_mixed_verbatim | 4.0 | 15 | 7 | 100.00% | 7 | 8 | 0 | 53.33% | 91.53% | 1/29/0/0 | 100.00% | 0.00 | 0 | 3.6 | 0.896 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0034 | hinglish | hinglish_script_normalized | 4.0 | 15 | 7 | 93.33% | 6 | 8 | 0 | 53.33% | 75.71% | 1/29/0/0 | 100.00% | 0.00 | 0 | 3.6 | 0.896 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0035 | hinglish | hinglish_roman | 6.0 | 14 | 11 | 78.57% | 8 | 3 | 0 | 21.43% | 48.39% | 0/45/0/0 | 100.00% | 0.52 | 0 | 15.0 | 2.494 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0035 | hinglish | hinglish_mixed_verbatim | 6.0 | 14 | 11 | 85.71% | 9 | 3 | 0 | 21.43% | 67.86% | 0/45/0/0 | 100.00% | 0.52 | 0 | 15.0 | 2.494 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0035 | hinglish | hinglish_script_normalized | 6.0 | 14 | 11 | 78.57% | 8 | 3 | 0 | 21.43% | 46.77% | 0/45/0/0 | 100.00% | 0.52 | 0 | 15.0 | 2.494 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0036 | hinglish | hinglish_roman | 4.0 | 6 | 5 | 100.00% | 5 | 1 | 0 | 16.67% | 72.41% | 0/23/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.531 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0036 | hinglish | hinglish_mixed_verbatim | 4.0 | 6 | 5 | 100.00% | 5 | 1 | 0 | 16.67% | 77.78% | 0/23/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.531 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0036 | hinglish | hinglish_script_normalized | 4.0 | 6 | 5 | 100.00% | 5 | 1 | 0 | 16.67% | 68.97% | 0/23/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.531 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0037 | hinglish | hinglish_roman | 4.0 | 11 | 6 | 100.00% | 6 | 5 | 0 | 45.45% | 81.40% | 0/31/0/0 | 100.00% | 0.32 | 0 | 2.0 | 0.497 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0037 | hinglish | hinglish_mixed_verbatim | 4.0 | 11 | 6 | 100.00% | 6 | 5 | 0 | 45.45% | 87.18% | 0/31/0/0 | 100.00% | 0.32 | 0 | 2.0 | 0.497 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0037 | hinglish | hinglish_script_normalized | 4.0 | 11 | 6 | 100.00% | 6 | 5 | 0 | 45.45% | 81.40% | 0/31/0/0 | 100.00% | 0.32 | 0 | 2.0 | 0.497 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0038 | hinglish | hinglish_roman | 4.0 | 11 | 0 | 100.00% | 0 | 11 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 10.9 | 2.715 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0038 | hinglish | hinglish_mixed_verbatim | 4.0 | 11 | 0 | 100.00% | 0 | 11 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 10.9 | 2.715 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0038 | hinglish | hinglish_script_normalized | 4.0 | 11 | 0 | 100.00% | 0 | 11 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 10.9 | 2.715 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0039 | hinglish | hinglish_roman | 8.0 | 17 | 17 | 70.59% | 10 | 1 | 1 | 5.88% | 20.00% | 0/72/0/0 | 100.00% | 0.28 | 0 | 3.4 | 0.421 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0039 | hinglish | hinglish_mixed_verbatim | 8.0 | 16 | 17 | 87.50% | 13 | 0 | 1 | 0.00% | 67.61% | 0/72/0/0 | 100.00% | 0.28 | 0 | 3.4 | 0.421 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0039 | hinglish | hinglish_script_normalized | 8.0 | 16 | 17 | 68.75% | 10 | 0 | 1 | 0.00% | 19.74% | 0/72/0/0 | 100.00% | 0.28 | 0 | 3.4 | 0.421 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0040 | hinglish | hinglish_roman | 4.0 | 6 | 7 | 116.67% | 6 | 0 | 1 | 0.00% | 47.22% | 0/29/0/0 | 100.00% | 0.00 | 0 | 8.4 | 2.102 | silero | 1 | 1 | No |
+| HINGLISH_MUCS_0040 | hinglish | hinglish_mixed_verbatim | 4.0 | 6 | 7 | 116.67% | 6 | 0 | 1 | 0.00% | 77.14% | 0/29/0/0 | 100.00% | 0.00 | 0 | 8.4 | 2.102 | silero | 1 | 1 | No |
+| HINGLISH_MUCS_0040 | hinglish | hinglish_script_normalized | 4.0 | 6 | 7 | 116.67% | 6 | 0 | 1 | 0.00% | 47.22% | 0/29/0/0 | 100.00% | 0.00 | 0 | 8.4 | 2.102 | silero | 1 | 1 | No |
+| HINGLISH_MUCS_0041 | hinglish | hinglish_roman | 5.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 12.1 | 2.419 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0041 | hinglish | hinglish_mixed_verbatim | 5.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 12.1 | 2.419 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0041 | hinglish | hinglish_script_normalized | 5.0 | 13 | 0 | 100.00% | 0 | 13 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 12.1 | 2.419 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0042 | hinglish | hinglish_roman | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 35.90% | 0/30/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.425 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0042 | hinglish | hinglish_mixed_verbatim | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 42.11% | 0/30/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.425 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0042 | hinglish | hinglish_script_normalized | 5.0 | 7 | 5 | 57.14% | 2 | 2 | 0 | 28.57% | 31.58% | 0/30/0/0 | 100.00% | 0.00 | 0 | 2.1 | 0.425 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0043 | hinglish | hinglish_roman | 4.0 | 9 | 8 | 88.89% | 7 | 1 | 0 | 11.11% | 58.70% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.605 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0043 | hinglish | hinglish_mixed_verbatim | 4.0 | 9 | 8 | 88.89% | 7 | 1 | 0 | 11.11% | 72.09% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.605 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0043 | hinglish | hinglish_script_normalized | 4.0 | 9 | 8 | 88.89% | 7 | 1 | 0 | 11.11% | 56.52% | 0/35/0/0 | 100.00% | 0.00 | 0 | 2.4 | 0.605 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0044 | hinglish | hinglish_roman | 4.0 | 9 | 11 | 88.89% | 6 | 0 | 2 | 0.00% | 33.33% | 0/47/0/0 | 100.00% | 0.40 | 0 | 2.8 | 0.701 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0044 | hinglish | hinglish_mixed_verbatim | 4.0 | 9 | 11 | 88.89% | 6 | 0 | 2 | 0.00% | 38.46% | 0/47/0/0 | 100.00% | 0.40 | 0 | 2.8 | 0.701 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0044 | hinglish | hinglish_script_normalized | 4.0 | 9 | 11 | 88.89% | 6 | 0 | 2 | 0.00% | 33.33% | 0/47/0/0 | 100.00% | 0.40 | 0 | 2.8 | 0.701 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0045 | hinglish | hinglish_roman | 6.0 | 15 | 15 | 53.33% | 8 | 0 | 0 | 0.00% | 21.31% | 0/64/0/0 | 100.00% | 0.24 | 0 | 3.8 | 0.640 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0045 | hinglish | hinglish_mixed_verbatim | 6.0 | 15 | 15 | 80.00% | 12 | 0 | 0 | 0.00% | 67.21% | 0/64/0/0 | 100.00% | 0.24 | 0 | 3.8 | 0.640 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0045 | hinglish | hinglish_script_normalized | 6.0 | 15 | 15 | 53.33% | 8 | 0 | 0 | 0.00% | 21.31% | 0/64/0/0 | 100.00% | 0.24 | 0 | 3.8 | 0.640 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0046 | hinglish | hinglish_roman | 7.0 | 17 | 10 | 76.47% | 6 | 7 | 0 | 41.18% | 61.45% | 0/49/0/0 | 100.00% | 0.52 | 0 | 3.1 | 0.437 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0046 | hinglish | hinglish_mixed_verbatim | 7.0 | 17 | 10 | 82.35% | 7 | 7 | 0 | 41.18% | 80.56% | 0/49/0/0 | 100.00% | 0.52 | 0 | 3.1 | 0.437 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0046 | hinglish | hinglish_script_normalized | 7.0 | 17 | 10 | 76.47% | 6 | 7 | 0 | 41.18% | 62.20% | 0/49/0/0 | 100.00% | 0.52 | 0 | 3.1 | 0.437 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0047 | hinglish | hinglish_roman | 6.0 | 11 | 8 | 100.00% | 8 | 3 | 0 | 27.27% | 69.09% | 0/32/0/0 | 100.00% | 0.28 | 0 | 2.7 | 0.443 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0047 | hinglish | hinglish_mixed_verbatim | 6.0 | 11 | 8 | 100.00% | 8 | 3 | 0 | 27.27% | 92.31% | 0/32/0/0 | 100.00% | 0.28 | 0 | 2.7 | 0.443 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0047 | hinglish | hinglish_script_normalized | 6.0 | 11 | 8 | 100.00% | 8 | 3 | 0 | 27.27% | 69.09% | 0/32/0/0 | 100.00% | 0.28 | 0 | 2.7 | 0.443 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0048 | hinglish | hinglish_roman | 7.0 | 13 | 5 | 61.54% | 0 | 8 | 0 | 61.54% | 49.15% | 0/30/0/0 | 100.00% | 0.00 | 0 | 13.5 | 1.926 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0048 | hinglish | hinglish_mixed_verbatim | 7.0 | 13 | 5 | 61.54% | 0 | 8 | 0 | 61.54% | 49.15% | 0/30/0/0 | 100.00% | 0.00 | 0 | 13.5 | 1.926 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0048 | hinglish | hinglish_script_normalized | 7.0 | 13 | 5 | 61.54% | 0 | 8 | 0 | 61.54% | 49.15% | 0/30/0/0 | 100.00% | 0.00 | 0 | 13.5 | 1.926 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0049 | hinglish | hinglish_roman | 5.0 | 12 | 7 | 100.00% | 7 | 5 | 0 | 41.67% | 80.00% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.452 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0049 | hinglish | hinglish_mixed_verbatim | 5.0 | 12 | 7 | 100.00% | 7 | 5 | 0 | 41.67% | 91.30% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.452 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0049 | hinglish | hinglish_script_normalized | 5.0 | 12 | 7 | 100.00% | 7 | 5 | 0 | 41.67% | 80.00% | 0/25/0/0 | 100.00% | 0.00 | 0 | 2.3 | 0.452 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0050 | hinglish | hinglish_roman | 4.0 | 6 | 0 | 100.00% | 0 | 6 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 12.4 | 3.093 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0050 | hinglish | hinglish_mixed_verbatim | 4.0 | 6 | 0 | 100.00% | 0 | 6 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 12.4 | 3.093 | silero | 1 | 0 | No |
+| HINGLISH_MUCS_0050 | hinglish | hinglish_script_normalized | 4.0 | 6 | 0 | 100.00% | 0 | 6 | 0 | 100.00% | 100.00% | 0/0/0/0 | 100.00% | 0.00 | 0 | 12.4 | 3.093 | silero | 1 | 0 | No |
+
+### Mode-Specific Category Summaries
+| Category & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 01_english_podcast [en] | english_latin | 1 | 30.51% | 30.51% | 23.73% | 23.89% | 100.00% | 0.324 | 32.7 | Yes |
+| 02_hindi [hi] | hindi_devanagari | 50 | 98.65% | 98.72% | 55.02% | 100.51% | 99.95% | 1.668 | 441.3 | No |
+| 03_hinglish [hinglish] | hinglish_roman | 50 | 89.16% | 88.55% | 44.58% | 65.13% | 99.87% | 1.039 | 314.6 | No |
+| 03_hinglish [hinglish] [hinglish_mixed_verbatim] | hinglish_mixed_verbatim | 50 | 92.11% | 91.08% | 43.96% | 77.46% | 100.00% | 1.039 | 314.6 | No |
+| 03_hinglish [hinglish] [hinglish_script_normalized] | hinglish_script_normalized | 50 | 88.70% | 88.21% | 43.96% | 64.39% | 100.00% | 1.039 | 314.6 | No |
+
+### Source Dataset Summaries
+| Source Dataset & Mode | Profile | Samples | Micro WER | Macro WER | Micro Del Rate | Mean CER | Script Match % | Mean RTF | Total Wall (s) | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|
+| npr_podcast [en] | english_latin | 1 | 30.51% | 30.51% | 23.73% | 23.89% | 100.00% | 0.324 | 32.7 | Yes |
+| common_voice_hindi [hi] | hindi_devanagari | 25 | 99.56% | 99.43% | 59.21% | 103.81% | 99.90% | 1.588 | 216.5 | No |
+| ai4bharat_kathbath_hindi [hi] | hindi_devanagari | 25 | 97.93% | 98.00% | 51.72% | 97.20% | 100.00% | 1.748 | 224.8 | No |
+| mucs_2021_hindi_english [hinglish] | hinglish_roman | 50 | 89.16% | 88.55% | 44.58% | 65.13% | 99.87% | 1.039 | 314.6 | No |
+| mucs_2021_hindi_english [hinglish] [hinglish_mixed_verbatim] | hinglish_mixed_verbatim | 50 | 92.11% | 91.08% | 43.96% | 77.46% | 100.00% | 1.039 | 314.6 | No |
+| mucs_2021_hindi_english [hinglish] [hinglish_script_normalized] | hinglish_script_normalized | 50 | 88.70% | 88.21% | 43.96% | 64.39% | 100.00% | 1.039 | 314.6 | No |

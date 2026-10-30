@@ -27,14 +27,14 @@ export function detectWordScript(text: string): ScriptType {
   if (TAMIL_REGEX.test(text)) {
     return "tamil";
   }
+  if (OTHER_FOREIGN_SCRIPTS_REGEX.test(text)) {
+    return "other";
+  }
   if (DEVANAGARI_REGEX.test(text)) {
     return "devanagari";
   }
   if (LATIN_REGEX.test(text)) {
     return "latin";
-  }
-  if (OTHER_FOREIGN_SCRIPTS_REGEX.test(text)) {
-    return "other";
   }
   return "symbol";
 }

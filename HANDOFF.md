@@ -1,6 +1,6 @@
 # Offcut handoff
 
-_Last updated: 2026-10-30 (`main` at `19253ea`, same as GitHub; Phase 2 P0.1 engine work uncommitted in `C:\OffCut`; Hindi/Hinglish audit received 2026-10-29)_
+_Last updated: 2026-10-30 (`main` at `c616bf8`, same as GitHub; Phase 2 P0.1–P2.0 committed; P2.1 is next, brief in `docs/p2-1-prompt.md`)_
 
 Read this first if you're picking up the project in a new session.
 
@@ -14,7 +14,7 @@ The owner is building it in public on a new Instagram tech channel, so every mil
 
 ## Where it lives
 
-The project lives at **`C:\OffCut`** (moved out of OneDrive, which kept locking files). Ignore any old copy under OneDrive. GitHub: `https://github.com/psuvraneel-cyber/offcut`; `origin/main` matches local `main` at `19253ea`.
+The project lives at **`C:\OffCut`** (moved out of OneDrive, which kept locking files). Ignore any old copy under OneDrive. GitHub: `https://github.com/psuvraneel-cyber/offcut`; `origin/main` matches local `main` at `c616bf8`. The evaluation corpus, model files and research reports live outside the repo in **`D:\OffCut-Evaluation\`** (`D:` is a `subst` of `C:\`, so it's really `C:\OffCut-Evaluation\`).
 
 ## Status right now (2026-10-30)
 
@@ -50,7 +50,7 @@ English is good. Benchmarks (`engine/bench/RESULTS.md`), `base` on WebGPU with V
 
 ### What doesn't: Hindi and Hinglish
 
-An outside audit (`OffCut_Hindi_Hinglish_ASR_Engine_Audit_Report.html` / `.pdf`, untracked in `C:\OffCut`, on commit `19253ea`) rates Hindi and Hinglish **not production-ready**. On `tiny`/WASM with VAD, Hindi averages 116.67% words wrong and Hinglish 94.88%, with 68.9% of Hinglish words dropped.
+An outside audit (`OffCut_Hindi_Hinglish_ASR_Engine_Audit_Report.html` / `.pdf` in the repo root, on commit `19253ea`) rates Hindi and Hinglish **not production-ready**. On `tiny`/WASM with VAD, Hindi averages 116.67% words wrong and Hinglish 94.88%, with 68.9% of Hinglish words dropped.
 
 Its main findings:
 
@@ -60,9 +60,9 @@ Its main findings:
 4. Transliteration mangles English loanwords (for example "believe" written in Devanagari comes out wrong in Roman).
 5. The captions page claims "3× higher accuracy" for the Small model (`web/src/captions/CaptionsPage.tsx`, around lines 770–778). No benchmark has tested `small`.
 
-### Phase 2 P0.1 and P0.1.1 (uncommitted in `C:\OffCut`)
+### Phase 2 P0.1 and P0.1.1: Whisper decoding fixes (committed in `c616bf8`)
 
-Another AI's work, not yet committed. `npm --prefix engine test` gives 198/198 passing across 20 files and the typecheck is clean (checked 2026-10-30).
+At the time of P0.1.1, `npm --prefix engine test` gave 198/198 passing across 20 files with a clean typecheck. P1.1 later added `engine/test/bench-p1-1.test.ts` (212 tests reported).
 
 - **Window planning** (`engine/src/whisper/windows.ts`): policies `baseline`, `fixed_duration`, `largest_pause`, `adaptive_pause`; windows capped at 15 s for conversation.
 - **Repetition controls** (`worker.ts`): `repetition_penalty: 1.15` and `no_repeat_ngram_size: 3`.
@@ -95,21 +95,102 @@ The fixes stop the engine collapsing; they don't make it accurate.
 
 **Open question on English (`tiny`).** Run alone, `EN_PODCAST_001` gets 12.29% after the ladder fix (13.56% in a later run, RTF 0.229). But in the full short-set run `Phase2_P0_1_1_FullEval_fixed_ladder`, the same clip scored **32.63%**, and the noisy vlogs got 22.92% micro WER, against 16.56–20.83% before. Find out why the full run differs before calling English regression-free. `base` hasn't been re-run on the new code.
 
-**The P0.1.1 write-up's "GO for Phase 2 P1"** (move on to Indic-specialised models such as IndicConformer or fine-tuned Whisper ONNX) is the right direction. Settle the English question above first.
+**The P0.1.1 write-up's "GO for Phase 2 P1"** (move on to Indic-specialised models such as IndicConformer or fine-tuned Whisper ONNX) was the right direction. The English question above is still open.
+
+### Phase 2 P1.0: Hindi/Hinglish evaluation corpus
+
+- **100 clips, 582.3 s**, in `D:\OffCut-Evaluation\`. All are 16 kHz mono PCM16 WAV, 3–15 s long, with no silent or clipped files.
+
+| Set | Clips | Duration | Source |
+|---|---:|---:|---|
+| Common Voice Hindi v27.0 | 25 | 134.4 s | `test` split, dual-voted, one clip per speaker |
+| AI4Bharat Kathbath Hindi | 25 | 131.9 s | `valid` split, news reading |
+| MUCS 2021 Hindi-English | 50 | 316.0 s | Test archive, Spoken Tutorial Project (instructional, not conversation) |
+
+- **Paths:** manifests in `manifests/` (`hindi`, `hinglish`, `combined`, `offcut_benchmark_manifest.json`, `excluded_samples.csv` with the 255 rejected samples), checksums in `checksums/`, licence notes in `licenses/`, and reports `SOURCE_INVENTORY.md` and `REFERENCE_VERIFICATION_REPORT.md`.
+- **Caveats:**
+  - Every reference is `SOURCE_PROVIDED_UNVERIFIED`; only 15 clips had a spot check.
+  - The 50 Romanized Hinglish references (`manifests/hinglish_roman_reference_review.csv`) are machine-made, all `NOT_REVIEWED`, and use academic spellings (`karem`, `haim`, `.n`) rather than natural Hinglish.
+  - The Kathbath speaker figures don't add up: 16 speakers, but 13 F + 12 M = 25.
+
+### Phase 2 P1.1: Whisper tiny vs base on the corpus
+
+Four browser runs in Chrome 157 on WebGPU (Intel UHD), 101 clips each: 50 Hindi, 50 Hinglish and 1 English control. Report: `D:\OffCut-Evaluation\reports\PHASE_2_P1_1_MODEL_EVALUATION_REPORT.md`; per-clip results in `reports/results/`.
+
+| Set (profile) | tiny | base |
+|---|---:|---:|
+| English control `EN_PODCAST_001` | 13.56% | 30.51% |
+| Hindi (`hindi_devanagari`) | 103.86% | 98.65% |
+| Hinglish (`hinglish_roman`) | 94.96% | 89.16% |
+| Hinglish (`hinglish_script_normalized`) | 94.89% | 88.70% |
+
+- **Verdict:** neither model is usable for Hindi or Hinglish. `base` drops far more words (Hindi deletions 15% → 55%), and the recovery ladder barely changes accuracy. Keep `tiny` for English and look for an Indic model.
+- **Open:** `base` scored 4.66% on the same English clip in an earlier configuration, and 30.51% here (it dropped a 25-word quote). One English clip is not enough to choose an English model.
+
+### Phase 2 P2.0: Indic model feasibility
+
+Report: `D:\OffCut-Evaluation\reports\PHASE_2_P2_0_MODEL_FEASIBILITY_REPORT.md`; artifacts in `D:\OffCut-Evaluation\p2-model-poc\`; browser test code in `engine/bench/test-conformer.ts` and `run_browser_test.mjs`.
+
+| Candidate | Verdict |
+|---|---|
+| Indic-Transcribe Flex / Core (1B, Canary-based; 1.7–3.8 GB) | No-go in the browser on this hardware: memory limits, and WebGPU buffer limits on Intel UHD |
+| Sherpa-ONNX WASM (investigated build) | No-go: needs threads, so `SharedArrayBuffer` and COOP/COEP |
+| **IndicConformer Hindi 120M** (`trysem/indicconformer-120m-onnx`, community ONNX export of `ai4bharat/indicconformer_stt_hi_hybrid_ctc_rnnt_large`) | **Strong Hindi candidate** |
+
+**IndicConformer facts:**
+- **Model:** CTC, opset 16, 35 standard operators, no custom ops. 5,632 Devanagari tokens plus blank. Reported licence CC-BY-4.0, not yet checked for the community export.
+- **File:** `model.onnx` is 493,060,285 bytes, SHA256 `fb362cae38fd183546d92a614bab2dcb6098702d53efb8e2f6fe850cda43e0d1` (checked 2026-10-30).
+
+**Proof-of-concept results (20 clips, run in Python with `librosa` + `onnxruntime`, `run_poc_evaluation.py`):**
+
+| Set | Clips | WER |
+|---|---:|---:|
+| Common Voice Hindi | 5 | 2.04% |
+| Kathbath Hindi | 5 | 4.76% |
+| **Hindi combined** | 10 | **3.57%** (7 of 10 exact) |
+| MUCS Hinglish, mixed verbatim | 10 | 61.39% |
+| MUCS Hinglish, script-normalised | 10 | 58.86% |
+| MUCS Hinglish, Romanized | 10 | 85.80% (references unreviewed) |
+
+**Why Hinglish scores badly:** the model hears English words but writes them in Devanagari (`अकाउंट्स` for accounts, `क्रिएट` for create). Converting the script doesn't turn them back into English words.
+
+**Browser runtime (ONNX Runtime Web, Chrome 157):**
+
+| Backend | Load | Inference | Speed |
+|---|---:|---:|---|
+| WASM, 1 thread | 3.3 s | 0.51 s | about 3× faster than WebGPU |
+| WebGPU | 3.9 s | 1.48 s | |
+
+- Memory peaks at 782 MB and settles at 297 MB after disposal. Twenty passes ran with no crash.
+- **These browser numbers came from a random-noise `[1, 80, 200]` tensor (2 s of fake features), not real speech** (`test-conformer.ts`, lines 46–49). The browser has not yet transcribed real audio.
+
+**Proposed design (not built):** a dual engine. English goes to Whisper `tiny`; Hindi goes to IndicConformer on single-threaded WASM, behind a `ModelAdapter` interface. Hinglish needs its own solution.
+
+**Caveats before trusting the 3.57%:**
+- It covers only 10 clips.
+- The references are unverified.
+- Kathbath is AI4Bharat's own dataset, and our clips come from its `valid` split, so training overlap is likely.
+- The Python feature extraction has no browser twin yet.
+- INT8 quantisation (about 125 MB) is proposed, not tested.
 
 ## What's next
 
-1. **Finish P0.1/P0.1.1:** work out why `EN_PODCAST_001` on `tiny` scores 32.63% in the full run but 12–14% alone. Re-run `base` on the new code. Then review and commit it (16 engine files plus the bench).
-2. **Fix the audit's remaining P0 items:**
-   - level the whole track's volume once (global RMS) instead of boosting each window;
-   - convert Urdu-script output to Devanagari in `hi` mode instead of deleting it.
-3. **Hinglish quality (audit P1/P2):** a bilingual starting prompt, a loanword lexicon for transliteration, the missing candra matras (ॉ, ॅ), retries split at VAD pauses, and a temperature fallback schedule `[0.0, 0.2, 0.4]`.
-4. **Be honest in the UI:** remove the unverified "3× higher accuracy" Small-model claim, or benchmark `small` first. Until Hindi/Hinglish improve, label them as experimental.
-5. **The real fix is the model.** `tiny` and `base` are too small for Hindi. Evaluate Indic fine-tuned Whisper checkpoints in ONNX that can run in the browser.
-6. **Head-to-head against OpusClip** on English clips the owner owns.
+1. **Run P2.1 using the revised brief `docs/p2-1-prompt.md`** (it replaces the P2.1 plan in the ChatGPT handoff). In order:
+   1. reproduce P2.0 in Python;
+   2. run all 100 clips;
+   3. prove the browser gives the same features and text as Python on real audio;
+   4. test the owner's held-out clips;
+   5. audit references and training overlap;
+   6. test an English-loanword lexicon for Hinglish;
+   7. explain the English contradictions (`tiny` 12.29% vs 32.63%, `base` 4.66% vs 30.51%).
+2. **Owner task:** record 10–20 own Hindi/Hinglish clips with typed transcripts in `D:\OffCut-Evaluation\raw\owner_holdout\`, and later review the proposed Romanized Hinglish references.
+3. **After P2.1:** if the Hindi gates pass, integrate IndicConformer for Hindi as a beta (adapter, download progress, caching, disposal). Hinglish follows either the lexicon route or a code-switching model, depending on P2.1.
+4. **Whisper path, still relevant for English:** the audit's global RMS volume fix (instead of boosting each window) and a temperature fallback schedule `[0.0, 0.2, 0.4]`.
+5. **Be honest in the UI:** remove the unverified "3× higher accuracy" Small-model claim (`CaptionsPage.tsx`, around lines 770–778). Label Hindi and Hinglish as experimental until a new engine ships.
+6. **Head-to-head against OpusClip** on English clips the owner owns, using a bigger English test set than one clip.
 7. **Remaining tool stations:** pick the best moments from a long video (not started), then the full long-video → clips flow on top of captions + reframe + burn-in.
 8. **Installable app (PWA, works offline).** The manifest and icons already exist.
-9. **Marketing:** drafts for launch threads and directory listings are in `docs/marketing/` (untracked).
+9. **Marketing:** drafts for launch threads and directory listings are in `docs/marketing/`.
 
 ## Repo map
 
@@ -123,12 +204,13 @@ The fixes stop the engine collapsing; they don't make it accurate.
 | `web/public/` | Favicon, icons, `og.png`, `site.webmanifest`, `_headers`, `robots.txt`, `reel.html` |
 | `web/scripts/brand-images/` | Sources for `og.png` and icons; `node web/scripts/brand-images/render.mjs` re-renders them |
 | `engine/` | Transcription engine: Whisper via Transformers.js 3.8.1, Silero VAD, DSP, windows, retry/recovery, language/script handling, transliteration, captions export, runtime stage |
-| `engine/bench/` | Dev-only benchmark (`RESULTS.md` holds numbers only; `README.md` explains the method) |
+| `engine/bench/` | Dev-only benchmark (`RESULTS.md` holds numbers only; `README.md` explains the method; `run_matrix.mjs` runs experiment matrices; `test-conformer.ts` is the IndicConformer browser spike) |
 | `runtime/` | `@offcut/runtime`: stage runner with GPU lock, release, cancel and WASM fallback |
 | `functions/`, `migrations/`, `shared/`, `test/` | Backend: Pages Functions + D1 + Turnstile |
-| `docs/` | `launch.md` (production checklist), `backend-prompt.md` (API contract, source of truth), `backend.md`, `runtime-foundation-plan.md`, and briefs for other AI sessions |
+| `docs/` | `launch.md` (production checklist), `backend-prompt.md` (API contract, source of truth), `backend.md`, `runtime-foundation-plan.md`, `p2-1-prompt.md` (next research brief), `marketing/`, and briefs for other AI sessions |
+| `D:\OffCut-Evaluation\` (outside the repo) | 100-clip Hindi/Hinglish corpus, manifests, references, phase reports, IndicConformer model and PoC scripts |
 
-Untracked in `C:\OffCut`: the audit report (HTML/PDF), `generate_pdf_report.cjs`, `docs/marketing/`, `opencode.jsonc`, `website screenshots/`, `asr-evaluation-assets/` (test set and results; stays local, git-ignored).
+`asr-evaluation-assets/` (English and early test clips, plus bench results) stays local and git-ignored. The audit report is in the repo root.
 
 The home page order is Hero, How it works, Roadmap, FAQ, Early access, then the footer.
 

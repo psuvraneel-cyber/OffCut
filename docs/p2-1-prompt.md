@@ -132,7 +132,7 @@ Hinglish has no pass/fail gate in P2.1: its references aren't reviewed yet. Repo
 11. `benchmark_reproduction.md`: exact commands to reproduce every number
 12. `p2_1_manifest.json`: checksums of the model, vocab, every script and every output
 
-Then append a P2.1 section to `HANDOFF.md`: what passed, what failed, what's blocked, and what's next. Don't rewrite earlier sections. Also fix the handoff's stale status line: HEAD is `c616bf8`, committed.
+Then add a P2.1 section to `HANDOFF.md` after the P2.0 section: what passed, what failed, what's blocked, and what's next. Don't rewrite earlier sections. Update the "Last updated" line and "What's next".
 
 ## What happens after P2.1
 

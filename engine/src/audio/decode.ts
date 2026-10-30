@@ -6,7 +6,7 @@ import {
   type InputAudioTrack,
 } from "mediabunny";
 import { NoAudioTrackError } from "../errors";
-import type { AudioWindow } from "../types";
+import type { AudioWindow, ConditioningMode } from "../types";
 import { conditionAudio } from "./dsp";
 import { downmixToMono, resampleMono } from "./resample";
 
@@ -23,6 +23,7 @@ export interface AudioWindowProvider {
     window: AudioWindow,
     signal: AbortSignal,
     onProgress?: (seconds: number) => void,
+    conditioning?: ConditioningMode,
   ): Promise<Float32Array>;
   dispose(): void;
 }
@@ -85,6 +86,7 @@ class MediabunnyAudioProvider implements AudioWindowProvider {
     window: AudioWindow,
     signal: AbortSignal,
     onProgress?: (seconds: number) => void,
+    conditioning: ConditioningMode = "legacy",
   ): Promise<Float32Array> {
     throwIfAborted(signal);
     const sourceLength = Math.max(1, Math.ceil((window.end - window.start) * this.#sampleRate) + 2);
@@ -134,7 +136,7 @@ class MediabunnyAudioProvider implements AudioWindowProvider {
     }
 
     onProgress?.(window.end);
-    return conditionAudio(resampleMono(source, this.#sampleRate));
+    return conditionAudio(resampleMono(source, this.#sampleRate), undefined, undefined, conditioning);
   }
 
   dispose(): void {
@@ -153,7 +155,12 @@ export class PcmAudioWindowProvider implements AudioWindowProvider {
     this.duration = duration ?? (sampleRate > 0 ? pcm.length / sampleRate : 0);
   }
 
-  async getWindow(window: AudioWindow, signal: AbortSignal): Promise<Float32Array> {
+  async getWindow(
+    window: AudioWindow,
+    signal: AbortSignal,
+    onProgress?: (seconds: number) => void,
+    conditioning: ConditioningMode = "legacy",
+  ): Promise<Float32Array> {
     throwIfAborted(signal);
     const startSample = Math.max(0, Math.floor(window.start * this.#sampleRate));
     const endSample = Math.min(this.#pcm.length, Math.ceil(window.end * this.#sampleRate));
@@ -162,7 +169,8 @@ export class PcmAudioWindowProvider implements AudioWindowProvider {
     }
     const slice = this.#pcm.subarray(startSample, endSample).slice();
     const resampled = this.#sampleRate === 16_000 ? slice : resampleMono(slice, this.#sampleRate);
-    return conditionAudio(resampled);
+    onProgress?.(window.end);
+    return conditionAudio(resampled, undefined, undefined, conditioning);
   }
 
   dispose(): void {
