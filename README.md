@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="web/public/favicon.svg" width="88" alt="Offcut logo" />
+Offcut logo
 
 # Offcut
 
