@@ -84,6 +84,7 @@
       .badge-pass { background: rgba(74, 222, 128, 0.2); color: var(--success); }
       .badge-warn { background: rgba(250, 204, 21, 0.2); color: var(--warning); }
       .badge-fail { background: rgba(248, 113, 113, 0.2); color: var(--danger); }
+      .badge-neutral { background: rgba(148, 163, 184, 0.2); color: var(--muted); }
       #status-box {
         font-size: 14px;
         line-height: 1.5;
@@ -106,7 +107,7 @@
     </style>
   </head>
   <body>
-    <h1>OffCut STT Benchmark</h1>
+    <h1>OffCut STT Benchmark (v2.0)</h1>
 
     <div class="card">
       <div id="status-title" style="font-weight: 600; font-size: 16px;">Initializing benchmark...</div>
@@ -136,7 +137,7 @@
     </div>
 
     <div class="card">
-      <h2>Category Summaries</h2>
+      <h2>Category & Mode Summaries</h2>
       <div id="summary-tables">Waiting for results...</div>
     </div>
 
@@ -149,6 +150,7 @@
               <th>ID</th>
               <th>Cat</th>
               <th>Lang</th>
+              <th>Profile</th>
               <th>Dur</th>
               <th>Ref Words</th>
               <th>Hyp Words</th>
@@ -156,11 +158,13 @@
               <th>S/D/I</th>
               <th>Del Rate</th>
               <th>CER</th>
+              <th>Script</th>
               <th>Max Gap</th>
               <th>Sil. Words</th>
               <th>Wall Time</th>
               <th>RTF</th>
               <th>VAD</th>
+              <th>Ver</th>
             </tr>
           </thead>
           <tbody id="results-tbody"></tbody>

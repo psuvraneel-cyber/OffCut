@@ -1,4 +1,4 @@
-import type { AudioWindow } from "../types";
+import type { AudioWindow, WindowSplitStrategy } from "../types";
 import type { SpeechSegment } from "./vad";
 
 export const WINDOW_SECONDS = 30;
@@ -14,7 +14,46 @@ export const PLANNER_CONSTANTS = {
   sampleRate: 16000,
   maxSamples: 480000,
   minSilenceGapToOmitSeconds: 5.0,
+  minimumSplitPauseSeconds: 0.15,
 } as const;
+
+export interface WindowPlanningOptions {
+  maxWindowSeconds?: number;
+  forcedOverlapSeconds?: number;
+  minSilenceGapToOmitSeconds?: number;
+  negThreshold?: number;
+  speechPadMs?: number;
+  frameSize?: number;
+  sampleRate?: number;
+  splitStrategy?: WindowSplitStrategy;
+  minimumSplitPauseSeconds?: number;
+}
+
+/**
+ * Calculates the exact union duration of an array of intervals without double-counting overlaps.
+ */
+export function calculateIntervalUnionDuration(
+  intervals: readonly { start: number; end: number }[],
+): number {
+  if (intervals.length === 0) return 0;
+  const sorted = [...intervals]
+    .filter((i) => i.end > i.start)
+    .sort((a, b) => a.start - b.start || a.end - b.end);
+  if (sorted.length === 0) return 0;
+
+  const merged: { start: number; end: number }[] = [{ start: sorted[0].start, end: sorted[0].end }];
+  for (let i = 1; i < sorted.length; i++) {
+    const cur = sorted[i];
+    const prev = merged[merged.length - 1];
+    if (cur.start <= prev.end) {
+      prev.end = Math.max(prev.end, cur.end);
+    } else {
+      merged.push({ start: cur.start, end: cur.end });
+    }
+  }
+
+  return merged.reduce((acc, seg) => acc + (seg.end - seg.start), 0);
+}
 
 export function createWindows(
   duration: number,
@@ -53,20 +92,34 @@ export function planWindows(
   segments: readonly SpeechSegment[],
   probs: Float32Array | readonly number[],
   duration: number,
-  constants: Partial<typeof PLANNER_CONSTANTS> = {},
+  constants: WindowPlanningOptions = {},
 ): AudioWindow[] {
   const maxWindow = constants.maxWindowSeconds ?? PLANNER_CONSTANTS.maxWindowSeconds;
-  const forcedOverlap = constants.forcedOverlapSeconds ?? PLANNER_CONSTANTS.forcedOverlapSeconds;
+  let forcedOverlap = constants.forcedOverlapSeconds ?? PLANNER_CONSTANTS.forcedOverlapSeconds;
+  if (forcedOverlap >= maxWindow) {
+    forcedOverlap = Math.max(0, maxWindow / 4);
+  }
+
   const negThreshold = constants.negThreshold ?? PLANNER_CONSTANTS.negThreshold;
   const padSec = (constants.speechPadMs ?? PLANNER_CONSTANTS.speechPadMs) / 1000;
-  const frameSec = (constants.frameSize ?? PLANNER_CONSTANTS.frameSize) / (constants.sampleRate ?? PLANNER_CONSTANTS.sampleRate);
+  const frameSec =
+    (constants.frameSize ?? PLANNER_CONSTANTS.frameSize) /
+    (constants.sampleRate ?? PLANNER_CONSTANTS.sampleRate);
+  const splitStrategy: WindowSplitStrategy = constants.splitStrategy ?? "baseline";
+  const minSplitPause = constants.minimumSplitPauseSeconds ?? PLANNER_CONSTANTS.minimumSplitPauseSeconds;
+  const minGapToOmit = constants.minSilenceGapToOmitSeconds ?? PLANNER_CONSTANTS.minSilenceGapToOmitSeconds;
 
   // 1. Short files (<5s)
   if (duration < 5) {
     return [{ index: 0, start: 0, end: duration }];
   }
 
-  // 2. Check total speech duration
+  // 2. Fixed-duration slicing strategy (bypasses pause alignment if requested for ablation)
+  if (splitStrategy === "fixed_duration") {
+    return createWindows(duration, maxWindow, forcedOverlap);
+  }
+
+  // 3. Check total speech duration
   let totalSpeechSec = 0;
   for (const s of segments) {
     totalSpeechSec += Math.max(0, s.end - s.start);
@@ -79,12 +132,12 @@ export function planWindows(
     return createWindows(duration, maxWindow, 5);
   }
 
-  // 3. Break any long speech segment (>28s) into pieces <= 28s
+  // 4. Break any individual speech segment > maxWindow into pieces <= maxWindow
   const splitSegments: SpeechSegment[] = [];
   for (const seg of segments) {
     let curStart = seg.start;
     while (seg.end - curStart > maxWindow) {
-      const searchStartSec = curStart + 20;
+      const searchStartSec = curStart + Math.min(20, Math.max(0, maxWindow * 0.6));
       const searchEndSec = curStart + maxWindow;
       const startFrame = Math.max(0, Math.floor(searchStartSec / frameSec));
       const endFrame = Math.min(probs.length - 1, Math.floor(searchEndSec / frameSec));
@@ -105,7 +158,7 @@ export function planWindows(
       } else {
         const splitSec = curStart + maxWindow;
         splitSegments.push({ start: curStart, end: splitSec });
-        curStart = splitSec - forcedOverlap;
+        curStart = Math.max(0, splitSec - forcedOverlap);
       }
     }
     if (seg.end > curStart) {
@@ -117,17 +170,29 @@ export function planWindows(
     return createWindows(duration, maxWindow, 5);
   }
 
-  // 4. Greedy window merging
+  // 5. Window aggregation according to splitStrategy
   const windows: AudioWindow[] = [];
   let curWinStart = Math.max(0, splitSegments[0].start);
   let prevSegEnd = splitSegments[0].end;
-  const minGapToOmit = constants.minSilenceGapToOmitSeconds ?? PLANNER_CONSTANTS.minSilenceGapToOmitSeconds;
 
   for (let i = 1; i < splitSegments.length; i++) {
     const nextSeg = splitSegments[i];
     const candidateEnd = nextSeg.end;
+    const currentSpan = candidateEnd - curWinStart;
 
-    if (candidateEnd - curWinStart <= maxWindow) {
+    let shouldSplit = currentSpan > maxWindow;
+
+    // In adaptive_pause mode, if we are in the target zone (>= 65% of maxWindow)
+    // and there is a natural pause >= minSplitPause, prefer splitting early at natural boundary
+    if (!shouldSplit && splitStrategy === "adaptive_pause") {
+      const accumulated = prevSegEnd - curWinStart;
+      const gapToNext = nextSeg.start - prevSegEnd;
+      if (accumulated >= maxWindow * 0.65 && gapToNext >= minSplitPause) {
+        shouldSplit = true;
+      }
+    }
+
+    if (!shouldSplit) {
       prevSegEnd = nextSeg.end;
     } else {
       const gap = Math.max(0, nextSeg.start - prevSegEnd);
@@ -147,10 +212,12 @@ export function planWindows(
         curWinStart = Math.max(0, openCut);
         prevSegEnd = nextSeg.end;
       } else {
-        // Small gap or continuous speech over music: do not drop audio!
-        // Enforce forced overlap between consecutive windows so seam words are never lost
+        // Small gap or continuous speech
         const closeCut = prevSegEnd + Math.min(padSec, gap / 2);
-        const winEnd = Math.min(duration, Math.min(curWinStart + maxWindow, Math.max(curWinStart + 0.1, closeCut)));
+        const winEnd = Math.min(
+          duration,
+          Math.min(curWinStart + maxWindow, Math.max(curWinStart + 0.1, closeCut)),
+        );
 
         windows.push({
           index: windows.length,
@@ -158,14 +225,24 @@ export function planWindows(
           end: winEnd,
         });
 
-        curWinStart = Math.max(0, Math.min(nextSeg.start, winEnd - forcedOverlap));
+        if ((splitStrategy === "largest_pause" || splitStrategy === "adaptive_pause") && gap >= minSplitPause) {
+          // Clean pause split: start next window at the next segment onset (with small pad)
+          const openCut = Math.max(0, nextSeg.start - Math.min(padSec, gap / 2));
+          curWinStart = openCut;
+        } else {
+          // Baseline behavior or tiny pause: enforce forced overlap
+          curWinStart = Math.max(0, Math.min(nextSeg.start, winEnd - forcedOverlap));
+        }
         prevSegEnd = nextSeg.end;
       }
     }
   }
 
   const finalGap = Math.max(0, duration - prevSegEnd);
-  const finalEnd = Math.min(duration, Math.min(curWinStart + maxWindow, prevSegEnd + Math.min(padSec, finalGap / 2)));
+  const finalEnd = Math.min(
+    duration,
+    Math.min(curWinStart + maxWindow, prevSegEnd + Math.min(padSec, finalGap / 2)),
+  );
   windows.push({
     index: windows.length,
     start: curWinStart,

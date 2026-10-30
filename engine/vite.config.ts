@@ -7,7 +7,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
 const evalAssetsDir = path.resolve(projectRoot, "asr-evaluation-assets");
+const evalExternalDir = path.resolve("D:\\OffCut-Evaluation");
 const evalResultsDir = path.resolve(evalAssetsDir, "results");
+const evalExternalResultsDir = path.resolve(evalExternalDir, "reports", "results");
 const resultsMdPath = path.resolve(__dirname, "bench", "RESULTS.md");
 
 function evalAssetsPlugin(): Plugin {
@@ -22,9 +24,18 @@ function evalAssetsPlugin(): Plugin {
         // 1. GET / HEAD /eval/*
         if ((req.method === "GET" || req.method === "HEAD") && cleanUrl.startsWith("/eval/")) {
           const subPath = decodeURIComponent(cleanUrl.slice("/eval/".length));
-          const targetPath = path.resolve(evalAssetsDir, subPath);
+          let targetPath = path.resolve(evalAssetsDir, subPath);
+          let isExternal = false;
 
-          if (!targetPath.startsWith(evalAssetsDir + path.sep) && targetPath !== evalAssetsDir) {
+          if (!fs.existsSync(targetPath)) {
+            const extTarget = path.resolve(evalExternalDir, subPath);
+            if (fs.existsSync(extTarget) && (extTarget.startsWith(evalExternalDir + path.sep) || extTarget === evalExternalDir)) {
+              targetPath = extTarget;
+              isExternal = true;
+            }
+          }
+
+          if (!isExternal && !targetPath.startsWith(evalAssetsDir + path.sep) && targetPath !== evalAssetsDir) {
             res.statusCode = 403;
             res.end("Forbidden: Path escapes evaluation directory");
             return;
@@ -32,7 +43,7 @@ function evalAssetsPlugin(): Plugin {
 
           if (!fs.existsSync(targetPath) || fs.statSync(targetPath).isDirectory()) {
             res.statusCode = 404;
-            res.end("Not Found");
+            res.end("Not Found: " + subPath);
             return;
           }
 
@@ -106,6 +117,14 @@ function evalAssetsPlugin(): Plugin {
 
               const targetJsonPath = path.join(evalResultsDir, safeName);
               fs.writeFileSync(targetJsonPath, body, "utf-8");
+
+              if (fs.existsSync(evalExternalDir)) {
+                if (!fs.existsSync(evalExternalResultsDir)) {
+                  fs.mkdirSync(evalExternalResultsDir, { recursive: true });
+                }
+                const extJsonPath = path.join(evalExternalResultsDir, safeName);
+                fs.writeFileSync(extJsonPath, body, "utf-8");
+              }
 
               // Append numbers-only summary to engine/bench/RESULTS.md if summary markdown is provided
               const data = JSON.parse(body);

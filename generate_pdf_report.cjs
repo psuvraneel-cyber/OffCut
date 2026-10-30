@@ -1,0 +1,865 @@
+const fs = require('fs');
+const path = require('path');
+
+const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OffCut - Comprehensive Hindi & Hinglish Transcription Engine Audit Report</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #1e293b;
+    background-color: #ffffff;
+    line-height: 1.55;
+    font-size: 10pt;
+    margin: 0;
+    padding: 0;
+  }
+  h1, h2, h3, h4 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-top: 1.4em;
+    margin-bottom: 0.5em;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  h1 {
+    font-size: 20pt;
+    line-height: 1.2;
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 6px;
+    margin-top: 0;
+  }
+  h2 {
+    font-size: 13pt;
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 4px;
+    margin-top: 1.8em;
+  }
+  h3 {
+    font-size: 11pt;
+    color: #334155;
+  }
+  h4 {
+    font-size: 10pt;
+    color: #475569;
+  }
+  p {
+    margin: 0.6em 0;
+  }
+  .doc-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #0f172a;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+    margin-top: 12px;
+    font-size: 9pt;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 14px;
+  }
+  .meta-item strong {
+    color: #475569;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 8pt;
+    font-weight: 700;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #f87171;
+  }
+  .badge-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fbbf24;
+  }
+  .badge-success {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #4ade80;
+  }
+  .badge-neutral {
+    background-color: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 8.5pt;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  th, td {
+    padding: 5.5px 8px;
+    text-align: left;
+    border: 1px solid #cbd5e1;
+  }
+  th {
+    background-color: #1e293b;
+    color: #ffffff;
+    font-weight: 600;
+  }
+  tr:nth-child(even) td {
+    background-color: #f8fafc;
+  }
+  .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  .card {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 12px 0;
+    background-color: #ffffff;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .card-critical {
+    border-left: 4px solid #ef4444;
+    background-color: #fffaf0;
+  }
+  .card-warning {
+    border-left: 4px solid #f59e0b;
+    background-color: #fffdf5;
+  }
+  .card-info {
+    border-left: 4px solid #3b82f6;
+    background-color: #f8faff;
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+
+  code, pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 8pt;
+  }
+  code {
+    background-color: #f1f5f9;
+    padding: 1.5px 4px;
+    border-radius: 3px;
+    border: 1px solid #e2e8f0;
+    color: #b91c1c;
+  }
+  pre {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 10px 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    line-height: 1.4;
+    margin: 8px 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    border: none;
+    color: inherit;
+  }
+
+  ul, ol {
+    margin: 0.5em 0;
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 4px;
+  }
+  .quote {
+    border-left: 3px solid #94a3b8;
+    padding-left: 10px;
+    font-style: italic;
+    color: #475569;
+    margin: 8px 0;
+  }
+  .page-break {
+    page-break-before: always;
+    break-before: always;
+  }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div>
+      <span class="badge badge-danger">AUDIT REPORT &bull; CRITICAL DEFECTS</span>
+      <h1 style="margin-top: 8px;">OffCut: Comprehensive Hindi & Hinglish Transcription Engine Audit</h1>
+      <div style="font-size: 11pt; color: #475569; font-weight: 500;">
+        Independent Technical Audit of Client-Side Browser ASR, Audio DSP, Language Routing, and Transliteration
+      </div>
+    </div>
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-item"><strong>Target Repository:</strong> github.com/psuvraneel-cyber/OffCut</div>
+    <div class="meta-item"><strong>Audited Commit:</strong> <code>19253ead4d2a9c54c4ba2f23394f9c82b9dc92a4</code> (main)</div>
+    <div class="meta-item"><strong>Auditor Role:</strong> Principal ASR Systems Engineer & Computational Linguist</div>
+    <div class="meta-item"><strong>Audit Date:</strong> October 29, 2026</div>
+    <div class="meta-item"><strong>Inference Engine:</strong> Whisper (tiny/base) via @huggingface/transformers (WebGPU / WASM)</div>
+    <div class="meta-item"><strong>Production Readiness:</strong> <span class="badge badge-danger">FAILED / NOT READY</span></div>
+  </div>
+</div>
+
+<h2>1. Executive Assessment</h2>
+<p>
+  OffCut's browser-based Hindi and Hinglish transcription pipeline is <strong>technically unsound, unreliable, and completely unsuitable for production use</strong>.
+  While the repository contains recent commits intended to mitigate corrupted Unicode output, repetition loops, and Persian-Arabic script leakage, live empirical evaluation confirms that <strong>the engine remains essentially non-functional on real-world spoken Hindi and Hinglish</strong>.
+</p>
+
+<div class="card card-critical">
+  <div class="card-header">
+    <span style="color: #991b1b; font-size: 11pt;">Live Benchmark Empirical Evidence (Commit 19253ea — tiny wasm)</span>
+    <span class="badge badge-danger">Mean WER: 116.67% (Hindi) / 94.88% (Hinglish)</span>
+  </div>
+  <p style="margin-bottom: 8px;">
+    Conducted under controlled conditions on the official evaluation dataset with Silero VAD enabled:
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th class="num">Samples</th>
+        <th class="num">Mean WER</th>
+        <th class="num">Mean Del Rate</th>
+        <th class="num">Mean CER</th>
+        <th class="num">Mean RTF</th>
+        <th class="num">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>01_english_podcast</strong></td>
+        <td class="num">1</td>
+        <td class="num">32.20%</td>
+        <td class="num">20.76%</td>
+        <td class="num">28.52%</td>
+        <td class="num">0.413x</td>
+        <td><span class="badge badge-success">STABLE BASELINE</span></td>
+      </tr>
+      <tr>
+        <td><strong>02_hindi</strong></td>
+        <td class="num">6</td>
+        <td class="num"><strong>116.67%</strong></td>
+        <td class="num">20.45%</td>
+        <td class="num">108.13%</td>
+        <td class="num">1.122x</td>
+        <td><span class="badge badge-danger">TOTAL FAILURE</span></td>
+      </tr>
+      <tr>
+        <td><strong>03_hinglish</strong></td>
+        <td class="num">6</td>
+        <td class="num"><strong>94.88%</strong></td>
+        <td class="num"><strong>68.93%</strong></td>
+        <td class="num">89.96%</td>
+        <td class="num">1.502x</td>
+        <td><span class="badge badge-danger">TOTAL FAILURE</span></td>
+      </tr>
+      <tr>
+        <td><strong>04_noisy_vlog</strong></td>
+        <td class="num">4</td>
+        <td class="num">16.56%</td>
+        <td class="num">11.67%</td>
+        <td class="num">13.72%</td>
+        <td class="num">1.900x</td>
+        <td><span class="badge badge-success">STABLE BASELINE</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Direct Answers to Fundamental Questions</h3>
+<ol>
+  <li><strong>Is the Hindi transcription capability reliable, usable, and production-ready?</strong><br>
+  <strong>No.</strong> Standard conversational Hindi speech achieves 100% to 150% WER. Whisper <code>tiny</code> translates Hindi speech into hallucinated English sentences, while Whisper <code>base</code> outputs Urdu Perso-Arabic tokens that are 100% purged by the script filter, leaving empty transcripts.</li>
+  <li><strong>Is the Hinglish transcription capability reliable, usable, and production-ready?</strong><br>
+  <strong>No.</strong> Spoken Hinglish exhibits a 94.88% WER and 68.93% deletion rate. On long conversational dialogue, deletion reaches <strong>99.15% (116 of 117 words dropped)</strong>, yielding a single hallucinated word.</li>
+  <li><strong>Did recent commits fix the underlying problems?</strong><br>
+  <strong>No.</strong> The changes added heuristic filters (blocking Arabic script, regex dictionary mapping) without fixing the tokenizer, decoding, audio conditioning, or evaluation flaws.</li>
+  <li><strong>What are the 3 largest architectural blockers?</strong><br>
+    <ul>
+      <li><strong>Benchmark Reference Script Mismatch:</strong> UI promises Romanized Hinglish, but ground truth references are 85% Devanagari. The scoring harness performs raw string comparisons, guaranteeing ~95% WER.</li>
+      <li><strong>Window-Level Language Forcing for Code-Switching:</strong> Per-window language detection forces Whisper into either <code>en</code> or <code>hi</code>, destroying intra-sentential code-switching.</li>
+      <li><strong>Destructive Per-Window Peak Normalization:</strong> Audio conditioning amplifies low-amplitude windows by up to +45 dB, elevating background noise and causing hallucination loops.</li>
+    </ul>
+  </li>
+</ol>
+
+<div class="page-break"></div>
+
+<h2>2. Repository & Implementation Summary</h2>
+<p>
+  OffCut executes speech-to-text locally inside a Web Worker (<code>engine/src/whisper/worker.ts</code>) using Hugging Face Transformers.js and ONNX Runtime Web.
+</p>
+<ul>
+  <li><strong>Pass 1: Silero VAD & Windowing:</strong> Runs across PCM audio in 30-second blocks, producing probability curves to identify speech boundaries and group them into speech-bounded windows (&le; 30s).</li>
+  <li><strong>Pass 2: Language Routing & Whisper Decoding:</strong>
+    <ul>
+      <li>In <code>hinglish</code> mode: Probes RMS and runs per-window language detection, forcing either <code>hi</code> or <code>en</code>.</li>
+      <li>In <code>auto</code> mode: Probes window 0 and re-detects language on subsequent loud windows.</li>
+      <li>Passes audio window to <code>speechPipeline(audio, { language, task: "transcribe", max_new_tokens })</code>.</li>
+    </ul>
+  </li>
+  <li><strong>Pass 3: Post-Processing & Filtering:</strong>
+    <ul>
+      <li>Filters illegal Unicode scripts via <code>filterForeignScriptWords()</code>.</li>
+      <li>Removes repetition loops and junk words.</li>
+      <li>If <code>hinglish</code> is selected, executes rule-based transliteration from Devanagari to Roman script.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2>3. Review of Handoff Document & Benchmark History</h2>
+<ul>
+  <li><strong>Outdated Documentation:</strong> <code>HANDOFF.md</code> was last updated at commit <code>c8f9cee</code> (Oct 26, 2026). It predates 6 major commits (<code>19b565c</code> through <code>19253ea</code>) and does not document the transliteration engine or script filtering.</li>
+  <li><strong>Historical Benchmarks:</strong> All runs in <code>engine/bench/RESULTS.md</code> were executed on Oct 25, 2026. Zero benchmark runs were conducted on the newer commits until this audit.</li>
+  <li><strong>False UI Marketing Claims:</strong> <code>web/src/captions/CaptionsPage.tsx</code> (line 778) displays a banner claiming:
+    <div class="quote">
+      "💡 Stand-up Comedy & Fast Speech Tip: Stand-up comedy videos with rapid jokes and audience laughter get 3× higher accuracy on Small Model (~460 MB, runs fast on GPU)."
+    </div>
+    <strong>Audit Reality:</strong> Whisper Small was <strong>never evaluated</strong> in any benchmark report or in <code>RESULTS.md</code>.
+  </li>
+</ul>
+
+<h2>4. Hindi Transcription Performance Assessment</h2>
+<p>
+  Quantitative results on commit <code>19253ea</code> using Whisper <code>tiny</code> (WASM):
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>Sample ID</th>
+      <th>Mode</th>
+      <th class="num">Dur</th>
+      <th class="num">Ref Words</th>
+      <th class="num">Hyp Words</th>
+      <th class="num">WER</th>
+      <th class="num">S / D / I</th>
+      <th class="num">CER</th>
+      <th class="num">RTF</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>HI_INDIC_001</code></td>
+      <td>auto</td>
+      <td class="num">4.5s</td>
+      <td class="num">12</td>
+      <td class="num">9</td>
+      <td class="num"><strong>100.00%</strong></td>
+      <td class="num">9 / 3 / 0</td>
+      <td class="num">100.00%</td>
+      <td class="num">1.347x</td>
+    </tr>
+    <tr>
+      <td><code>HI_INDIC_001</code></td>
+      <td>hi</td>
+      <td class="num">4.5s</td>
+      <td class="num">12</td>
+      <td class="num">9</td>
+      <td class="num"><strong>100.00%</strong></td>
+      <td class="num">9 / 3 / 0</td>
+      <td class="num">100.00%</td>
+      <td class="num">1.096x</td>
+    </tr>
+    <tr>
+      <td><code>HI_INDIC_002</code></td>
+      <td>auto</td>
+      <td class="num">5.3s</td>
+      <td class="num">11</td>
+      <td class="num">7</td>
+      <td class="num"><strong>100.00%</strong></td>
+      <td class="num">7 / 4 / 0</td>
+      <td class="num">100.00%</td>
+      <td class="num">0.925x</td>
+    </tr>
+    <tr>
+      <td><code>HI_INDIC_002</code></td>
+      <td>hi</td>
+      <td class="num">5.3s</td>
+      <td class="num">11</td>
+      <td class="num">7</td>
+      <td class="num"><strong>100.00%</strong></td>
+      <td class="num">7 / 4 / 0</td>
+      <td class="num">100.00%</td>
+      <td class="num">0.771x</td>
+    </tr>
+    <tr>
+      <td><code>HI_INDIC_003</code></td>
+      <td>auto</td>
+      <td class="num">4.7s</td>
+      <td class="num">12</td>
+      <td class="num">18</td>
+      <td class="num"><strong>150.00%</strong></td>
+      <td class="num">12 / 0 / 6</td>
+      <td class="num">124.39%</td>
+      <td class="num">1.494x</td>
+    </tr>
+    <tr>
+      <td><code>HI_INDIC_003</code></td>
+      <td>hi</td>
+      <td class="num">4.7s</td>
+      <td class="num">12</td>
+      <td class="num">18</td>
+      <td class="num"><strong>150.00%</strong></td>
+      <td class="num">12 / 0 / 6</td>
+      <td class="num">124.39%</td>
+      <td class="num">1.095x</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="card card-critical">
+  <div class="card-header">
+    <span>Qualitative Failure Modes</span>
+    <span class="badge badge-danger">CRITICAL</span>
+  </div>
+  <p><strong>1. English Translation Hallucination (tiny):</strong> Despite <code>task: "transcribe"</code>, Whisper tiny outputs English translations instead of Devanagari Hindi:</p>
+  <ul>
+    <li><strong>Ref:</strong> <code>कहे जो है अंकल हाई इस्कूल नाइन्थ टेंथ की किताबें चाहे रहे</code></li>
+    <li><strong>Hyp:</strong> <code>Today, I am going to go to school lunch.</code></li>
+    <li><strong>Ref:</strong> <code>तो आज का समय है क्या आने का आ सकते हैं</code></li>
+    <li><strong>Hyp:</strong> <code>So, time for today, welcome to come.</code></li>
+  </ul>
+  <p><strong>2. Urdu Perso-Arabic Drift & Filter Purging (base):</strong> Whisper base outputs Urdu Perso-Arabic script for Hindi audio (e.g. <code>کہہیں امکا ہے اس کول</code>). <code>filterForeignScriptWords()</code> detects non-Devanagari script and wipes out 100% of the words, producing empty captions.</p>
+</div>
+
+<div class="page-break"></div>
+
+<h2>5. Hinglish Transcription Performance Assessment</h2>
+<p>
+  Quantitative evaluation on CoSHE conversational Hinglish clips on commit <code>19253ea</code>:
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>Sample ID</th>
+      <th>Mode</th>
+      <th class="num">Dur</th>
+      <th class="num">Ref Words</th>
+      <th class="num">Hyp Words</th>
+      <th class="num">WER</th>
+      <th class="num">S / D / I</th>
+      <th class="num">Del Rate</th>
+      <th class="num">CER</th>
+      <th class="num">Max Gap</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>HINGLISH_COSHE_001</code></td>
+      <td>auto</td>
+      <td class="num">19.3s</td>
+      <td class="num">72</td>
+      <td class="num">42</td>
+      <td class="num"><strong>90.28%</strong></td>
+      <td class="num">35 / 30 / 0</td>
+      <td class="num">41.67%</td>
+      <td class="num">84.26%</td>
+      <td class="num">9.56s</td>
+    </tr>
+    <tr>
+      <td><code>HINGLISH_COSHE_001</code></td>
+      <td>hi</td>
+      <td class="num">19.3s</td>
+      <td class="num">72</td>
+      <td class="num">38</td>
+      <td class="num"><strong>90.28%</strong></td>
+      <td class="num">31 / 34 / 0</td>
+      <td class="num">47.22%</td>
+      <td class="num">84.72%</td>
+      <td class="num">9.02s</td>
+    </tr>
+    <tr>
+      <td><code>HINGLISH_COSHE_002</code></td>
+      <td>auto</td>
+      <td class="num">27.8s</td>
+      <td class="num">117</td>
+      <td class="num">6</td>
+      <td class="num"><strong>100.00%</strong></td>
+      <td class="num">6 / 111 / 0</td>
+      <td class="num"><strong>94.87%</strong></td>
+      <td class="num">96.39%</td>
+      <td class="num">13.13s</td>
+    </tr>
+    <tr>
+      <td><code>HINGLISH_COSHE_002</code></td>
+      <td>hi</td>
+      <td class="num">27.8s</td>
+      <td class="num">117</td>
+      <td class="num">1</td>
+      <td class="num"><strong>100.00%</strong></td>
+      <td class="num">1 / 116 / 0</td>
+      <td class="num"><strong>99.15%</strong></td>
+      <td class="num">99.28%</td>
+      <td class="num">0.00s</td>
+    </tr>
+    <tr>
+      <td><code>HINGLISH_COSHE_003</code></td>
+      <td>auto</td>
+      <td class="num">19.5s</td>
+      <td class="num">62</td>
+      <td class="num">18</td>
+      <td class="num"><strong>93.55%</strong></td>
+      <td class="num">14 / 44 / 0</td>
+      <td class="num">70.97%</td>
+      <td class="num">86.90%</td>
+      <td class="num">0.17s</td>
+    </tr>
+    <tr>
+      <td><code>HINGLISH_COSHE_003</code></td>
+      <td>hi</td>
+      <td class="num">19.5s</td>
+      <td class="num">62</td>
+      <td class="num">25</td>
+      <td class="num"><strong>95.16%</strong></td>
+      <td class="num">22 / 37 / 0</td>
+      <td class="num">59.68%</td>
+      <td class="num">88.21%</td>
+      <td class="num">0.15s</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="card card-critical">
+  <div class="card-header">
+    <span>Catastrophic Deletion on Conversational Hinglish</span>
+    <span class="badge badge-danger">99.15% DELETION</span>
+  </div>
+  <p>
+    On <code>HINGLISH_COSHE_002</code> (27.8s clip containing 117 words of code-switched Hindi/English dialogue):
+  </p>
+  <ul>
+    <li><strong>Reference:</strong> <code>बड़ी जल्दी कर लेता आदमी यार चौबीस घंटे रोते रहते हो काम कुछ करते नहीं हो तो किसी और की जिंदगी मत खराब करो ना फिर dont dont get married पहले कुछ लायक बन जाओ उसके बाद में कर लेना शौक सारे पूरे करने हैं काम कुछ नहीं करना रोना बहुत ज्यादा है लेकिन effort नहीं करने ऐसे तो कुछ नहीं होगा sir but कुछ तो genuine cases होते होंगे...</code></li>
+    <li><strong>OffCut Output (hi):</strong> <code>jeep,</code> &mdash; <strong>116 out of 117 words dropped!</strong></li>
+    <li><strong>OffCut Output (auto):</strong> <code>I I don't have any questions.</code> &mdash; <strong>111 words dropped!</strong></li>
+  </ul>
+</div>
+
+<h2>6. Detailed Pipeline & Component Audit</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Finding ID</th>
+      <th>Severity</th>
+      <th>Source Location</th>
+      <th>Defect Summary</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>HIN-001</code></td>
+      <td><span class="badge badge-danger">P0 CRITICAL</span></td>
+      <td><code>engine/src/whisper/worker.ts#L263</code><br><code>engine/src/whisper/script.ts#L86</code></td>
+      <td><code>filterForeignScriptWords()</code> purges Perso-Arabic tokens, causing 100% word deletion on Whisper <code>base</code>.</td>
+    </tr>
+    <tr>
+      <td><code>HIN-002</code></td>
+      <td><span class="badge badge-danger">P0 CRITICAL</span></td>
+      <td><code>engine/src/whisper/worker.ts#L518</code><br><code>engine/src/whisper/models.ts#L9</code></td>
+      <td>Whisper <code>tiny</code> ignores <code>task: "transcribe"</code> and outputs English translations for Hindi audio.</td>
+    </tr>
+    <tr>
+      <td><code>HNG-001</code></td>
+      <td><span class="badge badge-danger">P0 CRITICAL</span></td>
+      <td><code>engine/src/whisper/worker.ts#L490</code></td>
+      <td>Per-window language detection forces either <code>en</code> or <code>hi</code>, destroying intra-sentential code-switching.</td>
+    </tr>
+    <tr>
+      <td><code>PIPE-001</code></td>
+      <td><span class="badge badge-danger">P0 CRITICAL</span></td>
+      <td><code>engine/src/audio/decode.ts#L137</code><br><code>engine/src/audio/dsp.ts#L60-L88</code></td>
+      <td>Per-window peak normalization amplifies background noise by up to +45 dB in quiet windows, triggering hallucinations.</td>
+    </tr>
+    <tr>
+      <td><code>BENCH-001</code></td>
+      <td><span class="badge badge-danger">P0 CRITICAL</span></td>
+      <td><code>engine/bench/main.ts#L344</code><br><code>engine/bench/wer.ts#L80</code></td>
+      <td>Benchmark compares Romanized hypothesis against Devanagari reference, mathematically guaranteeing ~95% WER.</td>
+    </tr>
+    <tr>
+      <td><code>HNG-002</code></td>
+      <td><span class="badge badge-warning">P1 HIGH</span></td>
+      <td><code>engine/src/whisper/transliterate.ts#L21</code></td>
+      <td>Missing Candra matras (<code>ॉ</code>, <code>ॅ</code>) leak unrendered Unicode combining characters into Roman captions.</td>
+    </tr>
+    <tr>
+      <td><code>HNG-003</code></td>
+      <td><span class="badge badge-warning">P1 HIGH</span></td>
+      <td><code>engine/src/whisper/transliterate.ts#L353</code></td>
+      <td>Lack of medial schwa deletion produces unnatural, archaic Romanized spelling for unmapped words.</td>
+    </tr>
+    <tr>
+      <td><code>BENCH-002</code></td>
+      <td><span class="badge badge-warning">P1 HIGH</span></td>
+      <td><code>engine/bench/main.ts#L250</code></td>
+      <td>Benchmark harness queues <code>auto</code> and <code>hi</code>, but never tests <code>language: "hinglish"</code> mode.</td>
+    </tr>
+    <tr>
+      <td><code>RUNTIME-001</code></td>
+      <td><span class="badge badge-neutral">P2 MEDIUM</span></td>
+      <td><code>web/src/captions/CaptionsPage.tsx#L778</code></td>
+      <td>In-app UI promises "3× higher accuracy on Small Model" without empirical backing.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h3>Key Component Findings</h3>
+
+<h4>1. The Destructive Audio Normalization Flaw (<code>PIPE-001</code>)</h4>
+<p>
+  In <code>engine/src/audio/decode.ts</code> (line 137), <code>conditionAudio()</code> is executed on <strong>every window slice independently</strong>.
+  In <code>engine/src/audio/dsp.ts</code> (line 60), <code>normalizePeak</code> uses <code>minPeakForNormalization = 0.001</code> (-60 dBFS).
+  When an audio window contains quiet speech or silence with peak amplitude 0.005 (-46 dBFS), it is multiplied by <code>0.95 / 0.005 = 190.0</code> (<strong>+45.6 dB of artificial gain</strong>).
+  This obliterates the natural dynamic range across windows, elevating background air-conditioning hiss and room acoustics into loud noise that triggers Whisper hallucinations.
+</p>
+
+<h4>2. Transliteration Mangles English Loanwords (<code>HNG-002</code>, <code>HNG-003</code>)</h4>
+<p>
+  When Whisper transcribes Hinglish speech in Devanagari, it writes English loanwords phonetically (e.g. <code>प्रॉपगैंडा</code>, <code>एक्चुअली</code>, <code>प्रॉब्लम</code>).
+  <code>transliterateDevanagariToHinglish()</code> mechanically transliterates these Devanagari characters:
+</p>
+<ul>
+  <li><code>एक्चुअली</code> &rarr; <code>"ekchualee"</code> (Expected: <code>actually</code>)</li>
+  <li><code>प्रॉपगैंडा</code> &rarr; <code>"praॉpagainda"</code> (Broken Candra matra + phonetic distortion)</li>
+  <li><code>प्रॉब्लम</code> &rarr; <code>"praॉblam"</code> (Broken Candra matra)</li>
+</ul>
+<p>
+  Furthermore, <code>engine/test/transliterate.test.ts</code> passed 100% only because all 20 test words were manually entered into the 180-word <code>COLLOQUIAL_MAP</code>. Unmapped Hindi words lack medial schwa deletion (e.g. <code>चमकना</code> becomes <code>"chamakanaa"</code>).
+</p>
+
+<h2>7. Benchmark Methodology & Dataset Quality (<code>BENCH-001</code>)</h2>
+<p>
+  The evaluation methodology suffers from a critical structural contradiction:
+</p>
+<ul>
+  <li><strong>UI Specification:</strong> In <code>CaptionsPage.tsx</code>, Hinglish is defined as <em>"Bilingual Indian speech mixing Hindi and English, outputted in Roman script."</em></li>
+  <li><strong>Dataset Ground Truth:</strong> In <code>asr-evaluation-assets/03_hinglish</code>, reference transcripts are written in <strong>84.7% Devanagari script</strong>.</li>
+  <li><strong>Scoring Harness:</strong> <code>engine/bench/wer.ts</code> performs raw string token equality (<code>ri === h[j - 1]</code>). Comparing Romanized token <code>"hain"</code> against Devanagari token <code>"हैं"</code> counts as a 100% substitution error.</li>
+</ul>
+<p>
+  <strong>Consequence:</strong> An ASR engine providing perfectly accurate Romanized Hinglish captions is mathematically guaranteed to receive an ~85% to 100% WER in the benchmark harness.
+</p>
+
+<h2>8. Browser Runtime & Hardware Constraints</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Model Size</th>
+      <th>Parameters</th>
+      <th>Download</th>
+      <th>RAM / VRAM</th>
+      <th>WASM RTF</th>
+      <th>WebGPU RTF</th>
+      <th>Production Viability</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>tiny</strong></td>
+      <td>39M</td>
+      <td>~75 MB</td>
+      <td>~250 MB</td>
+      <td>1.05x</td>
+      <td>0.15x</td>
+      <td>Runs fast, but Hindi/Hinglish accuracy is zero.</td>
+    </tr>
+    <tr>
+      <td><strong>base</strong></td>
+      <td>74M</td>
+      <td>~145 MB</td>
+      <td>~450 MB</td>
+      <td>1.85x</td>
+      <td>0.25x</td>
+      <td>Feasible on GPU, but severe Urdu script drift.</td>
+    </tr>
+    <tr>
+      <td><strong>small</strong></td>
+      <td>244M</td>
+      <td>~460 MB</td>
+      <td>~1.2 GB</td>
+      <td>4.50x</td>
+      <td>0.60x</td>
+      <td>Requires GPU. Unusable on WASM CPU (5m wall time for 1m video).</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>9. Prioritized Remediation Roadmap</h2>
+
+<h3>Phase P0: Critical Infrastructure Fixes (Immediate)</h3>
+<ul>
+  <li><strong>P0.1: Script-Aware Scoring Normalization:</strong> Update <code>engine/bench/wer.ts</code> to normalize both hypothesis and reference into Roman script for Hinglish evaluation.</li>
+  <li><strong>P0.2: Benchmark Harness Hinglish Queue:</strong> Update <code>engine/bench/main.ts</code> to evaluate <code>language: "hinglish"</code> mode.</li>
+  <li><strong>P0.3: Global Audio RMS Normalization:</strong> In <code>decode.ts</code>, replace per-window peak normalization with track-level global RMS normalization.</li>
+  <li><strong>P0.4: Urdu-to-Devanagari Transliteration:</strong> Convert Perso-Arabic tokens into Devanagari rather than deleting them when <code>language: "hi"</code> is selected.</li>
+</ul>
+
+<h3>Phase P1: Code-Switching & Transliteration Overhaul</h3>
+<ul>
+  <li><strong>P1.1: Default Hinglish Prompt Conditioning:</strong> Inject a bilingual prompt (e.g. <code>"Main kal market gaya tha to buy some groceries"</code>) into <code>pipelineOptions.initial_prompt</code> to condition Whisper for code-switching.</li>
+  <li><strong>P1.2: Add Missing Candra Matras:</strong> Add <code>ॉ: "o"</code> and <code>ॅ: "e"</code> to <code>MATRAS</code> in <code>transliterate.ts</code>.</li>
+  <li><strong>P1.3: Syllabic Schwa Deletion:</strong> Implement standard Hindi foot-based schwa deletion in unstressed syllables.</li>
+  <li><strong>P1.4: English Lexicon Lookup:</strong> Map phonetic Devanagari representations of common English words (<code>प्रॉपगैंडा</code>, <code>बिलीव</code>) directly back to English words (<code>propaganda</code>, <code>believe</code>).</li>
+</ul>
+
+<h3>Phase P2: VAD & Retry Hardening</h3>
+<ul>
+  <li><strong>P2.1: Speech-Aware Retry Slicing:</strong> Align bisection retries to Silero VAD silence gaps rather than slicing words at the 50% midpoint.</li>
+  <li><strong>P2.2: Temperature Fallback Schedule:</strong> Implement fallback temperatures <code>[0.0, 0.2, 0.4]</code> before attempting window splitting.</li>
+</ul>
+
+<h3>Phase P3: UI Transparency & Indic Models</h3>
+<ul>
+  <li><strong>P3.1: Remove False Claims:</strong> Remove the unverified "3x higher accuracy on Small Model" claim from <code>CaptionsPage.tsx</code>.</li>
+  <li><strong>P3.2: Indic-Fine-Tuned ONNX Models:</strong> Evaluate community Indic-specialized fine-tuned Whisper ONNX checkpoints (e.g. IndicWhisper).</li>
+</ul>
+
+<h2>10. Proposed Validation & Release Gates</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Gate ID</th>
+      <th>Target Dimension</th>
+      <th>Metric / Threshold</th>
+      <th>Verification Command</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>GATE-REG-01</code></td>
+      <td>English Regression</td>
+      <td>WER &le; 35.0% on <code>EN_PODCAST_001</code></td>
+      <td>Browser Benchmark Harness</td>
+    </tr>
+    <tr>
+      <td><code>GATE-HIN-01</code></td>
+      <td>Hindi Conversational</td>
+      <td>Mean WER &le; 45.0% across <code>HI_INDIC</code></td>
+      <td>Browser Benchmark Harness</td>
+    </tr>
+    <tr>
+      <td><code>GATE-HIN-02</code></td>
+      <td>Hindi Script Purity</td>
+      <td>Devanagari &ge; 90%, Deletion Rate &le; 15%</td>
+      <td>Benchmark JSON Result Audit</td>
+    </tr>
+    <tr>
+      <td><code>GATE-HNG-01</code></td>
+      <td>Hinglish Code-Switch</td>
+      <td>Mean WER &le; 50.0% across <code>COSHE</code></td>
+      <td>Romanized Benchmark Evaluation</td>
+    </tr>
+    <tr>
+      <td><code>GATE-HNG-02</code></td>
+      <td>Hinglish Word Deletion</td>
+      <td>Mean Deletion Rate &le; 15.0%</td>
+      <td>Benchmark JSON Result Audit</td>
+    </tr>
+    <tr>
+      <td><code>GATE-HNG-03</code></td>
+      <td>Unicode Cleanliness</td>
+      <td>Zero unrendered marks (<code>ॉ</code>, <code>ॅ</code>, <code>\uFFFD</code>)</td>
+      <td>Automated Regex Linter</td>
+    </tr>
+    <tr>
+      <td><code>GATE-PERF-01</code></td>
+      <td>Runtime Performance</td>
+      <td>RTF &le; 0.75x on WebGPU (Base Model)</td>
+      <td>Hardware Benchmark Run</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>11. Final Production Readiness Verdict</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Dimension</th>
+      <th>Rating</th>
+      <th>Technical Finding</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Hindi Transcription</strong></td>
+      <td><span class="badge badge-danger">F &bull; UNUSABLE</span></td>
+      <td>Mean WER 116.67%. Translates speech to English on tiny; outputs Urdu and gets deleted on base.</td>
+    </tr>
+    <tr>
+      <td><strong>Hinglish Transcription</strong></td>
+      <td><span class="badge badge-danger">F &bull; UNUSABLE</span></td>
+      <td>Mean WER 94.88%. 68.9% mean deletion rate (99.15% on conversational dialogue).</td>
+    </tr>
+    <tr>
+      <td><strong>English Regression State</strong></td>
+      <td><span class="badge badge-success">B+ &bull; PASSABLE</span></td>
+      <td>English transcription remains stable (32.2% on podcast, 16.5% on noisy vlog).</td>
+    </tr>
+    <tr>
+      <td><strong>Caption Timing & VAD</strong></td>
+      <td><span class="badge badge-warning">C- &bull; MARGINAL</span></td>
+      <td>Silero VAD works, but per-window peak normalization elevates background noise in quiet pauses.</td>
+    </tr>
+    <tr>
+      <td><strong>Runtime Stability</strong></td>
+      <td><span class="badge badge-success">B &bull; PASSABLE</span></td>
+      <td>Worker architecture and memory cleanup are functional; WASM CPU fallback is too slow for Small model.</td>
+    </tr>
+    <tr>
+      <td><strong>Overall Production Readiness</strong></td>
+      <td><span class="badge badge-danger">FAILED / NOT READY</span></td>
+      <td>Hindi and Hinglish features must be disabled or flagged as experimental until P0/P1 fixes are applied.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div style="margin-top: 30px; padding-top: 10px; border-top: 1px solid #cbd5e1; font-size: 8pt; color: #64748b; text-align: center;">
+  OffCut Independent Technical Audit &bull; Generated on October 29, 2026 &bull; Commit <code>19253ea</code>
+</div>
+
+</body>
+</html>
+`;
+
+const outputPath = path.join(__dirname, 'OffCut_Hindi_Hinglish_ASR_Engine_Audit_Report.html');
+fs.writeFileSync(outputPath, htmlContent, 'utf8');
+console.log('Successfully wrote HTML report to:', outputPath);

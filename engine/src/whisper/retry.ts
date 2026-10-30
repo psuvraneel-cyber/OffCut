@@ -35,6 +35,7 @@ export type AssessmentReason =
   | "stopped_early"
   | "started_late"
   | "repetition_loop"
+  | "single_token_dominance"
   | "junk_output"
   | "foreign_script"
   | "skipped_speech";
@@ -184,8 +185,8 @@ export function uncoveredSpeech(
   return seconds > 0 ? { seconds, start: first, end: lastEnd } : { seconds: 0, start: 0, end: 0 };
 }
 
-export function countJunkWords(words: readonly { text: string }[]): number {
-  return words.filter((word) => isJunkWord(word.text)).length;
+export function countJunkWords(words: readonly { text: string }[], language: CaptionLanguage = "auto"): number {
+  return words.filter((word) => isJunkWord(word.text, language)).length;
 }
 
 export function hasRepetitionLoop(
@@ -218,6 +219,116 @@ export function hasRepetitionLoop(
   }
 
   return false;
+}
+
+export function hasSingleTokenDominance(
+  tokens: readonly string[],
+  threshold = 0.6,
+  minTokens = 6,
+): boolean {
+  if (tokens.length < minTokens) return false;
+  const counts = new Map<string, number>();
+  for (const t of tokens) {
+    counts.set(t, (counts.get(t) ?? 0) + 1);
+  }
+  let maxCount = 0;
+  for (const count of counts.values()) {
+    if (count > maxCount) maxCount = count;
+  }
+  return maxCount / tokens.length > threshold;
+}
+
+export interface CandidateValidationResult {
+  valid: boolean;
+  reason: string;
+  tokenCount: number;
+  junkCount: number;
+  foreignCount: number;
+  hasLoop: boolean;
+  singleTokenDominance: boolean;
+}
+
+export function validateCandidateTranscript(
+  result: WindowTranscript,
+  language: CaptionLanguage = "auto",
+  speechSeconds = 0,
+): CandidateValidationResult {
+  const words = result.words.filter((w) => w.kind !== "cue");
+  const tokens = words.map((w) => normalizeToken(w.text) || w.text.trim().toLowerCase()).filter(Boolean);
+
+  if (speechSeconds >= 2.0 && words.length === 0) {
+    return {
+      valid: false,
+      reason: "empty output on speech",
+      tokenCount: 0,
+      junkCount: 0,
+      foreignCount: 0,
+      hasLoop: false,
+      singleTokenDominance: false,
+    };
+  }
+
+  const hasLoop = hasRepetitionLoop(tokens);
+  if (hasLoop) {
+    return {
+      valid: false,
+      reason: "repetition loop detected",
+      tokenCount: tokens.length,
+      junkCount: countJunkWords(words, language),
+      foreignCount: countForeignScriptWords(words, language),
+      hasLoop: true,
+      singleTokenDominance: false,
+    };
+  }
+
+  const singleTokenDominance = hasSingleTokenDominance(tokens);
+  if (singleTokenDominance) {
+    return {
+      valid: false,
+      reason: "single token dominance detected",
+      tokenCount: tokens.length,
+      junkCount: countJunkWords(words, language),
+      foreignCount: countForeignScriptWords(words, language),
+      hasLoop: false,
+      singleTokenDominance: true,
+    };
+  }
+
+  const foreignCount = countForeignScriptWords(words, language);
+  if (foreignCount > 0) {
+    return {
+      valid: false,
+      reason: `forbidden foreign script detected (${foreignCount} words)`,
+      tokenCount: tokens.length,
+      junkCount: countJunkWords(words, language),
+      foreignCount,
+      hasLoop: false,
+      singleTokenDominance: false,
+    };
+  }
+
+  const junkCount = countJunkWords(words, language);
+  if (words.length > 0 && junkCount / words.length > 0.25) {
+    return {
+      valid: false,
+      reason: `high junk word ratio (${junkCount}/${words.length})`,
+      tokenCount: tokens.length,
+      junkCount,
+      foreignCount: 0,
+      hasLoop: false,
+      singleTokenDominance: false,
+    };
+  }
+
+  return {
+    valid: true,
+    reason: "structurally clean",
+    tokenCount: tokens.length,
+    junkCount,
+    foreignCount: 0,
+    hasLoop: false,
+    singleTokenDominance: false,
+  };
 }
 
 export function assessWindow(
@@ -256,6 +367,15 @@ export function assessWindow(
   const tokens = words.map((w) => normalizeToken(w.text) || w.text.trim().toLowerCase()).filter(Boolean);
 
   if (hasRepetitionLoop(tokens, minRepeats, maxPhraseLen)) {
+    return {
+      flagged: true,
+      reason: "repetition_loop",
+      speechSeconds,
+      flaggedRegion: { start: 0, end: winDuration },
+    };
+  }
+
+  if (hasSingleTokenDominance(tokens)) {
     return {
       flagged: true,
       reason: "repetition_loop",
